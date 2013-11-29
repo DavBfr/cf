@@ -1,0 +1,3 @@
+<?php
+
+configure("DEBUG", True);

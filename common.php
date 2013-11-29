@@ -13,17 +13,24 @@ function configure($key, $value) {
 }
 
 define("URL_SEPARATOR", "/");
+configure("CF_VERSION", "1.0");
+configure("INIT_CONFIG_DIR", dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "config");
+
+if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php")) {
+	require(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php");
+}
+
+if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
+	require_once(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
+}
+
 configure("CF_DIR", dirname(__file__));
 configure("ROOT_DIR", dirname(CF_DIR));
 configure("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
+configure("DATA_DIR", CONFIG_DIR);
+configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
 
-if (file_exists(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php")) {
-	require(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php");
-}
-
-require_once(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
-
-configure("CF_INCLUDE_DIR", CF_DIR  . DIRECTORY_SEPARATOR . "includes");
+configure("CF_INCLUDE_DIR", CF_DIR . DIRECTORY_SEPARATOR . "includes");
 configure("CF_WWW_DIR", CF_DIR . DIRECTORY_SEPARATOR . "www");
 configure("CF_WWW_PATH", "cf" . URL_SEPARATOR . "www");
 configure("CF_CLASSES_DIR", CF_DIR . DIRECTORY_SEPARATOR . "classes");
@@ -52,6 +59,7 @@ configure("REQUEST_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "request");
 configure("SESSION_NAME", "CF");
 configure("FORCE_HTTPS", False);
 configure("DEFAULT_TIMEZONE", "Europe/Paris");
+configure("DEBUG", False);
 
 set_include_path(get_include_path() . URL_SEPARATOR . VENDOR_DIR);
 

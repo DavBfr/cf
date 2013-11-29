@@ -1,13 +1,7 @@
 <?php
 
-function bootstrap($config=NULL) {
-	if ($config === NULL) {
-		$config = CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json";
-	}
-	$conf = new Config();
-	if (file_exists($config)) {
-		$conf->load($config);
-	}
+function bootstrap() {
+	$conf = Config::getInstance();
 
 	if (@$_SERVER["PATH_INFO"]) {
 		Rest::handle();

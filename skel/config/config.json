@@ -1,0 +1,13 @@
+{
+	"title": "Skeletton site",
+
+	"scripts": [
+		"bootstrap/bootstrap.js",
+		"bootstrap/bootstrap.css",
+		"bootstrap/bootstrap-theme.css",
+		"styles.css"
+	],
+	
+	"description": "Skeletton site made with <i>Core Framework</i>."
+
+}

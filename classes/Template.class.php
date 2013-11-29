@@ -54,11 +54,10 @@ class Template {
 		$ret .= "</pre>";
 		return $ret;
 	}
-
-
-	public function get($param, $filtre='row') {
-		$value=$this->params[$param];
-		switch($filtre) {
+	
+	
+	protected function filter($value, $filter) {
+		switch($filter) {
 			case 'row':
 				return $value;
 			case 'esc':
@@ -66,8 +65,21 @@ class Template {
 			case 'int':
 				return number_format($value, 0, ',', ' ');
 			default:
-				return "$filtre non trouvé";
+				return "${filter} not found";
 		}
+	}
+
+
+	public function get($param, $filter='row') {
+		$value = $this->params[$param];
+		return $this->filter($value, $filter);
+	}
+
+
+	public function config($key, $filter='row') {
+		$config = Config::getInstance();
+		$value = $config->get($key, $key);
+		return $this->filter($value, $filter);
 	}
 
 

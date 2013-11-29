@@ -1,11 +1,24 @@
 <?php
 
 class Config {
+	private static $instance = NULL;
 	private $data;
 	
 	
 	public function __construct() {
 		$this->data = array();
+	}
+	
+	
+	public static function getInstance() {
+		if (is_null(self::$instance)) {
+			self::$instance = new self();
+			if (file_exists(JCONFIG_FILE)) {
+				self::$instance->load(JCONFIG_FILE);
+			}
+		}
+		
+		return self::$instance;
 	}
 	
 	

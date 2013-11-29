@@ -1,5 +1,9 @@
 <?php
 
+configure("DBNAME", 'sqlite:' . DATA_DIR . '/db.sqlite');
+configure("DBLOGIN", '');
+configure("DBPASSWORD", '');
+
 class Bdd {
 	private static $instance = NULL;
 
@@ -11,7 +15,7 @@ class Bdd {
 
 		//get bdd
 		try {
-			$this->bdd = new PDO(DBNAME, LOGIN, PASSWORD, $params);
+			$this->bdd = new PDO(DBNAME, DBLOGIN, DBPASSWORD, $params);
 		} catch (Exeption $e){
 			send_error(500, "Unable to connect to Database", $e->getMessage());
 		}
