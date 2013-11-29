@@ -29,10 +29,10 @@ abstract class AbstractLogin extends Rest {
 				$_SESSION["is_logged"] = true;
 				output_json(True);
 			}
-			send_error(401, "Unauthorized");
+			send_error(401);
 		}
 
-		send_error(500, "Error");
+		send_error(417);
 	}
 
 	abstract protected function dologin($username, $password);

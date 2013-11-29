@@ -6,6 +6,6 @@ function is_logged() {
 
 function ensure_loggedin() {
 	if (!is_logged()) {
-		send_error(401, "Unauthorized");
+		send_error(401);
 	}
 }

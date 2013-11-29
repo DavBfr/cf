@@ -16,6 +16,6 @@ function __autoload($class_name) {
 			}
 		}
 
-		send_error(500, 'Class not found', "'${class_name} in " . __FILE__ . " line " . __LINE__);
+		send_error(404, NULL, "Class not found ${class_name} in " . __FILE__ . " line " . __LINE__);
 	}
 }

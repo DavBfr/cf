@@ -138,7 +138,7 @@ class Minifier {
 				return;
 			}
 		}
-		send_error(500, "Internal server error", "file ${filename} not found");
+		send_error(500, NULL, "file ${filename} not found");
 	}
 
 	public function get_scripts() {

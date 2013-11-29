@@ -17,7 +17,7 @@ class Bdd {
 		try {
 			$this->bdd = new PDO(DBNAME, DBLOGIN, DBPASSWORD, $params);
 		} catch (Exeption $e){
-			send_error(500, "Unable to connect to Database", $e->getMessage());
+			send_error(500, NULL, "Unable to connect to Database " . $e->getMessage());
 		}
 	}
 
@@ -53,13 +53,13 @@ class Bdd {
 		$reponse = $this->bdd->prepare($sql);
 		if ($reponse === false) {
 			$error = $this->bdd->errorInfo();
-			send_error(500, "Error in SQL statement", "${error[0]} (${error[1]}) ${error[2]} in $sql");
+			send_error(500, NULL, "Error in SQL statement ${error[0]} (${error[1]}) ${error[2]} in\n$sql");
 		}
 		$reponse->setFetchMode(PDO::FETCH_NAMED);
 		$result = $reponse->execute($params);
 		if ($result === false) {
 			$error = $reponse->errorInfo();
-			send_error(500, "Sql error", "${error[0]} (${error[1]}) ${error[2]} in $sql");
+			send_error(500, NULL, "Sql error ${error[0]} (${error[1]}) ${error[2]} in\n$sql");
 		}
 		return $reponse;
 	}

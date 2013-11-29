@@ -33,8 +33,9 @@ abstract class Rest {
 
 		if (isset($this->routes[$method."@".$path])) {
 			call_user_func(array($this, $this->routes[$method."@".$path]), $_REQUEST);
+			send_error(204);
 		} else {
-			send_error(301, "Path not found", $path);
+			send_error(404, NULL, $path);
 		}
 	}
 	
@@ -73,7 +74,7 @@ abstract class Rest {
 			exit(0);
 		}
 
-		send_error(301, "Path not found", $path);
+		send_error(404, NULL, $path);
 	}
 
 }
