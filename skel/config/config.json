@@ -1,5 +1,5 @@
 {
-	"title": "Skeletton site",
+	"title": "CoreFramework",
 
 	"scripts": [
 		"bootstrap/bootstrap.js",
@@ -8,6 +8,6 @@
 		"styles.css"
 	],
 	
-	"description": "Skeletton site made with <i>Core Framework</i>."
+	"description": "Skeletton site made with <i>CoreFramework</i>."
 
 }

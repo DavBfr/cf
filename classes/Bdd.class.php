@@ -7,19 +7,20 @@ configure("DBPASSWORD", '');
 class Bdd {
 	private static $instance = NULL;
 
+
 	private function __construct() {
 		$params = array();
 		if (strpos(DBNAME, "mysql") !== false) {
 			$params[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 		}
 
-		//get bdd
 		try {
 			$this->bdd = new PDO(DBNAME, DBLOGIN, DBPASSWORD, $params);
 		} catch (Exeption $e){
 			send_error(500, "Unable to connect to Database", $e->getMessage());
 		}
 	}
+
 
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
@@ -28,13 +29,16 @@ class Bdd {
 		return self::$instance;
 	}
 
+
 	public function quote($string) {
 		return $this->bdd->quote($string);
 	}
 
+
 	public function lastInsertId() {
 		return $this->bdd->lastInsertId();
 	}
+
 
 	public function insert_query($table, $fields) {
 		if ($this->bdd->exec("INSERT INTO " . 
@@ -43,6 +47,7 @@ class Bdd {
 			return $this->lastInsertId();
 		return False;
 	}
+
 
 	public function query($sql, $params = array()) {
 		$reponse = $this->bdd->prepare($sql);
@@ -58,12 +63,14 @@ class Bdd {
 		}
 		return $reponse;
 	}
-	
+
+
 	public function tableExists($name) {
 		$ret = $this->bdd->query('SELECT 1 FROM '.$name);
 		return $ret !== false;
 	}
-	
+
+
 	private function buildTableColumns($table_structure) {
 		$columns = Array();
 		foreach ($table_structure as $column_name => $column) {
@@ -87,7 +94,8 @@ class Bdd {
 		}
 		return $columns;
 	}
-	
+
+
 	public function createTable($name, $table_structure) {
 		$columns = $this->buildTableColumns($table_structure);
 		$query  = "CREATE TABLE IF NOT EXISTS ${name} (\n  ";
@@ -99,6 +107,7 @@ class Bdd {
 		$query .= "\n)";
 		return $query;
 	}
+
 
 	public function buildTable($name, $table_structure) {
 		$columns = Array();
@@ -243,4 +252,5 @@ class Bdd {
 			return true;
 		}
 	}
+
 }

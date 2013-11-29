@@ -83,7 +83,7 @@ class Template {
 	}
 
 
-	public function e($param, $filtre='row') {
+	public function out($param, $filtre='row') {
 		print($this->get($param, $filtre));
 	}
 
@@ -106,7 +106,7 @@ class Template {
 				$options[strtolower($key)] = constant($key);
 			}
 		}
-		return json_encode($options);
+		print(json_encode($options));
 	}
 
 }
