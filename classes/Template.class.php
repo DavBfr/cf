@@ -2,14 +2,22 @@
 
 class Template {
 	private $params;
-	
+
+
 	public function __construct($params=Array()) {
 		$this->params=array_merge($this->get_defaults(), $params);
 	}
-	
+
+
 	protected function get_defaults() {
 		return array();
 	}
+
+
+	public function set($key, $value) {
+		$this->params[$key] = $value;
+	}
+
 
 	public function parse($filename) {
 		ob_start();
@@ -19,6 +27,13 @@ class Template {
 		return $c;
 	}
 
+
+	public function output($filename) {
+		echo $this->parse($filename);
+		die();
+	}
+
+
 	public function all() {
 		$ret = "<ul>\n";
 		foreach ($this->params as $key => $value) {
@@ -27,6 +42,7 @@ class Template {
 		$ret .= "</ul>\n";
 		return $ret;
 	}
+
 
 	public function dev() {
 		$ret = "<pre>";
@@ -38,6 +54,7 @@ class Template {
 		$ret .= "</pre>";
 		return $ret;
 	}
+
 
 	public function get($param, $filtre='row') {
 		$value=$this->params[$param];
@@ -52,11 +69,13 @@ class Template {
 				return "$filtre non trouvé";
 		}
 	}
-	
+
+
 	public function e($param, $filtre='row') {
 		print($this->get($param, $filtre));
 	}
-	
+
+
 	public function cf_options($keys = NULL) {
 		global $configured_options;
 		
@@ -77,4 +96,5 @@ class Template {
 		}
 		return json_encode($options);
 	}
+
 }
