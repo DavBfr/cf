@@ -16,7 +16,7 @@ class Bdd {
 
 		try {
 			$this->bdd = new PDO(DBNAME, DBLOGIN, DBPASSWORD, $params);
-		} catch (Exeption $e){
+		} catch (Exeption $e) {
 			send_error(500, NULL, "Unable to connect to Database " . $e->getMessage());
 		}
 	}
@@ -26,6 +26,7 @@ class Bdd {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
@@ -98,7 +99,7 @@ class Bdd {
 
 	public function createTable($name, $table_structure) {
 		$columns = $this->buildTableColumns($table_structure);
-		$query  = "CREATE TABLE IF NOT EXISTS ${name} (\n  ";
+		$query  = "CREATE TABLE IF NOT EXISTS `${name}` (\n  ";
 		$cols = array();
 		foreach ($columns as $column_name => $column_type) {
 			$cols[] = '`'.$column_name.'` '.$column_type;
@@ -135,7 +136,7 @@ class Bdd {
 			$table_exists =  true;
 		}
 		if (!$table_exists) {
-			$query  = 'CREATE TABLE IF NOT EXISTS '.$name.' (';
+			$query  = 'CREATE TABLE IF NOT EXISTS `'.$name.'` (';
 			foreach ($columns as $column_name => $column_type) {
 				$query .= '`'.$column_name.'` '.$column_type.' , ';
 			}

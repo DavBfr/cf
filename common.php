@@ -91,5 +91,3 @@ if (is_dir(INCLUDE_DIR) && $handle = opendir(INCLUDE_DIR)) {
 }
 unset($handle);
 unset($entry);
-unset($handle);
-unset($entry);

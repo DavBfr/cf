@@ -7,7 +7,15 @@
 		"bootstrap/bootstrap-theme.css",
 		"styles.css"
 	],
-	
-	"description": "Skeletton site made with <i>CoreFramework</i>."
+
+	"description": "Skeletton site made with <i>CoreFramework</i>.",
+
+	"model": {
+		"user": {
+			"id": {"type":"int","primary":true,"edit":false,"autoincrement":true},
+			"login": {"type":"text","caption":"Utilisateur","list":true},
+			"password": {"type":"text","caption":"Mot de passe","list":false}
+		}
+	}
 
 }

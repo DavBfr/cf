@@ -1,6 +1,6 @@
 <?php
 
-abstract class Model {
+class Model {
 
 	protected $table;
 	protected $fields;
@@ -19,7 +19,18 @@ abstract class Model {
 	}
 
 
-	protected abstract function getTable();
+	protected function getTable() {
+		$table = get_class($this);
+		if (substr($table, -5) == "Model") {
+			return $this->getFromConfig("model." . strtolower(substr($table, 0, -5)));
+		}
+	}
+
+
+	public function getFromConfig($key) {
+		$config = Config::getInstance();
+		return array(substr($key, strrpos($key, ".") + 1), $config->get($key));
+	}
 
 
 	public function getTableName() {

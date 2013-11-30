@@ -20,6 +20,11 @@ function send_error($code, $message = NULL, $body = NULL) {
 	else
 		$body = $message." : ".$body;
 
+	if ($code >= 500) {
+		Logger::Error("$code $message $body");
+	} else {
+		Logger::Info("$code $message $body");
+	}
 	die($body);
 }
 
