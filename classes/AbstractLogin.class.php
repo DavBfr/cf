@@ -11,6 +11,7 @@ abstract class AbstractLogin extends Rest {
 
 	protected function logout($r) {
 		$_SESSION["is_logged"] = false;
+		$_SESSION["is_logged_api"] = false;
 		output_json(True);
 	}
 
@@ -39,7 +40,7 @@ abstract class AbstractLogin extends Rest {
 
 		if (($apiid = $this->apilogin($r["token"])) !== False) {
 			$_SESSION["apiid"] = $apiid;
-			$_SESSION["is_logged"] = true;
+			$_SESSION["is_logged_api"] = true;
 			output_json(True);
 		}
 		send_error(401);
