@@ -11,15 +11,15 @@ abstract class Rest {
 	}
 
 
-	public function addRoute($path, $method, $callback) {
+	protected function addRoute($path, $method, $callback) {
 		$this->routes[$method."@".$path] = $callback;
 	}
 
 
-	public abstract function getRoutes();
+	protected abstract function getRoutes();
 
 
-	public function jsonpost() {
+	protected function jsonpost() {
 		if ($this->jsonpost_data === Null) {
 			$this->jsonpost_data = decode_json_post();
 		}

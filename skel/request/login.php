@@ -6,4 +6,8 @@ class Login extends AbstractLogin {
 		return 0;
 	}
 
+	protected function apilogin($token) {
+		return false;
+	}
+
 }
