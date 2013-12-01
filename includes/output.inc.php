@@ -14,3 +14,13 @@ function output_json($object) {
 	echo json_encode($object);
 	die();
 }
+
+
+function output_success($object = array()) {
+	output_json(array_merge($object, array("success"=>True)));
+}
+
+
+function output_error($message) {
+	output_json(array("error"=>$message, "success"=>False));
+}

@@ -14,7 +14,11 @@ function configure($key, $value) {
 
 define("URL_SEPARATOR", "/");
 configure("CF_VERSION", "1.0");
-configure("INIT_CONFIG_DIR", dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "config");
+if (defined("ROOT_DIR")) {
+	configure("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
+} else {
+	configure("INIT_CONFIG_DIR", dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "config");
+}
 
 if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php")) {
 	require(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php");

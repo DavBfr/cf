@@ -16,6 +16,8 @@ class Bdd {
 
 		try {
 			$this->bdd = new PDO(DBNAME, DBLOGIN, DBPASSWORD, $params);
+		} catch (PDOException $e) {
+			send_error(500, NULL, "Unable to connect to Database " . $e->getMessage());
 		} catch (Exeption $e) {
 			send_error(500, NULL, "Unable to connect to Database " . $e->getMessage());
 		}
@@ -36,21 +38,26 @@ class Bdd {
 	}
 
 
+	public function quoteIdent($field) {
+		return "`".str_replace("`","``",$field)."`";
+	}
+
+
 	public function lastInsertId() {
 		return $this->bdd->lastInsertId();
 	}
 
 
-	public function insert_query($table, $fields) {
-		if ($this->bdd->exec("INSERT INTO " . 
+	public function insert($table, $fields) {
+		$this->query("INSERT INTO " . 
 			$table . "(" . implode(", ", array_keys($fields)) . 
-			") VALUES (" . implode(", ", array_map(array($this, 'quote'), $fields)) . ")"))
-			return $this->lastInsertId();
-		return False;
+			") VALUES (:" . implode(", :", array_keys($fields)) . ")", $fields);
+		return $this->lastInsertId();
 	}
 
 
 	public function query($sql, $params = array()) {
+		print($sql . print_r($params, true) . "\n");
 		$reponse = $this->bdd->prepare($sql);
 		if ($reponse === false) {
 			$error = $this->bdd->errorInfo();
@@ -66,6 +73,27 @@ class Bdd {
 	}
 
 
+	public function select($fields, $tables, $where = array(1), $limit=NULL, $order=NULL) {
+		$query = "SELECT ";
+		$query .= implode(", ", $fields);
+		$query .= " FROM ";
+		if (is_array($tables))
+			$query .= implode(", ", $tables);
+		else
+			$query .= $tables;
+		$query .= " WHERE (";
+		$query .= implode(") AND (", $where);
+		$query .= ")";
+		if ($order) {
+			$query .= ' ORDER BY '. implode(", ", $order);
+		}
+		if ($limit) {
+			$query .= ' LIMIT '. implode(", ", $limit);
+		}
+		return $query;
+	}
+
+
 	public function tableExists($name) {
 		$ret = $this->bdd->query('SELECT 1 FROM '.$name);
 		return $ret !== false;
@@ -73,6 +101,7 @@ class Bdd {
 
 
 	private function buildTableColumns($table_structure) {
+		$driver = $this->bdd->getAttribute(PDO::ATTR_DRIVER_NAME);
 		$columns = Array();
 		foreach ($table_structure as $column_name => $column) {
 			$column_type = explode(',', $column["type"]);
@@ -89,8 +118,13 @@ class Bdd {
 				$ctype .= " NOT NULL";
 			if ($column["primary"])
 				$ctype .= " PRIMARY KEY";
-			if ($column["autoincrement"])
-				$ctype .= " AUTO_INCREMENT";
+			if ($column["autoincrement"]) {
+				if ($driver == "mysql") {
+					$ctype .= " AUTO_INCREMENT";
+				} elseif ($driver == "sqlite") {
+					$ctype .= " AUTOINCREMENT";
+				}
+			}
 			$columns[$column_name] = $ctype;
 		}
 		return $columns;

@@ -11,7 +11,7 @@ function is_logged_api() {
 
 
 function ensure_loggedin() {
-	if (!is_logged()) {
+	if (!is_logged() || !is_logged_api()) {
 		send_error(401);
 	}
 }
@@ -24,8 +24,8 @@ function ensure_loggedin_api() {
 }
 
 
-function ensure_loggedin_any() {
-	if (!is_logged() || !is_logged_api()) {
+function ensure_loggedin_user() {
+	if (!is_logged()) {
 		send_error(401);
 	}
 }
