@@ -35,7 +35,7 @@ abstract class Rest {
 			call_user_func(array($this, $this->routes[$method."@".$path]), $_REQUEST);
 			send_error(204);
 		} else {
-			send_error(404, NULL, $path);
+			send_error(404, NULL, $method."@".$path);
 		}
 	}
 	
@@ -74,7 +74,7 @@ abstract class Rest {
 			exit(0);
 		}
 
-		send_error(404, NULL, $path);
+		send_error(404, NULL, REQUEST_DIR . "/" . $request . ".php");
 	}
 
 }

@@ -57,7 +57,7 @@ class Bdd {
 
 
 	public function query($sql, $params = array()) {
-		print($sql . print_r($params, true) . "\n");
+		Logger::Debug("Query ${sql} " . json_encode($params));
 		$reponse = $this->bdd->prepare($sql);
 		if ($reponse === false) {
 			$error = $this->bdd->errorInfo();

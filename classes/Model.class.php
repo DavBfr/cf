@@ -75,13 +75,24 @@ class Model {
 	}
 
 
-	public function getById($id) {
-		$bdd = Bdd::getInstance();
+	public function getPrimaryKey($id) {
 		foreach($this->fields as $key=>$val) {
 			if ($val["primary"]) {
-				return $this->simpleSelect(array($bdd->quoteIdent($key) . "=:id"), array("id"=>$id));
+				return getBy($key, $id);
 			}
 		}
-		return NULL;
+		
+		throw new Exception("No Primary Key found");
 	}
+
+
+	public function getBy($field, $value) {
+		$bdd = Bdd::getInstance();
+		if (array_key_exists($field, $this->fields)) {
+			return $this->simpleSelect(array($bdd->quoteIdent($field) . "=:value"), array("value"=>$value));
+		}
+		
+		throw new Exception("Field $field not found");
+	}
+
 }

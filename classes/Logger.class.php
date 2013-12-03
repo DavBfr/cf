@@ -8,37 +8,52 @@ class Logger {
 	const ERROR = 4;
 	const CRITICAL = 5;
 
+	private static $levels = array(
+		self::DEBUG=>"DEBUG", 
+		self::INFO=>"INFO", 
+		self::WARNING=>"WARNING", 
+		self::ERROR=>"ERROR", 
+		self::CRITICAL=>"CRITICAL"
+	);
+
 	private static $instance = NULL;
 	private $level;
+	private $stderr;
+
+	private function __construct($level) {
+		$this->level = $level;
+		$this->stderr = fopen('php://stderr', 'w');
+	}
 
 
-	public function __construct() {
-		$this->level = self::ERROR;
+	public function __destruct() {
+		fclose($this->stderr);
 	}
 
 
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
-			self::$instance = new self();
+			self::$instance = new self(DEBUG ? self::DEBUG : self::ERROR);
 		}
 
 		return self::$instance;
 	}
 
 
-	public function set_level($level) {
+	public function setLevel($level) {
 		$this->level = $level;
 	}
 
 
-	public function get_level($level) {
+	public function getLevel($level) {
 		return $this->level;
 	}
 
 
 	public function log($data, $level) {
 		if ($level >= $this->level) {
-			error_log($data);
+			$data = "[CF] [" . @date('M j H:i:s') . "] [" . @$_SERVER['REMOTE_ADDR'] . "] [" . self::$levels[$level] . "] " . $data . "\n";
+			fwrite($this->stderr, $data);
 		}
 	}
 
