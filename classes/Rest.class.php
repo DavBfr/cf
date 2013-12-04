@@ -3,6 +3,7 @@
 abstract class Rest {
 
 	private $routes = array();
+	private $complex_routes = array();
 	private $jsonpost_data = Null;
 
 
@@ -12,7 +13,22 @@ abstract class Rest {
 
 
 	protected function addRoute($path, $method, $callback) {
-		$this->routes[$method."@".$path] = $callback;
+		if (strpos($path, ":") !== false) {
+			$vars = array();
+			$path = explode("/", $path);
+			foreach($path as $key => $item) {
+				if (substr($item, 0, 1) == ":") {
+					$vars[] = substr($item, 1);
+					$path[$key] = "([^/]+)";
+				} else {
+					$path[$key] = str_replace(".", "\\.", $item);
+				}
+			}
+			$path = "#" . implode("/", $path) . "#";
+			$this->complex_routes[] = array($method, $path, $vars, $callback);
+		} else {
+			$this->routes[$method."@".$path] = $callback;
+		}
 	}
 
 
@@ -32,9 +48,22 @@ abstract class Rest {
 			$path = "/";
 
 		if (isset($this->routes[$method."@".$path])) {
-			call_user_func(array($this, $this->routes[$method."@".$path]), $_REQUEST);
+			call_user_func(array($this, $this->routes[$method."@".$path]), array());
 			send_error(204);
 		} else {
+			foreach($this->complex_routes as $route) {
+				list($m, $p, $v, $c) = $route;
+				if ($m == $method) {
+					if (preg_match($p, $path, $matches) !== false) {
+						$p = array();
+						foreach($v as $i => $k) {
+							$p[$k] = $matches[$i+1];
+						}
+						call_user_func(array($this, $c), $p);
+						send_error(204);
+					}
+				}
+			}
 			send_error(404, NULL, $method."@".$path);
 		}
 	}
