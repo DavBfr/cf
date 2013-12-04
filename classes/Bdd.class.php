@@ -49,12 +49,18 @@ class Bdd {
 
 
 	public function insert($table, $fields) {
-		$this->query("INSERT INTO " . 
-			$table . "(" . implode(", ", array_keys($fields)) . 
+		$this->query("INSERT INTO " .
+			$table . "(" . implode(", ", array_keys($fields)) .
 			") VALUES (:" . implode(", :", array_keys($fields)) . ")", $fields);
 		return $this->lastInsertId();
 	}
 
+	public function update($table, $fields, $key) {
+		$this->query("UPDATE " .
+			$table . "(" . implode(", ", array_keys($fields)) .
+			") VALUES (:" . implode(", :", array_keys($fields)) . ") WHERE $key = :$key", $fields);
+		return True;
+	}
 
 	public function query($sql, $params = array()) {
 		Logger::Debug("Query ${sql} " . json_encode($params));

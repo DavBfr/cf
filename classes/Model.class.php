@@ -75,13 +75,13 @@ class Model {
 	}
 
 
-	public function getPrimaryKey($id) {
+	public function getById($id) {
 		foreach($this->fields as $key=>$val) {
 			if ($val["primary"]) {
-				return getBy($key, $id);
+				return $this->getBy($key, $id);
 			}
 		}
-		
+
 		throw new Exception("No Primary Key found");
 	}
 
@@ -91,7 +91,7 @@ class Model {
 		if (array_key_exists($field, $this->fields)) {
 			return $this->simpleSelect(array($bdd->quoteIdent($field) . "=:value"), array("value"=>$value));
 		}
-		
+
 		throw new Exception("Field $field not found");
 	}
 

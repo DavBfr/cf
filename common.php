@@ -72,9 +72,6 @@ if (FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	die();
 }
 
-session_name(SESSION_NAME);
-session_start();
-
 date_default_timezone_set(DEFAULT_TIMEZONE);
 
 if ($handle = opendir(CF_INCLUDE_DIR)) {

@@ -127,6 +127,14 @@ class ModelData {
 					break;
 				}
 			}
+			$this->isnew = False;
+		} else {
+			foreach($this->model->getFields() as $key=>$val) {
+				if ($val["autoincrement"]) {
+					$bdd->update($this->model->getTableName(), $this->values, $key);
+					break;
+				}
+			}
 		}
 	}
 

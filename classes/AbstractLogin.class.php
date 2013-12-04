@@ -11,8 +11,7 @@ abstract class AbstractLogin extends Rest {
 
 
 	protected function logout($r) {
-		$_SESSION["is_logged"] = false;
-		$_SESSION["is_logged_api"] = false;
+		Session::delete();
 		output_success();
 	}
 
@@ -32,8 +31,8 @@ abstract class AbstractLogin extends Rest {
 		ensure_request($post, array("username", "password"));
 
 		if (($user = $this->dologin($post["username"], $post["password"])) !== False) {
-			$_SESSION["userid"] = $user;
-			$_SESSION["is_logged"] = true;
+			Session::Set("userid", $user);
+			Session::Set("is_logged", true);
 			output_success();
 		}
 		send_error(401);
@@ -44,8 +43,8 @@ abstract class AbstractLogin extends Rest {
 		ensure_request($r, array("token"));
 
 		if (($apiid = $this->apilogin($r["token"])) !== False) {
-			$_SESSION["apiid"] = $apiid;
-			$_SESSION["is_logged_api"] = true;
+			Session::Set("apiid", $apiid);
+			Session::Set("is_logged_api", true);
 			output_success();
 		}
 		send_error(401);

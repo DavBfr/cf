@@ -1,31 +1,26 @@
 <?php
-
+/*
 function is_logged() {
-	return isset($_SESSION["is_logged"]) && $_SESSION["is_logged"] === true;
+	return Session::isLogged();
 }
 
 
 function is_logged_api() {
-	return isset($_SESSION["is_logged_api"]) && $_SESSION["is_logged_api"] === true;
+	return Session::isLoggedApi();
 }
 
 
 function ensure_loggedin() {
-	if (!is_logged() && !is_logged_api()) {
-		send_error(401);
-	}
+	Session::ensureLoggedin();
 }
 
 
 function ensure_loggedin_api() {
-	if (!is_logged_api()) {
-		send_error(401);
-	}
+	Session::ensureLoggedinApi();
 }
 
 
 function ensure_loggedin_user() {
-	if (!is_logged()) {
-		send_error(401);
-	}
+	Session::ensureLoggedinUser();
 }
+*/
