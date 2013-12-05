@@ -40,9 +40,9 @@ abstract class AbstractLogin extends Rest {
 
 
 	protected function api_login($r) {
-		ensure_request($r, array("token"));
+		ensure_request($_REQUEST, array("token"));
 
-		if (($apiid = $this->apilogin($r["token"])) !== False) {
+		if (($apiid = $this->apilogin($_REQUEST["token"])) !== False) {
 			Session::Set("apiid", $apiid);
 			Session::Set("is_logged_api", true);
 			output_success();

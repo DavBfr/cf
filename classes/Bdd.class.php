@@ -55,12 +55,18 @@ class Bdd {
 		return $this->lastInsertId();
 	}
 
+
 	public function update($table, $fields, $key) {
+		$s = array();
+		foreach($fields as $k=>$v) {
+			if ($key != $k)
+				$s[] = "$k = :$k";
+		}
 		$this->query("UPDATE " .
-			$table . "(" . implode(", ", array_keys($fields)) .
-			") VALUES (:" . implode(", :", array_keys($fields)) . ") WHERE $key = :$key", $fields);
+			$table . " SET " . implode(", ", $s) ." WHERE $key = :$key", $fields);
 		return True;
 	}
+
 
 	public function query($sql, $params = array()) {
 		Logger::Debug("Query ${sql} " . json_encode($params));
