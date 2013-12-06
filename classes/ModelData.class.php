@@ -1,12 +1,13 @@
 <?php
 
-class ModelData {
+class ModelData implements Iterator {
 
 	private $model;
 	private $values;
 	private $isnew;
 	private $isempty;
 	private $statement;
+	private $primary;
 
 
 	function __construct($model, $values = NULL) {
@@ -22,23 +23,62 @@ class ModelData {
 		$this->values = array();
 		foreach($this->model->getFields() as $key=>$val) {
 			$this->values[$key] = $val["default"];
+			if ($val["primary"]) {
+				$this->primary = $key;
+			}
 		}
 
 		if (! $this->isnew) {
 			$this->setValues($values);
 		}
 	}
+	
+	
+	public function __toString() {
+		return json_encode($this->getValues());
+	}
+
+
+	public function rewind() {
+	}
+
+
+	public function current() {
+		return $this;
+	}
+
+
+	public function key() {
+		return $this->values[$this->primary];
+	}
+
+
+	public function valid() {
+		return !$this->isempty;
+	}
 
 
 	public function next() {
-		$this->isempty;
+		if (!$this->statement) {
+			$this->isempty = True;
+			$this->isnew = True;
+			foreach($this->model->getFields() as $key=>$val) {
+				$this->values[$key] = $val["default"];
+			}
+			return $this;
+		}
 		$values = $this->statement->fetch();
 		if ($values === False) {
 			$this->isempty = True;
-			return False;
+			$this->isnew = True;
+			foreach($this->model->getFields() as $key=>$val) {
+				$this->values[$key] = $val["default"];
+			}
+			return $this;
 		}
+		$this->isnew = False;
 		$this->setValues($values);
-		return True;
+		return $this;
 	}
 
 

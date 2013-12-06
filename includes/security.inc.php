@@ -47,3 +47,12 @@ function ensure_request($array, $mandatory, $optional = array(), $strict = false
 		}
 	}
 }
+
+
+function ensure_dir($name, $mode=0750) {
+	if (! is_dir($name)) {
+		if (! mkdir($name, $mode, true)) {
+			send_error(500, NULL, "Unable to create directory $name");
+		}
+	}
+}
