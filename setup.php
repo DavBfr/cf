@@ -5,7 +5,7 @@ header("Content-Type: text/plain");
 if (is_dir(MODEL_DIR)) {
 	if ($dh = opendir(MODEL_DIR)) {
 		while (($file = readdir($dh)) !== false) {
-			if (substr($file, -10) == ".class.php") {
+			if (substr($file, -15) == "Model.class.php") {
 				$class = substr($file, 0, -10);
 				$model = new $class();
 				echo "DROP TABLE IF EXISTS `".$model->getTableName()."`;\n";
@@ -16,4 +16,3 @@ if (is_dir(MODEL_DIR)) {
 		closedir($dh);
 	}
 }
-

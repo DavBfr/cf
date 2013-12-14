@@ -1,9 +1,10 @@
 <?php
 
 function bootstrap() {
+	ErrorHandler::Init("ErrorHandler");
 	$conf = Config::getInstance();
 
-	if (@$_SERVER["PATH_INFO"]) {
+	if (array_key_exists("PATH_INFO", $_SERVER) && $_SERVER["PATH_INFO"]) {
 		Rest::handle();
 	}
 

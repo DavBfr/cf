@@ -1,4 +1,5 @@
 <?php
+configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
 
 class Config {
 	private static $instance = NULL;
@@ -38,7 +39,7 @@ class Config {
 	public function get($key, $default=NULL) {
 		$value = $this->data;
 		foreach(explode(".", $key) as $item) {
-			if (@array_key_exists($item, $value)) {
+			if (is_array($value) && array_key_exists($item, $value)) {
 				$value = $value[$item];
 			} else {
 				return $default;

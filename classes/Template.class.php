@@ -21,7 +21,10 @@ class Template {
 
 	public function parse($filename) {
 		ob_start();
-		include(TEMPLATES_DIR . "/" . $filename);
+		if ($filename[0] != DIRECTORY_SEPARATOR) {
+			$filename = TEMPLATES_DIR . DIRECTORY_SEPARATOR . $filename;
+		}
+		include($filename);
 		$c=ob_get_contents();
 		ob_end_clean();
 		return $c;
@@ -54,8 +57,8 @@ class Template {
 		$ret .= "</pre>";
 		return $ret;
 	}
-	
-	
+
+
 	protected function filter($value, $filter) {
 		switch($filter) {
 			case 'row':
@@ -70,8 +73,17 @@ class Template {
 	}
 
 
+	public function has($param) {
+		return array_key_exists($param, $this->params);
+	}
+
+
 	public function get($param, $filter='row') {
-		$value = $this->params[$param];
+		if (array_key_exists($param, $this->params)) {
+			$value = $this->params[$param];
+		} else {
+			$value = $param;
+		}
 		return $this->filter($value, $filter);
 	}
 
@@ -90,7 +102,7 @@ class Template {
 
 	public function cf_options($keys = NULL) {
 		global $configured_options;
-		
+
 		if ($keys == NULL) {
 			$keys = array();
 			foreach ($configured_options as $key) {
@@ -99,7 +111,7 @@ class Template {
 				}
 			}
 		}
-		
+
 		$options = array();
 		foreach ($configured_options as $key) {
 			if (in_array($key, $keys)) {
