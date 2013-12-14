@@ -20,20 +20,35 @@ class Template {
 
 
 	public function parse($filename) {
-		ob_start();
 		if ($filename[0] != DIRECTORY_SEPARATOR) {
-			$filename = TEMPLATES_DIR . DIRECTORY_SEPARATOR . $filename;
+			if (file_exists(TEMPLATES_DIR . DIRECTORY_SEPARATOR . $filename))
+				$filename = TEMPLATES_DIR . DIRECTORY_SEPARATOR . $filename;
+			else
+				$filename = CF_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $filename;
 		}
+		ob_start();
 		include($filename);
-		$c=ob_get_contents();
+		$content=ob_get_contents();
 		ob_end_clean();
-		return $c;
+		return $content;
 	}
 
 
-	public function output($filename) {
+	public function output($filename, $contentType="text/html", $encoding="utf-8") {
+		ob_end_clean();
+		header("Content-Type: ${contentType};charset=${encoding}");
 		echo $this->parse($filename);
 		die();
+	}
+
+
+	public function media($filename) {
+		$searchPaths = array(MEDIA_DIR=>MEDIA_PATH, CF_MEDIA_DIR=>CF_MEDIA_PATH);
+		foreach($searchPaths as $dir=>$path) {
+			if (file_exists($dir."/".$filename))
+				return $path."/".$filename;
+		}
+		return $filename;
 	}
 
 

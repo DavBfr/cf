@@ -2,7 +2,7 @@
 
 function __autoload($class_name) {
 	if (!class_exists($class_name)) {
-		
+
 		$search = array();
 		$search[] = CLASSES_DIR;
 		$search[] = CF_CLASSES_DIR;
@@ -15,7 +15,5 @@ function __autoload($class_name) {
 				return;
 			}
 		}
-
-		send_error(404, NULL, "Class not found ${class_name} in " . __FILE__ . " line " . __LINE__);
 	}
 }

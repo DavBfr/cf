@@ -4,14 +4,25 @@ class Model {
 
 	protected $table;
 	protected $fields;
+	protected $modelData;
 
 
-	function __construct() {
-		list($this->table, $this->fields) = $this->getTable();
-		foreach ($this->fields as $name => $prop) {
-			$defaults = $this->getDefaults($this->table, $name);
-			$this->fields[$name] = array_merge($defaults, $prop);
+	public function __construct() {
+		$this->modelData = $this->getModelData();
+		list($this->table, $fields) = $this->getTable();
+		$this->fields = array();
+		foreach ($fields as $name => $prop) {
+			$this->fields[$name] = new ModelField($this->table, $name, $prop);
 		}
+	}
+
+
+	protected function getModelData() {
+		$md = get_class($this)."Data";
+		if (class_exists($md) && is_subclass_of($md, ModelData))
+			return get_class($this)."Data";
+
+		return "ModelData";
 	}
 
 
@@ -56,7 +67,11 @@ class Model {
 
 				Cli::pln($className);
 				$f = fopen($filename, "w");
-				fwrite($f, "<?php\n\nclass $className extends Model {\n\n}\n");
+				fwrite($f, "<?php\n\nclass $className extends Model {\n\tconst TABLE = \"$table\";\n");
+				foreach($columns as $name => $params) {
+					fwrite($f, "\tconst ".strtoupper($name)." = \"$name\"; // " . $params["type"] . "\n");
+				}
+				fwrite($f, "\n\n}\n");
 				fclose($f);
 			}
 		}
@@ -88,20 +103,19 @@ class Model {
 	}
 
 
-	public function getDefaults($table, $field) {
-		return array(
-			"type"=>"int",
-			"foreign"=>NULL,
-			"display"=>$table.".".$field,
-			"name"=>$table."_".$field,
-			"caption"=>ucwords(str_replace("_", " ", $field)),
-			"null"=>false,
-			"edit"=>true,
-			"default"=>NULL,
-			"list"=>false,
-			"primary"=>false,
-			"autoincrement"=>false,
-		);
+	public function getField($name) {
+		return $this->fields[$name];
+	}
+
+
+	public function getPrimaryField() {
+		foreach($this->fields as $field) {
+			if ($field->isPrimary()) {
+				return $field->getName();
+			}
+		}
+
+		throw new Exception("No Primary Key found");
 	}
 
 
@@ -112,26 +126,35 @@ class Model {
 
 
 	public function newRow() {
-		return new ModelData($this);
+		return new $this->modelData($this);
 	}
 
 
-	public function simpleSelect($where=array(1), $params=array(), $limit=NULL, $order=NULL) {
+	public function simpleSelect($where=array(), $params=array()) {
 		$bdd = Bdd::getInstance();
-		$query = $bdd->select(array_map(array($bdd, "quoteIdent"), array_keys($this->fields)), $bdd->quoteIdent($this->table), $where, $limit, $order);
-		$this->simpleselect = $bdd->query($query, $params);
-		return new ModelData($this, $this->simpleselect);
+		$this->simpleselect = Collection::Query()
+			->select(array_map(array($bdd, "quoteIdent"), array_keys($this->fields)))
+			->from($bdd->quoteIdent($this->table))
+			->where($where)
+			->with($params)
+			->getValues();
+		return new $this->modelData($this, $this->simpleselect);
 	}
 
 
 	public function getById($id) {
-		foreach($this->fields as $key=>$val) {
-			if ($val["primary"]) {
-				return $this->getBy($key, $id);
-			}
-		}
+		return $this->getBy($this->getPrimaryField(), $id);
+	}
 
-		throw new Exception("No Primary Key found");
+
+	public function deleteById($id) {
+		$bdd = Bdd::getInstance();
+		$bdd->delete($this->getTableName(), $this->getPrimaryField(), $id);
+		$this->dataChanged();
+	}
+
+
+	public function dataChanged() {
 	}
 
 

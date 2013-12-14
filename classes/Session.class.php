@@ -1,4 +1,6 @@
 <?php
+configure("SESSION_NAME", "CF");
+
 
 class Session {
 	private static $instance = NULL;
@@ -32,7 +34,7 @@ class Session {
 				$params["secure"], $params["httponly"]
 			);
 		}
-		
+
 		unset($_COOKIE[SESSION_NAME]);
 	}
 
@@ -76,7 +78,7 @@ class Session {
 
 
 	public static function ensureLoggedin() {
-		if (!self::isLogged() && !self::isLoggedApi()) {
+		if (!DEBUG && !self::isLogged() && !self::isLoggedApi()) {
 			send_error(401);
 		}
 	}

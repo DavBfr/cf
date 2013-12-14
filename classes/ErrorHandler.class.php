@@ -1,11 +1,15 @@
 <?php
-configure("ERROR_TEMPLATE", TEMPLATES_DIR . DIRECTORY_SEPARATOR . "error.php");
+if (file_exists(TEMPLATES_DIR . DIRECTORY_SEPARATOR . "error.php"))
+	configure("ERROR_TEMPLATE", TEMPLATES_DIR . DIRECTORY_SEPARATOR . "error.php");
+else
+	configure("ERROR_TEMPLATE", CF_TEMPLATES_DIR . DIRECTORY_SEPARATOR . "error.php");
 
 
 class ErrorHandler {
 	private static $instance = NULL;
 	private $inerror = False;
 	private $backtrace = Array();
+	private $raise_exception = False;
 
 	public static $messagecode = array(
 				500 => "Internal server error",
@@ -37,6 +41,12 @@ class ErrorHandler {
 		}
 
 		return self::$instance;
+	}
+
+
+	public static function RaiseExceptionOnError() {
+		$i = self::getInstance();
+		$i->raise_exception = True;
 	}
 
 
@@ -97,8 +107,6 @@ class ErrorHandler {
 				$message = "Error #${code}";
 		}
 
-		header("$protocol $code $message");
-
 		if ($body === NULL)
 			$body = $message;
 
@@ -107,6 +115,11 @@ class ErrorHandler {
 		} else {
 			Logger::Info("[$code] $message: $body");
 		}
+
+		if ($this->raise_exception)
+			throw new Exception($body);
+
+		header("$protocol $code $message");
 
 		IS_CLI || DEBUG || die();
 

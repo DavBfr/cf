@@ -8,10 +8,12 @@ class ModelData implements Iterator {
 	private $isempty;
 	private $statement;
 	private $primary;
+	private $foreign;
 
 
 	function __construct($model, $values = NULL) {
 		$this->model = $model;
+		$this->foreign = array();
 		$this->isempty = True;
 
 		if (is_a($values, "PDOStatement")) {
@@ -21,10 +23,10 @@ class ModelData implements Iterator {
 
 		$this->isnew = $values === NULL || $values === False;
 		$this->values = array();
-		foreach($this->model->getFields() as $key=>$val) {
-			$this->values[$key] = $val["default"];
-			if ($val["primary"]) {
-				$this->primary = $key;
+		foreach($this->model->getFields() as $field) {
+			$this->values[$field->getName()] = $field->getDefault();
+			if ($field->isPrimary()) {
+				$this->primary = $field;
 			}
 		}
 
@@ -32,8 +34,8 @@ class ModelData implements Iterator {
 			$this->setValues($values);
 		}
 	}
-	
-	
+
+
 	public function __toString() {
 		return json_encode($this->getValues());
 	}
@@ -62,8 +64,8 @@ class ModelData implements Iterator {
 		if (!$this->statement) {
 			$this->isempty = True;
 			$this->isnew = True;
-			foreach($this->model->getFields() as $key=>$val) {
-				$this->values[$key] = $val["default"];
+			foreach($this->model->getFields() as $field) {
+				$this->values[$field->getName()] = $field->getDefault();
 			}
 			return $this;
 		}
@@ -71,8 +73,8 @@ class ModelData implements Iterator {
 		if ($values === False) {
 			$this->isempty = True;
 			$this->isnew = True;
-			foreach($this->model->getFields() as $key=>$val) {
-				$this->values[$key] = $val["default"];
+			foreach($this->model->getFields() as $field) {
+				$this->values[$field->getName()] = $field->getDefault();
 			}
 			return $this;
 		}
@@ -106,7 +108,7 @@ class ModelData implements Iterator {
 
 	public function get($field) {
 		if (!array_key_exists($field, $this->values))
-			throw Exception("Field ${field} not found in table " . $this->model->getTableName());
+			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
 
 		return $this->values[$field];
 	}
@@ -114,7 +116,7 @@ class ModelData implements Iterator {
 
 	public function set($field, $value) {
 		if (!array_key_exists($field, $this->values))
-			throw Exception("Field ${field} not found in table " . $this->model->getTableName());
+			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
 
 		$this->values[$field] = $value;
 		$this->isempty = False;
@@ -142,9 +144,9 @@ class ModelData implements Iterator {
 
 
 	public function getId() {
-		foreach($this->model->getFields() as $key=>$val) {
-			if ($val["autoincrement"]) {
-				return $this->values[$key];
+		foreach($this->model->getFields() as $field) {
+			if ($field->isAutoincrement()) {
+				return $this->values[$field->getName()];
 			}
 		}
 		return NULL;
@@ -155,27 +157,39 @@ class ModelData implements Iterator {
 		$bdd = Bdd::getInstance();
 		if ($this->isnew) {
 			$values = array();
-			foreach($this->model->getFields() as $key=>$val) {
-				if (! $val["autoincrement"]) {
-					$values[$key] = $this->values[$key];
+			foreach($this->model->getFields() as $field) {
+				if (! $field->isAutoincrement()) {
+					$values[$field->getName()] = $this->values[$field->getName()];
 				}
 			}
 			$id = $bdd->insert($this->model->getTableName(), $values);
-			foreach($this->model->getFields() as $key=>$val) {
-				if ($val["autoincrement"]) {
-					$this->values[$key] = $id;
+			foreach($this->model->getFields() as $field) {
+				if ($field->isAutoincrement()) {
+					$this->values[$field->getName()] = $id;
+					$this->model->dataChanged();
 					break;
 				}
 			}
 			$this->isnew = False;
 		} else {
-			foreach($this->model->getFields() as $key=>$val) {
-				if ($val["autoincrement"]) {
-					$bdd->update($this->model->getTableName(), $this->values, $key);
+			foreach($this->model->getFields() as $field) {
+				if ($field->isAutoincrement()) {
+					$bdd->update($this->model->getTableName(), $this->values, $field->getName());
+					$this->model->dataChanged();
 					break;
 				}
 			}
 		}
+	}
+
+
+	public function getForeign($field, $class) {
+		if (! array_key_exists($field, $this->foreign)) {
+			$obj = new $class();
+			$this->foreign[$field] = $obj->getById($this->get($field));
+		}
+
+		return $this->foreign[$field];
 	}
 
 }

@@ -1,6 +1,7 @@
 <?php
 configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
 
+
 class Config {
 	private static $instance = NULL;
 	private $data;

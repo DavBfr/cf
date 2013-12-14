@@ -24,7 +24,7 @@ abstract class Rest {
 					$path[$key] = str_replace(".", "\\.", $item);
 				}
 			}
-			$path = "#" . implode("/", $path) . "#";
+			$path = "#^" . implode("/", $path) . "$#";
 			$this->complex_routes[] = array($method, $path, $vars, $callback);
 		} else {
 			$this->routes[$method."@".$path] = $callback;
@@ -54,12 +54,12 @@ abstract class Rest {
 			foreach($this->complex_routes as $route) {
 				list($m, $p, $v, $c) = $route;
 				if ($m == $method) {
-					if (preg_match($p, $path, $matches) !== false) {
-						$p = array();
+					if (preg_match($p, $path, $matches) != false) {
+						$pa = array();
 						foreach($v as $i => $k) {
-							$p[$k] = $matches[$i+1];
+							$pa[$k] = $matches[$i+1];
 						}
-						call_user_func(array($this, $c), $p);
+						call_user_func(array($this, $c), $pa);
 						send_error(204);
 					}
 				}
@@ -67,12 +67,13 @@ abstract class Rest {
 			send_error(404, NULL, $method."@".$path);
 		}
 	}
-	
+
+
 	public static function handle($method = NULL, $path = NULL) {
 		if ($path == NULL) {
 			$path = @$_SERVER["PATH_INFO"];
 		}
-		
+
 		if ($method == NULL) {
 			$method = $_SERVER["REQUEST_METHOD"];
 		}
@@ -104,6 +105,26 @@ abstract class Rest {
 		}
 
 		send_error(404, NULL, REQUEST_DIR . "/" . $request . ".php");
+	}
+
+
+	protected function output_json($object) {
+		output_json($object);
+	}
+
+
+	protected function output_success($object = array()) {
+		output_success($object);
+	}
+
+
+	protected function output_error($message) {
+		output_error($message);
+	}
+
+
+	protected function ensure_request($array, $mandatory, $optional = array(), $strict = false) {
+		ensure_request($array, $mandatory, $optional, $strict);
 	}
 
 }

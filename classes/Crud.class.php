@@ -1,63 +1,33 @@
 <?php
 
-abstract class Crud extends Rest {
+configure("CRUD_LIMIT", 30);
 
-	protected $table;
-	protected $fields;
-	protected $bdd;
+abstract class Crud extends Rest {
+	const ID = "CRUD_ID_FIELD";
+
+	protected $model;
+	protected $limit;
 
 
 	function __construct() {
 		parent::__construct();
-		$this->bdd = Bdd::getInstance();
-
-		list($this->table, $this->fields) = $this->getTable();
-		foreach ($this->fields as $name => $prop) {
-			$defaults = $this->getDefaults($this->table, $name);
-			$this->fields[$name] = array_merge($defaults, $prop);
-		}
+		$this->model = $this->getModel();
+		$this->limit = CRUD_LIMIT;
 	}
 
 
-	protected abstract function getTable();
-
-
-	public function getTableName() {
-		return $this->table;
-	}
-
-
-	public function getFields() {
-		return $this->fields;
-	}
+	protected abstract function getModel();
 
 
 	public function getRoutes() {
-		$this->addRoute("/", "GET", "output_list");
-		$this->addRoute("/count", "GET", "output_count");
-		$this->addRoute("/edit", "GET", "output_form");
-		$this->addRoute("/", "DELETE", "delete_form");
-	}
-
-
-	public function getDefaults($table, $field) {
-		return array(
-			"type"=>"int",
-			"foreign"=>NULL,
-			"display"=>$table.".".$field,
-			"name"=>$table."_".$field,
-			"caption"=>ucwords(str_replace("_", " ", $field)),
-			"null"=>false,
-			"edit"=>true,
-			"list"=>false,
-			"primary"=>false,
-			"autoincrement"=>false,
-		);
-	}
-	
-	
-	public function createTable() {
-		return $this->bdd->createTable($this->table, $this->fields);
+		$this->addRoute("/", "GET", "get_list");
+		$this->addRoute("/count", "GET", "get_count");
+		$this->addRoute("/list", "GET", "get_list_partial");
+		$this->addRoute("/detail", "GET", "get_detail_partial");
+		$this->addRoute("/:id", "GET", "get_item");
+		$this->addRoute("/:id", "DELETE", "delete_item");
+		$this->addRoute("/", "PUT", "new_item");
+		$this->addRoute("/:id", "POST", "update_item");
 	}
 
 
@@ -77,7 +47,7 @@ abstract class Crud extends Rest {
 		}
 		return $query;
 	}
-	
+
 
 	public function make_filter($fieldname, $value) {
 		if ($this->fields[$fieldname]["type"] == "text")
@@ -96,127 +66,101 @@ abstract class Crud extends Rest {
 	}
 
 
-	public function get_list($filtres = array()) {
-		$fields = array();
-		$tables = array($this->table);
-		$where = array("1");
-		if (isset($filtres["Q"]))
-			$where[] = $this->make_global_filter($filtres["Q"]);
-
-		if (isset($filtres["L"]))
-			$limit = explode(",", $filtres["L"]);
-		else
-			$limit = NULL;
-
-		foreach($this->fields as $name => $prop) {
-			if ($prop["list"] || $prop["primary"]) {
-				$fields[] = $prop["display"] . " as " . $prop["name"];
-			}
-			if ($prop["foreign"] != null) {
-				list($table, $field) = explode(".", $prop["foreign"]);
-				$tables[] = $table;
-				$where[] = $prop["foreign"] . "=" . $this->table.".".$name;
-				$fields[] = $this->table.".".$name . " as " . $this->table."_".$name;
-			}
-			if (isset($filtres[$prop["display"]])) {
-				$where[] = $this->make_filter($name, $filtres[$prop["display"]]);
-			}
-			elseif (isset($filtres[$name])) {
-				$where[] = $this->make_filter($name, $filtres[$name]);
-			}
-			elseif (isset($filtres[$prop["name"]])) {
-				$where[] = $this->make_filter($name, $filtres[$prop["name"]]);
-			}
-		}
-		return array($fields, $tables, $where, $limit);
+	protected function filterList($col) {
+		$col->select(array_keys($this->model->getFields()));
 	}
 
 
-	public function output_list($filtres = array()) {
-		list($fields, $tables, $where, $limit) = $this->get_list($filtres);
-		$reponse = $this->bdd->query($this->build_query($fields, $tables, $where, $limit));
-		$collection = array();
-		foreach ($reponse as $row) {
-			$collection[] = $row;
-		}
-		output_json(array(
-			'success'=>1,
-			'collection'=>$collection
-		));
+	protected function get_list($r) {
+		$col = Collection::Query($this->model->getTableName())
+			->SelectAs($this->model->getPrimaryField(), self::ID)
+			->limit(30);
+		$this->filterList($col);
+		$this->output_success(array("list"=>$col->getValuesArray(isset($_GET["p"])?intval($_GET["p"]):0)));
 	}
 
 
-	public function output_count($filtres = array()) {
-		list($fields, $tables, $where, $limit) = $this->get_list($filtres);
-		$reponse = $this->bdd->query($this->build_query(array("COUNT(*)"), $tables, $where));
+	protected function get_list_partial($r) {
+		$tpt = new Template(array("model" => $this->model->getFields()));
+		$tpt->output("crud-list.php");
+	}
+
+
+	protected function get_detail_partial($r) {
+		$tpt = new Template(array("model" => $this->model->getFields()));
+		$tpt->output("crud-detail.php");
+	}
+
+
+	protected function get_count($r) {
+		$col = Collection::Query($this->model->getTableName());
+		$this->filterList($col);
+		$col->resetSelect()->SelectAs("COUNT(".$this->model->getPrimaryField().")", "n");
+
+		$reponse = $col->getValues();
 		$count = $reponse->fetch(PDO::FETCH_NUM);
 		if ($count)
-			output_json(array(
-				'success'=>1,
-				'count'=>intVal($count[0])
-			));
-		else {
-			output_json(array(
-				'success'=>0
+			$this->output_success(array(
+				'count'=>intVal($count[0]),
+				'limit'=>$this->limit,
+				'pages'=>ceil(intVal($count[0]) / $this->limit)
 			));
 
+		$this->output_error("No data");
+	}
+
+
+	protected function get_item($r) {
+		$this->ensure_request($r, array("id"));
+		$id = $r["id"];
+		$item = $this->model->getById($id);
+		$this->output_success(array(self::ID=>$id, "data"=>$item->getValues()));
+	}
+
+
+	protected function delete_item($r) {
+		ErrorHandler::RaiseExceptionOnError();
+		try {
+			$this->ensure_request($r, array("id"));
+			$id = $r["id"];
+			Logger::debug("Crud::delete_item id:" . $id . " in table " . $this->model->getTableName());
+			$this->model->deleteById($id);
+			$this->output_success();
+		} catch (Exception $e) {
+			$this->output_error($e->getMessage());
 		}
 	}
 
 
-	public function output_form($filtres = array()) {
-		$id = $filtres["id"];
-
-		$fields = array();
-		$tables = array($this->table);
-		$where = array("1");
-		foreach($this->fields as $name => $prop) {
-			if ($prop["edit"] || $prop["primary"]) {
-				$fields[] = $this->table.".".$name . " as " . $prop["name"];
-			}
-			if ($prop["primary"]) {
-				$where[] = $this->table.".".$name . "=:id";
-			}
+	protected function new_item($r) {
+		ErrorHandler::RaiseExceptionOnError();
+		try {
+			Logger::debug("Crud::new_item in table " . $this->model->getTableName());
+			$post = $this->jsonpost();
+			$item = $this->model->newRow();
+			$item->setValues($post);
+			$item->save();
+			$this->output_success(array("id"=>$item->getId()));
+		} catch (Exception $e) {
+			$this->output_error($e->getMessage());
 		}
-		$query = $this->build_query($fields, $tables, $where);
-		$reponse = $this->bdd->query($query, array(
-			"id" => $id
-		));
-		output_json(array(
-			'success'=>1,
-			'collection'=>$reponse->fetch()
-		));
 	}
 
-	public function delete_form($filtres = array()) {
-		$id = $filtres["id"];
 
-		foreach($this->fields as $name => $prop) {
-			if ($prop["primary"]) {
-				$this->bdd->query("DELETE FROM `" . $this->table . "` WHERE " . $name . "=:id", array(
-					"id" => $id
-				));
-				output_json(array('success'=>1));
-			}
+	protected function update_item($r) {
+		ErrorHandler::RaiseExceptionOnError();
+		try {
+			$this->ensure_request($r, array("id"));
+			$id = $r["id"];
+			Logger::debug("Crud::update_item id:" . $id . " in table " . $this->model->getTableName());
+			$post = $this->jsonpost();
+			$item = $this->model->getById($id);
+			$item->setValues($post);
+			$item->save();
+			$this->output_success(array("id"=>$id));
+		} catch (Exception $e) {
+			$this->output_error($e->getMessage());
 		}
-		
-		output_json(array('success'=>0, 'error'=>'Pas de clé primaire'));
-	}
-	
-	public function get_detail_template($prefix) {
-		$ret = '<form class="form-horizontal" role="form">'."\n";
-		foreach($this->fields as $name => $prop) {
-			if ($prop["caption"] && $prop["edit"]) {
-				$ret .= "\n\t".'<div class="form-group">'."\n";
-				$ret .= "\t\t".'<label class="col-sm-2 control-label">'. $prop['caption'] . '</label>'."\n";
-				$ret .= "\t\t".'<div class="col-sm-10">'."\n";
-					$ret .= "\t\t\t".'<p class="form-control-static">{{' . $prefix . $prop['name'] . '}}</p>'."\n";
-				$ret .= "\t\t".'</div>'."\n";
-				$ret .= "\t".'</div>'."\n";
-			}
-		}
-		$ret .= "</form>"."\n";
-		return $ret;
 	}
 
 }

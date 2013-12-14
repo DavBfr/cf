@@ -1,4 +1,5 @@
 <?php
+configure("MINIFY_JSCSS", DEBUG);
 
 class Minifier {
 	private $scripts = array();
@@ -74,17 +75,36 @@ class Minifier {
 		}
 	}
 
-	private function generate($items, $output, $type) {
-		$outputwww = MEDIA_PATH . URL_SEPARATOR . $output;
-		$output = MEDIA_DIR . DIRECTORY_SEPARATOR . $output;
-		if (DEBUG) {
-			if (file_exists($output)) {
-				unlink($output);
+
+	private function getFileContent($filename) {
+		if ($this->is_min($filename)) {
+			return file_get_contents($filename);
+		} elseif (($item_min = $this->has_min($filename)) !== false) {
+			return file_get_contents($item_min);
+		} else {
+			$min = Cache::Priv($filename);
+			if ($min->check()) {
+				exec("yui-compressor --nomunge --type $type '${filename}'", $datamin, $ret);
+				if ($ret !== 0) {
+					$datamin = file_get_contents($filename);
+				}
+				$min->setContents($datamin);
+				return $datamin;
+			} else {
+				return $min->getContents();
 			}
+		}
+	}
+
+
+	private function generate($items, $output, $type) {
+		$output = Cache::Pub($output);
+		if (! MINIFY_JSCSS || $type == "css") {
+			$output->delete();
 			return $items;
 		}
 
-		$time = @filemtime($output);
+		$time = @filemtime($output->getFilename());
 		$generate = False;
 		foreach($items as $item) {
 			$t = @filemtime($item[0]);
@@ -93,30 +113,15 @@ class Minifier {
 		}
 
 		if ($generate) {
-			if (!is_writable(dirname($output))) {
-				return $items;
-			}
-
-			$data = Array();
-			foreach($items as $item) {
-				if ($this->is_min($item[0])) {
-					$data[] = file_get_contents($item[0]);
-				} elseif (($item_min = $this->has_min($item[0])) !== false) {
-					$data[] = file_get_contents($item_min);
-				} else {
-					exec("yui-compressor --nomunge --type $type '${item[0]}'", $data, $ret);
-					if ($ret !== 0) {
-						$data[] = file_get_contents($item[0]);
-					}
+			if ($f = fopen($output->getFilename(), "w")) {
+				foreach($items as $item) {
+					fwrite($f, $this->getFileContent($item[0]));
 				}
-			}
-			if ($f = fopen($output, "w")) {
-				fwrite($f, implode("\n", $data));
 				fclose($f);
 			}
 		}
 
-		return Array(Array($output, $outputwww));
+		return Array(Array($output->getFilename(), $output->getFilepath()));
 	}
 	
 	public function add($filename) {
