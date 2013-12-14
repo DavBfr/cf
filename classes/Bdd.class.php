@@ -87,7 +87,10 @@ class Bdd {
 
 	public function select($fields, $tables, $where = array(1), $limit=NULL, $order=NULL) {
 		$query = "SELECT ";
-		$query .= implode(", ", $fields);
+		if (is_array($fields))
+			$query .= implode(", ", $fields);
+		else
+			$query .= $fields;
 		$query .= " FROM ";
 		if (is_array($tables))
 			$query .= implode(", ", $tables);
