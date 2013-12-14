@@ -15,17 +15,66 @@ class Model {
 	}
 
 
+	public static function export($args) {
+		$bdd = Bdd::getInstance();
+		if (is_dir(MODEL_DIR)) {
+			if ($dh = opendir(MODEL_DIR)) {
+				while (($file = readdir($dh)) !== false) {
+					if (substr($file, -15) == "Model.class.php") {
+						$class = substr($file, 0, -10);
+						$model = new $class();
+						Cli::pln($bdd->dropTable($model->getTableName()) . ";");
+						Cli::pln($model->createTable() . ";");
+						Cli::pln("");
+					}
+				}
+				closedir($dh);
+			}
+		}
+	}
+
+
+	public static function import($args) {
+		Cli::pr("\"model\": ");
+		$tables = array();
+		$bdd = Bdd::getInstance();
+		foreach($bdd->getTables() as $table) {
+			$tables[$table] = $bdd->getTableInfo($table);
+		}
+		Cli::pln(json_encode($tables));
+	}
+
+
+	public static function createClassesFromConfig($args) {
+		$config = Config::getInstance();
+		if (is_dir(MODEL_DIR)) {
+			foreach ($config->get("model", array()) as $table => $columns) {
+				$className = ucfirst($table) . "Model";
+				$filename = MODEL_DIR . "/" . ucfirst($table) . "Model.class.php";
+				if (file_exists($filename))
+					continue;
+
+				Cli::pln($className);
+				$f = fopen($filename, "w");
+				fwrite($f, "<?php\n\nclass $className extends Model {\n\n}\n");
+				fclose($f);
+			}
+		}
+	}
+
+
 	protected function getTable() {
 		$table = get_class($this);
 		if (substr($table, -5) == "Model") {
 			return $this->getFromConfig("model." . strtolower(substr($table, 0, -5)));
 		}
+		return array($table, array());
 	}
 
 
 	public function getFromConfig($key) {
 		$config = Config::getInstance();
-		return array(substr($key, strrpos($key, ".") + 1), $config->get($key));
+		return array(substr($key, strrpos($key, ".") + 1), $config->get($key, array()));
 	}
 
 

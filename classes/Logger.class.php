@@ -9,10 +9,10 @@ class Logger {
 	const CRITICAL = 5;
 
 	private static $levels = array(
-		self::DEBUG=>"DEBUG", 
-		self::INFO=>"INFO", 
-		self::WARNING=>"WARNING", 
-		self::ERROR=>"ERROR", 
+		self::DEBUG=>"DEBUG",
+		self::INFO=>"INFO",
+		self::WARNING=>"WARNING",
+		self::ERROR=>"ERROR",
 		self::CRITICAL=>"CRITICAL"
 	);
 
@@ -52,7 +52,8 @@ class Logger {
 
 	public function log($data, $level) {
 		if ($level >= $this->level) {
-			$data = "[CF] [" . @date('M j H:i:s') . "] [" . @$_SERVER['REMOTE_ADDR'] . "] [" . self::$levels[$level] . "] " . $data . "\n";
+			$raddr = array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : '-';
+			$data = "[CF] [" . @date('M j H:i:s') . "] [" . $raddr . "] [" . self::$levels[$level] . "] " . $data . "\n";
 			fwrite($this->stderr, $data);
 		}
 	}

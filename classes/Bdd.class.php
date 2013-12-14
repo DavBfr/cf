@@ -17,9 +17,9 @@ class Bdd {
 		try {
 			$this->bdd = new PDO(DBNAME, DBLOGIN, DBPASSWORD, $params);
 		} catch (PDOException $e) {
-			send_error(500, NULL, "Unable to connect to Database " . $e->getMessage());
+			send_error(500, NULL, "Unable to connect to Database: " . $e->getMessage());
 		} catch (Exeption $e) {
-			send_error(500, NULL, "Unable to connect to Database " . $e->getMessage());
+			send_error(500, NULL, "Unable to connect to Database: " . $e->getMessage());
 		}
 	}
 
@@ -129,7 +129,7 @@ class Bdd {
 				$ctype = "TEXT";
 			elseif (in_array("date", $column_type))
 				$ctype = "DATE";
-			if (in_array("not null", $column_type))
+			if (!$column["null"])
 				$ctype .= " NOT NULL";
 			if ($column["primary"])
 				$ctype .= " PRIMARY KEY";
@@ -146,6 +146,11 @@ class Bdd {
 	}
 
 
+	public function dropTable($name) {
+		return "DROP TABLE IF EXISTS `$name`";
+	}
+
+
 	public function createTable($name, $table_structure) {
 		$columns = $this->buildTableColumns($table_structure);
 		$query  = "CREATE TABLE IF NOT EXISTS `${name}` (\n  ";
@@ -156,6 +161,42 @@ class Bdd {
 		$query .= implode(",\n  ", $cols);
 		$query .= "\n)";
 		return $query;
+	}
+
+
+	public function getTables() {
+		$tables = array();
+		$res = $this->query("SHOW TABLES");
+		if ($res !== false) {
+			while($row = $res->fetch(PDO::FETCH_NUM)) {
+				$tables[] = $row[0];
+			}
+		}
+		return $tables;
+	}
+
+
+	public function getTableInfo($name) {
+		$fields = array();
+		$res = $this->query("SHOW COLUMNS FROM `$name`");
+		if ($res !== false) {
+			foreach($res as $row) {
+				$field = array();
+				if (strpos($row["Type"], "int") !== False) $field["type"] = "int";
+				elseif (strpos($row["Type"], "text") !== False) $field["type"] = "text";
+				elseif (strpos($row["Type"], "varchar") !== False) $field["type"] = "text";
+				elseif (strpos($row["Type"], "date") !== False) $field["type"] = "date";
+				elseif (strpos($row["Type"], "timestamp") !== False) $field["type"] = "date";
+				else $field["type"] = $row["Type"];
+
+				$field["null"] = $row["Null"] == "YES";
+				$field["primary"] = strpos($row["Key"], "PRI") !== False;
+				$field["default"] = $row["Default"];
+				$field["autoincrement"] = strpos($row["Extra"], "auto_increment") !== False;
+				$fields[$row["Field"]] = $field;
+			}
+		}
+		return $fields;
 	}
 
 

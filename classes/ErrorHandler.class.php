@@ -7,6 +7,13 @@ class ErrorHandler {
 	private $inerror = False;
 	private $backtrace = Array();
 
+	public static $messagecode = array(
+				500 => "Internal server error",
+				204 => "No Content",
+				404 => "Path not found",
+				401 => "Unauthorized",
+				417 => "Expectation failed",
+	);
 
 	protected function __construct() {
 		error_reporting(E_ALL ^ (E_NOTICE|E_WARNING));
@@ -38,8 +45,16 @@ class ErrorHandler {
 	}
 
 
-	private function formatErrorBody($code, $message, $body, $backtrace, $baseline) {
-		if (file_exists(ERROR_TEMPLATE)) {
+	public function formatErrorBody($code, $message, $body, $backtrace = array()) {
+		$baseline = "CF " . CF_VERSION . " ⠶ PHP " . PHP_VERSION . (isset($_SERVER["SERVER_SOFTWARE"]) ? " ⠶ " . $_SERVER["SERVER_SOFTWARE"] : "");
+		if ($message == NULL) {
+			if (isset(self::$messagecode[$code]))
+				$message = self::$messagecode[$code];
+			else
+				$message = "Error #${code}";
+		}
+
+		if (file_exists(ERROR_TEMPLATE) && !IS_CLI) {
 			$tpt = new Template(array(
 				"code" => $code,
 				"message" => $message,
@@ -51,7 +66,7 @@ class ErrorHandler {
 			die($tpt->parse(ERROR_TEMPLATE));
 		}
 		header("Content-type: text/plain");
-		$body = "$code $message : $body";
+		$body = "$message ($code): $body";
 		$body .= "\n\nBacktrace:\n";
 		foreach($backtrace as $n=>$bt) {
 			$body .=
@@ -61,7 +76,7 @@ class ErrorHandler {
 			.(isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '')
 			."\n\n";
 		}
-		$body .= $baseline;
+		$body .= $baseline . "\n";
 		die($body);
 	}
 
@@ -76,14 +91,10 @@ class ErrorHandler {
 		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 
 		if ($message == NULL) {
-			switch ($code) {
-				case 500: $message = "Internal server error"; break;
-				case 204: $message = "No Content"; break;
-				case 404: $message = "Path not found"; break;
-				case 401: $message = "Unauthorized"; break;
-				case 417: $message = "Expectation failed"; break;
-				default: $message = "Error #${code}"; break;
-			}
+			if (isset(self::$messagecode[$code]))
+				$message = self::$messagecode[$code];
+			else
+				$message = "Error #${code}";
 		}
 
 		header("$protocol $code $message");
@@ -92,20 +103,18 @@ class ErrorHandler {
 			$body = $message;
 
 		if ($code >= 500) {
-			Logger::Error("$code $message $body");
+			Logger::Error("[$code] $message: $body");
 		} else {
-			Logger::Info("$code $message $body");
+			Logger::Info("[$code] $message: $body");
 		}
 
-		DEBUG || die();
+		IS_CLI || DEBUG || die();
 
 		if ($backtrace !== False) {
 			$this->debugBacktrace($backtrace);
 		}
 
-		$baseline = "CF " . CF_VERSION . " ⠶ PHP " . PHP_VERSION . " ⠶ " . $_SERVER["SERVER_SOFTWARE"];
-
-		$this->formatErrorBody($code, $message, $body, $this->backtrace, $baseline);
+		$this->formatErrorBody($code, $message, $body, $this->backtrace);
 	}
 
 
@@ -133,7 +142,7 @@ class ErrorHandler {
 			array_walk($v['args'], function (&$item, $key) {
 				$item = var_export($item, true);
 			});
-			$this->addBacktrace($v['file'], $v['line'], isset($v['class']) ? $v['class'] : NULL, $v['function'], $v['args']);
+			$this->addBacktrace(isset($v['file']) ? $v['file'] : '', isset($v['line']) ? $v['line'] : "", isset($v['class']) ? $v['class'] : NULL, $v['function'], $v['args']);
 		}
 	}
 

@@ -64,6 +64,7 @@ configure("SESSION_NAME", "CF");
 configure("FORCE_HTTPS", False);
 configure("DEFAULT_TIMEZONE", "Europe/Paris");
 configure("DEBUG", False);
+configure("IS_CLI", defined("STDIN"));
 
 set_include_path(get_include_path() . URL_SEPARATOR . VENDOR_DIR);
 
