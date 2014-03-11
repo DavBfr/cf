@@ -1,14 +1,14 @@
 {
 	"title": "CoreFramework",
 	"description": "Skeletton site made with <i>CoreFramework</i>.",
-	"angular": false,
+	"plugins": ["Bootstrap"],
 
 	"scripts": [
 		"jquery/jquery.js",
 		"bootstrap/bootstrap.js",
 		"bootstrap/bootstrap.css",
 		"bootstrap/bootstrap-theme.css",
-		"styles.css"
+		"media/styles.css"
 	],
 
 	"model": {
