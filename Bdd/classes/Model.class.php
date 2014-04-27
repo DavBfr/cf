@@ -1,6 +1,6 @@
 <?php
 
-class Model {
+abstract class Model {
 
 	protected $table;
 	protected $fields;
@@ -28,10 +28,10 @@ class Model {
 
 	public static function export($args) {
 		$bdd = Bdd::getInstance();
-		if (is_dir(MODEL_DIR)) {
-			if ($dh = opendir(MODEL_DIR)) {
+		if (is_dir(BddPlugin::MODEL_DIR)) {
+			if ($dh = opendir(BddPlugin::MODEL_DIR)) {
 				while (($file = readdir($dh)) !== false) {
-					if (substr($file, -15) == "Model.class.php") {
+					if (substr($file, -15) == "Model.class.php" && substr($file, 0, 4) != "Base") {
 						$class = substr($file, 0, -10);
 						$model = new $class();
 						Cli::pln($bdd->dropTable($model->getTableName()) . ";");
@@ -58,19 +58,35 @@ class Model {
 
 	public static function createClassesFromConfig($args) {
 		$config = Config::getInstance();
-		if (is_dir(MODEL_DIR)) {
+		if (is_dir(BddPlugin::MODEL_DIR)) {
 			foreach ($config->get("model", array()) as $table => $columns) {
+				$baseClassName = "Base" . ucfirst($table) . "Model";
+				$filename = BddPlugin::MODEL_DIR . "/" . $baseClassName . ".class.php";
+				Cli::pln($baseClassName);
+				$f = fopen($filename, "w");
+				fwrite($f, "<?php\n\nclass $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
+				$colstr = ArrayWriter::toString($columns, 4);
+				foreach($columns as $name => $params) {
+					fwrite($f, "\tconst ".strtoupper($name)." = " . ArrayWriter::quote($name) . "; // " . $params["type"] . "\n");
+					$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($name), $colstr);
+				}
+				
+				fwrite($f, "\n\n\tprotected function getTable() {\n");
+				fwrite($f, "\t\treturn array(\n");
+				fwrite($f, "\t\t\tself::TABLE,\n");
+				fwrite($f, "\t\t\t" . $colstr . ",\n");
+				fwrite($f, "\t\t);\n\t}\n");
+				fwrite($f, "\n}\n");
+				fclose($f);
+
 				$className = ucfirst($table) . "Model";
-				$filename = MODEL_DIR . "/" . ucfirst($table) . "Model.class.php";
+				$filename = BddPlugin::MODEL_DIR . "/" . $className . ".class.php";
 				if (file_exists($filename))
 					continue;
 
 				Cli::pln($className);
 				$f = fopen($filename, "w");
-				fwrite($f, "<?php\n\nclass $className extends Model {\n\tconst TABLE = \"$table\";\n");
-				foreach($columns as $name => $params) {
-					fwrite($f, "\tconst ".strtoupper($name)." = \"$name\"; // " . $params["type"] . "\n");
-				}
+				fwrite($f, "<?php\n\nclass $className extends $baseClassName {\n\tconst TABLE = \"$table\";\n");
 				fwrite($f, "\n\n}\n");
 				fclose($f);
 			}
@@ -78,19 +94,7 @@ class Model {
 	}
 
 
-	protected function getTable() {
-		$table = get_class($this);
-		if (substr($table, -5) == "Model") {
-			return $this->getFromConfig("model." . strtolower(substr($table, 0, -5)));
-		}
-		return array($table, array());
-	}
-
-
-	public function getFromConfig($key) {
-		$config = Config::getInstance();
-		return array(substr($key, strrpos($key, ".") + 1), $config->get($key, array()));
-	}
+	abstract protected function getTable();
 
 
 	public function getTableName() {

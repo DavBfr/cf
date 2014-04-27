@@ -64,5 +64,5 @@ function __autoload($class_name) {
 }
 
 require_once(CF_DIR . DIRECTORY_SEPARATOR . CORE_PLUGIN . DIRECTORY_SEPARATOR . "classes" . DIRECTORY_SEPARATOR . "Plugins.class.php");
-Plugins::add(CORE_PLUGIN);
+Plugins::add(CORE_PLUGIN, PLugins::CORE);
 Plugins::addApp();

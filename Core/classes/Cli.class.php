@@ -11,16 +11,6 @@ class Cli {
 	}
 
 
-	public static function pr($s="") {
-		print($s);
-	}
-
-
-	public static function pln($s="") {
-		self::pr($s . "\n");
-	}
-
-
 	public function getCommand() {
 		if (isset($this->args['input']) && isset($this->args['input'][1]))
 			return $this->args['input'][1];
@@ -84,7 +74,17 @@ class Cli {
 	}
 
 
-	public function question() {
+	public static function pr($s="") {
+		print($s);
+	}
+
+
+	public static function pln($s="") {
+		self::pr($s . "\n");
+	}
+
+
+	public static function question() {
 		echo "Are you sure you want to do this?  Type 'yes' to continue: ";
 		$handle = fopen ("php://stdin","r");
 		$line = fgets($handle);
@@ -94,6 +94,23 @@ class Cli {
 		}
 		echo "\n";
 		echo "Thank you, continuing...\n";
+	}
+
+
+	public static function copyTree($src, $dst) {
+		$dir = opendir($src);
+		@mkdir($dst);
+		while(false !== ( $file = readdir($dir)) ) {
+			if (( $file != '.' ) && ( $file != '..' )) {
+				if ( is_dir($src . DIRECTORY_SEPARATOR . $file) ) {
+					self::copyTree($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
+				}
+				else {
+					copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
+				}
+			}
+		}
+		closedir($dir);
 	}
 
 }

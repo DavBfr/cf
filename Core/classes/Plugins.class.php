@@ -58,6 +58,23 @@ class Plugins {
 	}
 
 
+	public static function addAll($position = self::PLUGIN, $dir = NULL) {
+		if ($dir === NULL)
+			$dir = CF_PLUGINS_DIR;
+
+		if (is_dir($dir)) {
+			if ($dh = opendir($dir)) {
+				while (($file = readdir($dh)) !== false) {
+					if (is_dir($dir . DIRECTORY_SEPARATOR . $file) && $file[0] != ".") {
+						self::add($file, $position, $dir . DIRECTORY_SEPARATOR . $file);
+					}
+				}
+				closedir($dh);
+			}
+		}
+	}
+
+
 	public static function get_plugins() {
 		return array_merge(self::$app_list, self::$plugins_list, self::$core_list);
 	}
@@ -88,6 +105,37 @@ class Plugins {
 			}
 		}
 		return $files;
+	}
+
+
+	public static function dispatch() {
+		$arguments = func_get_args();
+		$method_name = array_shift($arguments);
+		
+		foreach(self::get_plugins() as $plugin) {
+			$class = self::get($plugin);
+			if (method_exists($class, $method_name)) {
+				return call_user_method_array($method_name, $class, $arguments); 
+			}
+		}
+		
+		return NULL;
+	}
+
+
+	public static function dispatchAll() {
+		$results = array();
+		$arguments = func_get_args();
+		$method_name = array_shift($arguments);
+		
+		foreach(self::get_plugins() as $plugin) {
+			$class = self::get($plugin);
+			if (method_exists($class, $method_name)) {
+				$results[] = call_user_method_array($method_name, $class, $arguments); 
+			}
+		}
+		
+		return $results;
 	}
 
 

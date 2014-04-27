@@ -1,7 +1,7 @@
 {
 	"title": "CoreFramework",
 	"description": "Skeletton site made with <i>CoreFramework</i>.",
-	"plugins": ["Bootstrap"],
+	"plugins": ["Bootstrap", "Bdd"],
 
 	"scripts": [
 		"jquery/jquery.js",
