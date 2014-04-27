@@ -1,8 +1,13 @@
 <?php
+configure("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins");
+
+require_once("MemCache.class.php");
+require_once("Logger.class.php");
 
 class Plugins {
 	const CLASS_DIR = "classes";
 	const APP_NAME = "__app__";
+	const APP_PLUGIN = "CFApp";
 	const APP = 0;
 	const PLUGIN = 1;
 	const CORE = 2;
@@ -20,20 +25,36 @@ class Plugins {
 	public function __construct($dir, $name) {
 		$this->name = $name;
 		$this->dir = $dir;
+		$this->init();
+	}
+	
+	
+	protected function init() {
+		
 	}
 
 
-	public static function add($name, $position = self::PLUGIN, $dir = NULL) {
+	public static function add($name, $position = self::PLUGIN, $dir = NULL, $class_name = NULL) {
 		if (array_key_exists($name, self::$plugins))
 			return;
 		
-		if ($dir === NULL)
-			$dir = CF_PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
+		if ($dir === NULL) {
+			$dir = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
+		    if (! is_dir($dir))
+				$dir = CF_PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
+		}
+
+		if (! is_dir($dir))
+			throw Exception("Plugin $name not found");
 		
-		$class_file = $dir . DIRECTORY_SEPARATOR . $name . '.plugin.php';
+		if ($class_name == NULL)
+			$class_name = $name;
+		
+		$class_file = $dir . DIRECTORY_SEPARATOR . $class_name . '.plugin.php';
+		 
 		if (file_exists($class_file)) {
 			require_once($class_file);
-			$class_name = $name."Plugin";
+			$class_name .= "Plugin";
 			$plugin = new $class_name($dir, $name);
 		} else {
 			$plugin = new self($dir, $name);
@@ -54,14 +75,11 @@ class Plugins {
 
 
 	public static function addApp() {
-		self::add(self::APP_NAME, self::APP, ROOT_DIR);
+		self::add(self::APP_NAME, self::APP, ROOT_DIR, self::APP_PLUGIN);
 	}
 
 
-	public static function addAll($position = self::PLUGIN, $dir = NULL) {
-		if ($dir === NULL)
-			$dir = CF_PLUGINS_DIR;
-
+	public static function addAll($dir, $position = self::PLUGIN) {
 		if (is_dir($dir)) {
 			if ($dh = opendir($dir)) {
 				while (($file = readdir($dh)) !== false) {
@@ -120,7 +138,7 @@ class Plugins {
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				return call_user_method_array($method_name, $class, $arguments); 
+				return call_user_func_array(array($class, $method_name), $arguments); 
 			}
 		}
 		
@@ -136,7 +154,7 @@ class Plugins {
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				$results[] = call_user_method_array($method_name, $class, $arguments); 
+				$results[] = call_user_func_array(array($class, $method_name), $arguments); 
 			}
 		}
 		

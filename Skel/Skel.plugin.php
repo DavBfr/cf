@@ -3,10 +3,10 @@
 class SkelPlugin extends Plugins {
 
 	public function cli($cli) {
-		$cli->addCommand("skel", array($this, "init"), "Initialize a new CF project");
+		$cli->addCommand("skel", array($this, "skel"), "Initialize a new CF project");
 	}
 
-	public function init() {
+	public function skel() {
 		Cli::copyTree($this->getDir(), getcwd());
 		unlink(getcwd() . DIRECTORY_SEPARATOR . basename(__file__));
 		$index = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . "index.php");

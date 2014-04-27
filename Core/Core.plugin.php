@@ -18,6 +18,8 @@ class CorePlugin extends Plugins {
 		else
 			$resources = new Resources();
 
+		Plugins::dispatchAll("resources", $resources);
+
 		foreach($conf->get("scripts", Array()) as $script) {
 			$resources->add($script);
 		}

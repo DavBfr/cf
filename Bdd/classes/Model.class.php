@@ -19,7 +19,7 @@ abstract class Model {
 
 	protected function getModelData() {
 		$md = get_class($this)."Data";
-		if (class_exists($md) && is_subclass_of($md, ModelData))
+		if (class_exists($md) && is_subclass_of($md, "ModelData"))
 			return get_class($this)."Data";
 
 		return "ModelData";
@@ -64,7 +64,7 @@ abstract class Model {
 				$filename = BddPlugin::MODEL_DIR . "/" . $baseClassName . ".class.php";
 				Cli::pln($baseClassName);
 				$f = fopen($filename, "w");
-				fwrite($f, "<?php\n\nclass $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
+				fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
 				$colstr = ArrayWriter::toString($columns, 4);
 				foreach($columns as $name => $params) {
 					fwrite($f, "\tconst ".strtoupper($name)." = " . ArrayWriter::quote($name) . "; // " . $params["type"] . "\n");
@@ -86,8 +86,7 @@ abstract class Model {
 
 				Cli::pln($className);
 				$f = fopen($filename, "w");
-				fwrite($f, "<?php\n\nclass $className extends $baseClassName {\n\tconst TABLE = \"$table\";\n");
-				fwrite($f, "\n\n}\n");
+				fwrite($f, "<?php\n\nclass $className extends $baseClassName {\n\n}\n");
 				fclose($f);
 			}
 		}

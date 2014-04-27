@@ -2,12 +2,12 @@
 
 class Input {
 
-	function decodeJsonPost() {
+	public static function decodeJsonPost() {
 		return json_decode(file_get_contents("php://input"), true);
 	}
 
 
-	function ensureRequest($array, $mandatory, $optional = array(), $strict = false) {
+	public static function ensureRequest($array, $mandatory, $optional = array(), $strict = false) {
 		foreach($mandatory as $param) {
 			if (!isset($array[$param])) {
 				ErrorHandler::error(417, NULL, "Missing parameter ${param}");
