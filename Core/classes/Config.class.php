@@ -15,15 +15,21 @@ class Config {
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
-			if (file_exists(JCONFIG_FILE)) {
+			$memcache = new MemCache();
+			if ($memcache->offsetExists("JCONFIG_FILE")) {
+				self::$instance->data = $memcache["JCONFIG_FILE"];
+				Logger::debug("Config loaded from cache");
+			}
+			elseif (file_exists(JCONFIG_FILE)) {
 				self::$instance->load(JCONFIG_FILE);
+				$memcache["JCONFIG_FILE"] = self::$instance->data;
 			}
 		}
 
 		return self::$instance;
 	}
-	
-	
+
+
 	public static function jsonLastErrorMsg() {
 		if (!function_exists('json_last_error_msg')) {
 			static $errors = array(
@@ -37,7 +43,7 @@ class Config {
 			$error = json_last_error();
 			return array_key_exists($error, $errors) ? $errors[$error] : "Unknown error ({$error})";
 		}
-		
+
 		return json_last_error_msg();
 	}
 

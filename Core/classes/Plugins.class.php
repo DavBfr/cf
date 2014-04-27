@@ -86,12 +86,17 @@ class Plugins {
 
 
 	public static function find($filename) {
+		$memcached = new MemCache();
+		if ($memcached->offsetExists("plugin.".$filename))
+			return $memcached["plugin.".$filename];
 		foreach(self::get_plugins() as $plugin) {
 			$resource = self::get($plugin)->getDir() . DIRECTORY_SEPARATOR . $filename;
 			if (file_exists($resource)) {
+				$memcached["plugin.".$filename] = $resource;
 				return $resource;
 			}
 		}
+		$memcached["plugin.".$filename] = NULL;
 		return NULL;
 	}
 

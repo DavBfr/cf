@@ -32,7 +32,6 @@ configure("CF_DIR", dirname(__file__));
 configure("CF_URL", "http://cf.nfet.net");
 configure("CF_PLUGINS_DIR", CF_DIR);
 configure("ROOT_DIR", dirname(CF_DIR));
-configure("DATA_DIR", ROOT_DIR);
 configure("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 configure("DATA_DIR", CONFIG_DIR);
 configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
@@ -64,5 +63,5 @@ function __autoload($class_name) {
 }
 
 require_once(CF_DIR . DIRECTORY_SEPARATOR . CORE_PLUGIN . DIRECTORY_SEPARATOR . "classes" . DIRECTORY_SEPARATOR . "Plugins.class.php");
-Plugins::add(CORE_PLUGIN, PLugins::CORE);
+Plugins::add(CORE_PLUGIN, Plugins::CORE);
 Plugins::addApp();
