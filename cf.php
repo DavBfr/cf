@@ -9,6 +9,8 @@ function configure($key, $value) {
 	if (!defined($key)) {
 		$configured_options[] = $key;
 		define($key, $value);
+	} elseif (! array_key_exists($key, $configured_options)) {
+		$configured_options[] = $key;
 	}
 }
 

@@ -1,17 +1,14 @@
 <?php
 
 configure("MINIFY_JSCSS", !DEBUG);
+configure("MINIFY_YUI", false);
 
 class Minifier extends Resources {
 
 
 	protected function append($filename) {
 		if (substr($filename, -5) == ".less") {
-			
-			$script = 
-			Cache::Pub(
-			$filename, ".css");
-			
+			$script =Cache::Pub($filename, ".css");
 			if ($script->check()) {
 				$less = new lessc();
 				$less->compileFile($filename, $script->getFilename());
@@ -68,9 +65,13 @@ class Minifier extends Resources {
 		} else {
 			$min = Cache::Priv($filename);
 			if ($min->check()) {
-				exec("yui-compressor --nomunge --type js '${filename}'", $datamin, $ret);
-				if ($ret !== 0) {
-					$datamin = file_get_contents($filename);
+				if (MINIFY_YUI) {
+					exec("yui-compressor --nomunge --type js '${filename}'", $datamin, $ret);
+					if ($ret !== 0) {
+						$datamin = file_get_contents($filename);
+					}
+				} else {
+					$datamin = JSMin::minify(file_get_contents($filename));
 				}
 				$min->setContents($datamin);
 				return $datamin;
@@ -79,8 +80,8 @@ class Minifier extends Resources {
 			}
 		}
 	}
-	
-	
+
+
 	protected function minifyStylesheet($filename) {
 		if ($this->isMin($filename)) {
 			return file_get_contents($filename);
@@ -89,9 +90,15 @@ class Minifier extends Resources {
 		} else {
 			$min = Cache::Priv($filename);
 			if ($min->check()) {
-				exec("yui-compressor --nomunge --type css '${filename}'", $datamin, $ret);
-				if ($ret !== 0) {
-					$datamin = file_get_contents($filename);
+				if (MINIFY_YUI) {
+					exec("yui-compressor --nomunge --type css '${filename}'", $datamin, $ret);
+					if ($ret !== 0) {
+						$datamin = file_get_contents($filename);
+					}
+				} else {
+					$less = new lessc();
+					$less->setFormatter(new lessc_formatter_compressed());
+					$datamin = $less->compileFile($filename);
 				}
 				$min->setContents($datamin);
 				return $datamin;
@@ -100,8 +107,8 @@ class Minifier extends Resources {
 			}
 		}
 	}
-	
-	
+
+
 	public function getScripts() {
 		$res = $this->getResourcesByExt(".js");
 		$output = Cache::Pub("app.min.js");
@@ -111,13 +118,13 @@ class Minifier extends Resources {
 		}
 		$out = $output->openWrite();
 		foreach($res as $item) {
-			fwrite($out, $this->minifyJavascript($item));
+			fwrite($out, $this->minifyJavascript($item)."\n");
 		}
 		fclose($out);
 		return array($this->web($output->getFilename()));
 	}
-	
-	
+
+
 	public function getStylesheets() {
 		$res = $this->getResourcesByExt(".css");
 		$output = Cache::Pub("app.min.css");
@@ -127,7 +134,7 @@ class Minifier extends Resources {
 		}
 		$out = $output->openWrite();
 		foreach($res as $item) {
-			fwrite($out, $this->minifyStylesheet($item));
+			fwrite($out, $this->minifyStylesheet($item)."\n");
 		}
 		fclose($out);
 		return array($this->web($output->getFilename()));

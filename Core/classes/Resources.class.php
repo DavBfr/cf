@@ -23,9 +23,9 @@ class Resources {
 
 
 	public static function web($filename) {
-		$localpath = ROOT_DIR . DIRECTORY_SEPARATOR;
+		$localpath = WWW_DIR . DIRECTORY_SEPARATOR;
 		if (strpos($filename, $localpath) !== False) {
-			$web = str_replace($localpath, '', $filename);
+			$web = WWW_PATH . DIRECTORY_SEPARATOR . str_replace($localpath, '', $filename);
 		} else {
 			$web = str_replace(DOCUMENT_ROOT, '', $filename);
 		}
