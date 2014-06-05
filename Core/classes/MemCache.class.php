@@ -10,7 +10,7 @@ class MemCache implements arrayaccess {
 
 	public function __construct($lifetime = MEMCACHE_LIFETIME) {
 		$this->lifetime = $lifetime;
-		$this->apc = function_exists('apc_store') && ini_get('apc.enabled') && !DEBUG;
+		$this->apc = false;function_exists('apc_store') && ini_get('apc.enabled') && !DEBUG;
 	}
 
 	public function offsetSet($offset, $value) {

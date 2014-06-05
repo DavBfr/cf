@@ -11,6 +11,8 @@ function CrudService($http, service) {
 			onsuccess && onsuccess([], 200);
 			return;
 		}
+		if (filter == undefined)
+			filter = "";
 		$http.get(service_url + "?p="+page+"&q="+filter).success(function (data, status) {
 			if (data.success)
 				onsuccess && onsuccess(data.list, status);
@@ -22,6 +24,8 @@ function CrudService($http, service) {
 	};
 
 	this.get_count = function (filter, onsuccess, onerror) {
+		if (filter == undefined)
+			filter = "";
 		$http.get(service_url + "/count?q="+filter).success(function (data, status) {
 			if (data.success)
 				onsuccess && onsuccess(data);
@@ -84,6 +88,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		$scope.perpages = null;
 		$scope.list = [];
 		$scope.item = {};
+		$scope.filter = "";
 		$scope.pages = 0;
 		$scope.count = 0;
 		$scope.page = 0;
@@ -121,14 +126,14 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 	};
 
 	$scope.del = function(id) {
-		NotificationFactory.confirm("Supprimer la fiche #" + id + " ?", function () {
+		NotificationFactory.confirm("Delete the record #" + id + " ?", function () {
 			CrudService.del(id, function () {
 				var path = (new RegExp("^/[^/]+")).exec($route.current.originalPath)[0];
 				if (path == $route.current.originalPath)
 					this.get_list();
 				else
 					$scope.go_list();
-				NotificationFactory.success("Fiche #"+ id +" supprimée");
+				NotificationFactory.success("Record #"+ id +" deleted");
 			}.bind(this), function (data) {
 				NotificationFactory.error(data);
 			});
@@ -142,7 +147,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 			CrudService.save(id, data, function () {
 				$scope.go_list();
 				//this.get_fiche(id);
-				NotificationFactory.success("Fiche #"+ id +" sauvegardée");
+				NotificationFactory.success("Record #"+ id +" deleted");
 			}.bind(this), function (data) {
 				NotificationFactory.error(data);
 			});
@@ -150,7 +155,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 			CrudService.add(data, function (id) {
 				$scope.go_list();
 				//this.get_fiche(id);
-				NotificationFactory.success("Nouvelle fiche #"+ id +" sauvegardée");
+				NotificationFactory.success("New record #"+ id +" saved");
 			}.bind(this), function (data) {
 				$scope.loading = false;
 				NotificationFactory.error(data);

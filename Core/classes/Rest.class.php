@@ -100,7 +100,7 @@ abstract class Rest {
 		
 		$request_file = Plugins::find(self::REQUEST_DIR . DIRECTORY_SEPARATOR . ucwords($request) . "Rest.class.php");
 		if ($request_file === NULL) {
-			ErrorHandler::error(404, NULL, $request . ".php");
+			ErrorHandler::error(404, NULL, ucwords($request) . "Rest.class.php");
 		}
 		
 		require_once($request_file);

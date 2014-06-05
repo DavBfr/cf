@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+define("DEBUG", true);
 define("ROOT_DIR", getcwd());
 require_once(dirname(__file__) . DIRECTORY_SEPARATOR . "cf.php");
 

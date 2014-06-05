@@ -110,6 +110,18 @@ class Collection {
 	}
 
 
+	public function filter($value, $operator="=") {
+		$bdd = Bdd::getInstance();
+		$value = $bdd->quote($value);
+		
+		$filter = array();
+		foreach ($this->fields as $field) {
+			$filter[] = $bdd->quoteIdent($field) . " " . $operator . " " . $value;
+		}
+		$this->where[] = implode(" OR ", $filter);
+	}
+
+
 	public function groupBy() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))

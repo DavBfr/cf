@@ -4,6 +4,8 @@ configure("SESSION_NAME", "CF");
 
 
 class Session {
+	const rights_key = "RIGHTS";
+	
 	private static $instance = NULL;
 
 
@@ -50,6 +52,36 @@ class Session {
 	}
 
 
+	public static function addRight($value) {
+		if (self::Has(self::rights_key)) {
+			$rights = self::Get(self::rights_key);
+		} else {
+			$rights = array();
+		}
+		if (!in_array($value, $rights)) {
+			$rights[] = $value;
+		}
+		self::Set(self::rights_key, $rights);
+	}
+
+
+	public static function hasRight($value) {
+		if (self::Has(self::rights_key)) {
+			$rights = self::Get(self::rights_key);
+		} else {
+			$rights = array();
+		}
+		return in_array($value, $rights);
+	}
+
+
+	public static function ensureRight($value) {
+		if (!self::hasRight($value)) {
+			ErrorHandler::error(401);
+		}
+	}
+
+
 	public static function Set($key, $value) {
 		self::getInstance();
 		$_SESSION[$key] = $value;
@@ -69,12 +101,12 @@ class Session {
 
 
 	public static function isLogged() {
-		return self::hasSession() && self::Has("is_logged") && self::Get("is_logged") === true;
+		return self::hasSession() && self::hasRight("logged");
 	}
 
 
 	public static function isLoggedApi() {
-		return self::hasSession() && self::Has("is_logged_api") && self::Get("is_logged_api") === true;
+		return self::hasSession() && self::hasRight("logged_api");
 	}
 
 

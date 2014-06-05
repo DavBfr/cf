@@ -58,37 +58,39 @@ abstract class Model {
 
 	public static function createClassesFromConfig($args) {
 		$config = Config::getInstance();
-		if (is_dir(BddPlugin::MODEL_DIR)) {
-			foreach ($config->get("model", array()) as $table => $columns) {
-				$baseClassName = "Base" . ucfirst($table) . "Model";
-				$filename = BddPlugin::MODEL_DIR . "/" . $baseClassName . ".class.php";
-				Cli::pln($baseClassName);
-				$f = fopen($filename, "w");
-				fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
-				$colstr = ArrayWriter::toString($columns, 4);
-				foreach($columns as $name => $params) {
-					fwrite($f, "\tconst ".strtoupper($name)." = " . ArrayWriter::quote($name) . "; // " . $params["type"] . "\n");
-					$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($name), $colstr);
-				}
-				
-				fwrite($f, "\n\n\tprotected function getTable() {\n");
-				fwrite($f, "\t\treturn array(\n");
-				fwrite($f, "\t\t\tself::TABLE,\n");
-				fwrite($f, "\t\t\t" . $colstr . ",\n");
-				fwrite($f, "\t\t);\n\t}\n");
-				fwrite($f, "\n}\n");
-				fclose($f);
-
-				$className = ucfirst($table) . "Model";
-				$filename = BddPlugin::MODEL_DIR . "/" . $className . ".class.php";
-				if (file_exists($filename))
-					continue;
-
-				Cli::pln($className);
-				$f = fopen($filename, "w");
-				fwrite($f, "<?php\n\nclass $className extends $baseClassName {\n\n}\n");
-				fclose($f);
+		if (! is_dir(BddPlugin::MODEL_DIR)) {
+			mkdir(BddPlugin::MODEL_DIR, 0744, true);
+		}
+		
+		foreach ($config->get("model", array()) as $table => $columns) {
+			$baseClassName = "Base" . ucfirst($table) . "Model";
+			$filename = BddPlugin::MODEL_DIR . "/" . $baseClassName . ".class.php";
+			Cli::pln($baseClassName);
+			$f = fopen($filename, "w");
+			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
+			$colstr = ArrayWriter::toString($columns, 4);
+			foreach($columns as $name => $params) {
+				fwrite($f, "\tconst ".strtoupper($name)." = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : "int") . "\n");
+				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($name), $colstr);
 			}
+			
+			fwrite($f, "\n\n\tprotected function getTable() {\n");
+			fwrite($f, "\t\treturn array(\n");
+			fwrite($f, "\t\t\tself::TABLE,\n");
+			fwrite($f, "\t\t\t" . $colstr . ",\n");
+			fwrite($f, "\t\t);\n\t}\n");
+			fwrite($f, "\n}\n");
+			fclose($f);
+
+			$className = ucfirst($table) . "Model";
+			$filename = BddPlugin::MODEL_DIR . "/" . $className . ".class.php";
+			if (file_exists($filename))
+				continue;
+
+			Cli::pln($className);
+			$f = fopen($filename, "w");
+			fwrite($f, "<?php\n\nclass $className extends $baseClassName {\n\n}\n");
+			fclose($f);
 		}
 	}
 

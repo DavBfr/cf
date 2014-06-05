@@ -16,7 +16,7 @@ class Config {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
 			$memcache = new MemCache();
-			if ($memcache->offsetExists("JCONFIG_FILE")) {
+			if (array_key_exists("JCONFIG_FILE", $memcache)) {
 				self::$instance->data = $memcache["JCONFIG_FILE"];
 				Logger::debug("Config loaded from cache");
 			}

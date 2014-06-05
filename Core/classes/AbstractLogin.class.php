@@ -32,7 +32,7 @@ abstract class AbstractLogin extends Rest {
 
 		if (($user = $this->login($post["username"], $post["password"])) !== False) {
 			Session::Set("userid", $user);
-			Session::Set("is_logged", true);
+			Session::addRight("logged");
 			Output::success();
 		}
 		ErrorHandler::error(401);
@@ -44,7 +44,7 @@ abstract class AbstractLogin extends Rest {
 
 		if (($apiid = $this->apiLogin($_REQUEST["token"])) !== False) {
 			Session::Set("apiid", $apiid);
-			Session::Set("is_logged_api", true);
+			Session::addRight("logged_api");
 			Output::success();
 		}
 		ErrorHandler::error(401);

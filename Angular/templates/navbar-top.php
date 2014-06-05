@@ -14,6 +14,6 @@
 			<li data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
 		</ul>
 
-		<button type="button" class="btn btn-default navbar-btn navbar-right" data-ng-click="logout()">Déconnection</button>
+		<button type="button" class="btn btn-default navbar-btn navbar-right" data-ng-click="logout()">Disconnect</button>
 	</div>
 </nav>

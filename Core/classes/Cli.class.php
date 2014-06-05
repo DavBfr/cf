@@ -113,4 +113,22 @@ class Cli {
 		closedir($dir);
 	}
 
+
+	public static function configuration() {
+		global $configured_options;
+
+		
+		if (isset($configured_options)) {
+			foreach($configured_options as $key) {
+				$val = constant($key);
+				self::pln($key.' = '.$val);
+			}
+		}
+	}
+
+
+	public static function version() {
+		self::pln(CorePlugin::getBaseline());
+	}
+
 }

@@ -69,4 +69,10 @@ class CorePlugin extends Plugins {
 		return $info;
 	}
 
+
+	public function cli($cli) {
+		$cli->addCommand("core:config", array("Cli", "configuration"), "Get framework configuration");
+		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");
+	}
+
 }

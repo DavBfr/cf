@@ -33,7 +33,7 @@ configure("CF_URL", "http://cf.nfet.net");
 configure("CF_PLUGINS_DIR", CF_DIR);
 configure("ROOT_DIR", dirname(CF_DIR));
 configure("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
-configure("DATA_DIR", CONFIG_DIR);
+configure("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
 configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
 configure("CORE_PLUGIN", "Core");
 configure("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www");

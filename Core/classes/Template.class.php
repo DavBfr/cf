@@ -153,6 +153,13 @@ class Template {
 				$options[strtolower($key)] = constant($key);
 			}
 		}
+		
+		if (Session::Has(Session::rights_key)) {
+			$options["rights"] = Session::Get(Session::rights_key);
+		} else {
+			$options["rights"] = Array();
+		}
+		
 		print(json_encode($options));
 	}
 

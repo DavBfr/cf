@@ -47,33 +47,24 @@ abstract class Crud extends Rest {
 	}
 
 
-	public function make_filter($fieldname, $value) {
-		if ($this->fields[$fieldname]["type"] == "text")
-			return $this->table.".$fieldname LIKE ".$this->bdd->quote("%".$value."%");
-		return $this->table.".$fieldname = ".$this->bdd->quote($value);
-	}
-
-
-	public function make_global_filter($value) {
-		$where = array();
-		foreach($this->fields as $name => $prop) {
-			if ($this->fields[$name]["type"] == "text")
-				$where[] = $this->make_filter($name, $value);
-		}
-		return "(" . implode(") OR (", $where) . ")";
-	}
-
-
 	protected function filterList($col) {
-		$col->select(array_keys($this->model->getFields()));
+		foreach ($this->model->getFields() as $field) {
+			if ($field->inList()) {
+				$col->select($field->getName());
+			}
+		}
 	}
 
 
 	protected function get_list($r) {
 		$col = Collection::Query($this->model->getTableName())
 			->SelectAs($this->model->getPrimaryField(), self::ID)
-			->limit(30);
+			->limit($this->limit);
 		$this->filterList($col);
+		
+		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
+			$col->filter("%".$_GET["q"]."%", "LIKE");
+		}
 		Output::success(array("list"=>$col->getValuesArray(isset($_GET["p"])?intval($_GET["p"]):0)));
 	}
 
@@ -93,6 +84,9 @@ abstract class Crud extends Rest {
 	protected function get_count($r) {
 		$col = Collection::Query($this->model->getTableName());
 		$this->filterList($col);
+		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
+			$col->filter("%".$_GET["q"]."%", "LIKE");
+		}
 		$col->resetSelect()->SelectAs("COUNT(".$this->model->getPrimaryField().")", "n");
 
 		$reponse = $col->getValues();
