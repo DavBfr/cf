@@ -1,0 +1,125 @@
+<?php
+
+configure("LANG_DEFAULT", "en_US");
+configure("LANG_AUTOLOAD", true);
+
+class Lang {
+	const i18n = "i18n";
+	
+	protected static $words = array();
+	protected static $baselang;
+	
+
+
+	public static function load($filename, $lang = NULL) {
+		if (!is_file($filename))
+			throw new Exception("Can't find translation file \"${filename}\"");
+
+		$words = json_decode(file_get_contents($filename), true);
+		self::setWords($words, $lang);
+
+		Logger::info(print_r(self::$words, true));
+	}
+
+
+	public static function setWords($words, $lang = NULL, $suffix = NULL) {
+		foreach($words as $token => $word) {
+			if (is_array($word)) {
+				self::setWords($word, $lang, $token . ".");
+			} else {
+				self::set($suffix.$token, $word, $lang);
+			}
+		}
+	}
+
+
+	public static function setLang($lang) {
+		self::$baselang = $lang;
+		
+		if (LANG_AUTOLOAD) {
+			if (($pos = strpos($lang, "_")) !== false) {
+				$slang = substr($lang, 0, $pos);
+				foreach (Plugins::findAll(self::i18n . DIRECTORY_SEPARATOR . $slang . ".json") as $filename) {
+					Logger::info("$filename");
+					self::load($filename, $lang);
+				}
+			}
+
+			foreach (Plugins::findAll(self::i18n . DIRECTORY_SEPARATOR . $lang . ".json") as $filename) {
+				self::load($filename, $lang);
+			}
+		}
+	}
+
+
+	public static function getLang() {
+		return self::$baselang;
+	}
+
+
+	public static function get($token, $lang = NULL, $context = NULL) {
+		if ($lang == NULL)
+			$lang = self::$baselang;
+
+		if(self::exists($token)) {
+			if(!is_null($context)) {
+				return sprintf(self::getByCount($token, $context, $lang), $context);
+			} else {
+				if(is_null($t = self::getByLang($token, $lang)))
+					$t = self::getByLang($token, LANG_DEFAULT);
+				return $t;
+			}
+		}
+
+		return $token;
+	}
+
+
+	public static function getTextByCount($text, $count) {
+		preg_match('/\((.+)\)/', $text, $regs, PREG_OFFSET_CAPTURE);
+		$fill = '';
+		$x = explode('|', $regs[1][0]); // If there are different notations for singular and plural
+		if ((Int)$count != 1) {
+			$fill = $x[count($x) - 1]; // last element
+		}
+		elseif (count($x) > 1) {
+			$fill = $x[0];
+		}
+		return substr_replace($text, $fill, $regs[0][1], strlen($regs[0][0]));
+	}
+
+
+	public static function getByCount($token, $count, $lang = NULL) {
+		return self::getTextByCount(self::get($token, $lang), $count);
+	}
+
+
+	public static function getByLang($token, $lang)
+	{
+		if (isset(self::$words[$token][$lang])) {
+			return self::$words[$token][$lang];
+		}
+		return null;
+	}
+
+
+	public static function set($token, $value, $lang = NULL) {
+		if (is_null($token))
+			throw new Exception("token cannot be null");
+
+		if ($lang == NULL) {
+			$lang = self::$baselang;
+		}
+
+		self::$words[$token][$lang] = $value;
+	}
+
+
+	public static function exists($token) {
+		return array_key_exists($token, self::$words);
+	}
+
+}
+
+Lang::setLang(LANG_DEFAULT);
+//Lang::setLang("fr");

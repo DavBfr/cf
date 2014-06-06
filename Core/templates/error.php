@@ -5,18 +5,18 @@
 	</div>
 
 	<div class="alert alert-danger">
-		<h2><span class="glyphicon glyphicon-wrench"></span> Error <?php $this->out("code") ?> <?php $this->out("message") ?></h2>
+		<h2><span class="glyphicon glyphicon-wrench"></span> <?php $this->tr("core.error") ?> <?php $this->out("code") ?> <?php $this->out("message") ?></h2>
 	</div>
 	<p><?php $this->out("body") ?></p>
 	<?php if ($this->has("backtrace") && count($this->get("backtrace"))>0): ?>
 	<div class="well">
-		<h2>Backtrace</h2>
+		<h2><?php $this->tr("core.backtrace") ?></h2>
 		<table class="table table-condensed ">
 			<thead>
 				<tr>
 					<th>#</th>
-					<th>File</th>
-					<th>Function</th>
+					<th><?php $this->tr("core.file") ?></th>
+					<th><?php $this->tr("core.function") ?></th>
 				</tr>
 			</thead>
 			<tbody>

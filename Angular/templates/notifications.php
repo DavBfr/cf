@@ -7,8 +7,8 @@
 			<p>{{confirm.message}}</p>
 			</div>
 			<div class="modal-footer">
-			<button type="button" class="btn btn-primary" data-ng-click="confirm.onYes && confirm.onYes()" data-dismiss="modal">Yes</button>
-			<button type="button" class="btn btn-default" data-ng-click="confirm.onNo && confirm.onNo()" data-dismiss="modal">No</button>
+			<button type="button" class="btn btn-primary" data-ng-click="confirm.onYes && confirm.onYes()" data-dismiss="modal"><?php $this->tr("core.yes") ?></button>
+			<button type="button" class="btn btn-default" data-ng-click="confirm.onNo && confirm.onNo()" data-dismiss="modal"><?php $this->tr("core.no") ?></button>
 			</div>
 		</div>
 		</div>

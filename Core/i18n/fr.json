@@ -1,0 +1,31 @@
+{
+	"core": {
+		"yes": "Oui",
+		"no": "Non",
+		"error": "Erreur",
+		"backtrace": "Trace de débogage",
+		"file": "Fichier",
+		"function": "Fonction",
+		
+		"form": "Fiche",
+		"new_form": "Nouvelle fiche",
+		"loading": "Chargement ...",
+		"saving": "Sauvegarde ...",
+		"action": "Actions",
+		"list": "Liste",
+		"del": "Suppr",
+		"delete": "Supprimer",
+		"cancel": "Annuler",
+		"details": "details",
+		"toggle_navigation": "Toggle navigation",
+		"logout": "Déconnecter",
+		"new": "Nouveau",
+		"filter": "Filtre",
+		"submit": "Valider",
+		"username": "Utilisateur",
+		"password": "Mot de passe",
+		"none_found": "Aucun trouvé.",
+		"enter_value": "veuillez entrer une valeur",
+		"enter_valid_value": "veuillez entrer une valeur valide"
+	}
+}

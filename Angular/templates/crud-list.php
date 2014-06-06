@@ -1,21 +1,21 @@
 <div class="page-header">
-	<h1>Liste</h1>
+	<h1><?php $this->tr("core.list") ?></h1>
 </div>
 
 <form class="form-inline" data-role="form">
 	<div class="form-group">
-		<label class="sr-only" for="filter">Filtre</label>
-		<input type="search" class="form-control" id="filter" placeholder="Filtre" data-ng-model="filter" data-ng-change="Search()">
+		<label class="sr-only" for="filter"><?php $this->tr("core.filter") ?></label>
+		<input type="search" class="form-control" id="filter" placeholder="<?php $this->tr("core.filter") ?>" data-ng-model="filter" data-ng-change="Search()">
 	</div>
 	<button data-ng-click="go_detail('new')" type="button" class="btn btn-default">
-		<span class="glyphicon glyphicon-plus"></span> Nouveau
+		<span class="glyphicon glyphicon-plus"></span> <?php $this->tr("core.new") ?>
 	</button>
 </form>
 
 <div data-ng-hide="!loading" class="panel panel-default">
 	<div class="panel-body">
 		<h4 class="text-center">
-			Chargement<br>
+			<?php $this->tr("core.loading") ?><br>
 			<br>
 			<img src="<?php echo $this->media("ajax-loader.gif") ?>"/>
 		</h4>
@@ -23,7 +23,7 @@
 </div>
 
 <div data-ng-hide="count > 0 || loading" class="well">
-	Aucun trouvé.
+	<?php $this->tr("core.none_found") ?>
 </div>
 
 <table data-ng-hide="count == 0" class="table table-hover">
@@ -34,7 +34,7 @@
 			<th><?php echo $field->getCaption() ?></th>
 			<?php endif; ?>
 			<?php endforeach; ?>
-			<th class="table-actions">Actions</th>
+			<th class="table-actions"><?php $this->tr("core.actions") ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -52,10 +52,10 @@
 			<?php endforeach; ?>
 			<td>
 				<button data-ng-click="del(item.<?php echo Crud::ID ?>);$event.stopPropagation();" type="button" class="btn btn-danger btn-xs">
-					<span class="glyphicon glyphicon-remove"></span> del
+					<span class="glyphicon glyphicon-remove"></span> <?php $this->tr("core.del") ?>
 				</button>
 				<button data-ng-click="go_detail(item.<?php echo Crud::ID ?>)" type="button" class="btn btn-primary btn-xs">
-					<span class="glyphicon glyphicon-info-sign"></span> details
+					<span class="glyphicon glyphicon-info-sign"></span> <?php $this->tr("core.details") ?>
 				</button>
 			</td>
 		</tr>

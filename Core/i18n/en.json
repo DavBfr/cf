@@ -1,0 +1,31 @@
+{
+	"core": {
+		"yes": "Yes",
+		"no": "No",
+		"error": "Error",
+		"backtrace": "Backtrace",
+		"file": "File",
+		"function": "Function",
+		
+		"form": "Record",
+		"new_form": "New record",
+		"loading": "Loading",
+		"saving": "Saving",
+		"action": "Actions",
+		"list": "List",
+		"del": "del",
+		"delete": "Delete",
+		"cancel": "Cancel",
+		"details": "details",
+		"toggle_navigation": "Toggle navigation",
+		"logout": "Disconnect",
+		"new": "New",
+		"filter": "Filter",
+		"submit": "Submit",
+		"username": "Username",
+		"password": "Password",
+		"none_found": "None found.",
+		"enter_value": "please enter a value",
+		"enter_valid_value": "please enter a valid value"
+	}
+}

@@ -1,7 +1,7 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation" data-ng-controller="RouteController">
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-			<span class="sr-only">Toggle navigation</span>
+			<span class="sr-only"><?php $this->tr("core.toggle_navigation") ?></span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
@@ -14,6 +14,6 @@
 			<li data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
 		</ul>
 
-		<button type="button" class="btn btn-default navbar-btn navbar-right" data-ng-click="logout()">Disconnect</button>
+		<button type="button" class="btn btn-default navbar-btn navbar-right" data-ng-click="logout()"><?php $this->tr("core.logout") ?></button>
 	</div>
 </nav>

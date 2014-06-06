@@ -46,10 +46,14 @@ class Template {
 	}
 
 
-	public function insert($filename) {
+	public function insert($filename, $optional = false) {
 		$template = self::findTemplate($filename);
-		if ($template === False)
+		if ($template === False) {
+			if ($optional) {
+				return;
+			}
 			ErrorHandler::error(404, NULL, $filename);
+		}
 
 		include($template);
 	}
@@ -98,6 +102,8 @@ class Template {
 		switch($filter) {
 			case 'row':
 				return $value;
+			case 'tr':
+				return Lang::get($value);
 			case 'esc':
 				return htmlspecialchars($value);
 			case 'int':
@@ -132,6 +138,11 @@ class Template {
 
 	public function out($param, $filtre='row') {
 		print($this->get($param, $filtre));
+	}
+
+
+	public function tr($param) {
+		print(Lang::get($param));
 	}
 
 
