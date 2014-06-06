@@ -147,7 +147,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 			CrudService.save(id, data, function () {
 				$scope.go_list();
 				//this.get_fiche(id);
-				NotificationFactory.success("Record #"+ id +" deleted");
+				NotificationFactory.success("Record #"+ id +" saved");
 			}.bind(this), function (data) {
 				NotificationFactory.error(data);
 			});

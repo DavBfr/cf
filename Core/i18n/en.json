@@ -6,12 +6,11 @@
 		"backtrace": "Backtrace",
 		"file": "File",
 		"function": "Function",
-		
 		"form": "Record",
 		"new_form": "New record",
 		"loading": "Loading",
 		"saving": "Saving",
-		"action": "Actions",
+		"actions": "Actions",
 		"list": "List",
 		"del": "del",
 		"delete": "Delete",

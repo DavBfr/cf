@@ -1,8 +1,7 @@
 <?php
 
-configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
 
-class Config {
+class Config implements arrayaccess {
 	private static $instance = NULL;
 	private $data;
 
@@ -72,6 +71,25 @@ class Config {
 		}
 
 		return $value;
+	}
+
+
+	public function offsetSet($offset, $value) {
+		$this->data[$offset] = $value;
+	}
+
+
+	public function offsetExists($offset) {
+		return $this->get($key) !== NULL;
+	}
+
+
+	public function offsetUnset($offset) {
+	}
+
+
+	public function offsetGet($offset) {
+		return $this->get($key);
 	}
 
 }

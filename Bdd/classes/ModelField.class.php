@@ -1,6 +1,13 @@
 <?php
 
 class ModelField {
+	const TYPE_INT = "int";
+	const TYPE_BOOL = "bool";
+	const TYPE_TEXT = "text";
+	const TYPE_PASSWD = "password";
+	const TYPE_EMAIL = "email";
+	const TYPE_URL = "url";
+	const TYPE_DATE = "date";
 
 	protected $table;
 	protected $name;
@@ -36,7 +43,7 @@ class ModelField {
 
 	protected function getDefaults() {
 		return array(
-			"type"=>"int",
+			"type"=>self::TYPE_INT,
 			"foreign"=>NULL,
 			"display"=>$this->table.".".$this->name,
 			"name"=>$this->table."_".$this->name,
@@ -62,32 +69,32 @@ class ModelField {
 
 
 	public function isText() {
-		return $this->props["type"] == "text";
+		return $this->props["type"] == self::TYPE_TEXT;
 	}
 
 
 	public function isPassword() {
-		return $this->props["type"] == "password";
+		return $this->props["type"] == self::TYPE_PASSWD;
 	}
 
 
 	public function isEmail() {
-		return $this->props["type"] == "email";
+		return $this->props["type"] == self::TYPE_EMAIL;
 	}
 
 
 	public function isUrl() {
-		return $this->props["type"] == "url";
+		return $this->props["type"] == self::TYPE_URL;
 	}
 
 
 	public function isInt() {
-		return $this->props["type"] == "int";
+		return $this->props["type"] == self::TYPE_INT;
 	}
 
 
 	public function isDate() {
-		return $this->props["type"] == "date";
+		return $this->props["type"] == self::TYPE_DATE;
 	}
 
 
@@ -113,15 +120,15 @@ class ModelField {
 
 	public function getDbType() {
 		switch ($this->props["type"]) {
-			case "int":
+			case self::TYPE_INT:
 			case "bool":
 				return "INTEGER";
-			case "text":
-			case "password":
-			case "email":
-			case "url":
+			case self::TYPE_TEXT:
+			case self::TYPE_PASSWD:
+			case self::TYPE_EMAIL:
+			case self::TYPE_URL:
 				return "TEXT";
-			case "date":
+			case self::TYPE_DATE:
 				return "DATE";
 			default:
 				throw new Exception("Unable to find column type for " . $this->getName());

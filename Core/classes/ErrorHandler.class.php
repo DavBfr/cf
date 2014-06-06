@@ -1,8 +1,5 @@
 <?php
 
-configure("ERROR_TEMPLATE", "error.php");
-
-
 class ErrorHandler {
 	private static $instance = NULL;
 	private $inerror = False;

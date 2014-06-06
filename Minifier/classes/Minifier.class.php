@@ -1,10 +1,6 @@
 <?php
 
-configure("MINIFY_JSCSS", !DEBUG);
-configure("MINIFY_YUI", false);
-
 class Minifier extends Resources {
-
 
 	protected function append($filename) {
 		if (substr($filename, -5) == ".less") {

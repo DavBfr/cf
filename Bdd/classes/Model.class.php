@@ -61,10 +61,13 @@ abstract class Model {
 		if (! is_dir(BddPlugin::MODEL_DIR)) {
 			mkdir(BddPlugin::MODEL_DIR, 0744, true);
 		}
+		if (! is_dir(BddPlugin::BASE_MODEL_DIR)) {
+			mkdir(BddPlugin::BASE_MODEL_DIR, 0744, true);
+		}
 		
 		foreach ($config->get("model", array()) as $table => $columns) {
 			$baseClassName = "Base" . ucfirst($table) . "Model";
-			$filename = BddPlugin::MODEL_DIR . "/" . $baseClassName . ".class.php";
+			$filename = BddPlugin::BASE_MODEL_DIR . "/" . $baseClassName . ".class.php";
 			Cli::pln($baseClassName);
 			$f = fopen($filename, "w");
 			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");

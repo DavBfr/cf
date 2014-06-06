@@ -1,5 +1,23 @@
 <?php
 
+configure("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www");
+configure("WWW_PATH", "www");
+configure("INDEX_PATH", "index.php");
+configure("REST_PATH", INDEX_PATH);
+configure("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
+configure("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]));
+configure("MEMCACHE_PREFIX", "CF");
+configure("MEMCACHE_LIFETIME", 10800);
+configure("SESSION_NAME", "CF");
+configure("ERROR_TEMPLATE", "error.php");
+configure("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache");
+configure("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");
+configure("LANG_DEFAULT", "en_US");
+configure("LANG_AUTOLOAD", true);
+configure("LANG_AUTODETECT", true);
+configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
+configure("CF_URL", "http://cf.nfet.net");
+
 class CorePlugin extends Plugins {
 
 	public static function bootstrap() {
@@ -61,7 +79,7 @@ class CorePlugin extends Plugins {
 		foreach($_SERVER as $key=>$val) {
 			if ($key == 'PHP_AUTH_PW')
 				$val = '*****';
-				
+
 			$info .= '<tr><th>'.$key.'</th><td>'.$val.'</td></tr>';
 		}
 		$info .= '</tbody></table>';
@@ -70,9 +88,22 @@ class CorePlugin extends Plugins {
 	}
 
 
+	public static function install() {
+		global $configured_options;
+
+		Cli::pln(" * Create folders");
+		foreach ($configured_options as $key) {
+			if (substr($key, -4) == "_DIR") {
+				System::ensureDir(constant($key));
+			}
+		}
+	}
+
+
 	public function cli($cli) {
 		$cli->addCommand("core:config", array("Cli", "configuration"), "Get framework configuration");
 		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");
+		$cli->addCommand("install", array("Cli", "install"), "Install the application");
 	}
 
 }

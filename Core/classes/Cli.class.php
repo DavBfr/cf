@@ -5,6 +5,9 @@ class Cli {
 	private $commands;
 
 	public function __construct($argv) {
+		while (ob_get_level())
+			ob_end_clean();
+
 		$this->args = $this->parseArguments($argv);
 		$this->commands = array();
 		$this->addCommand("help", array($this, "printHelp"), "Help messages");
@@ -76,6 +79,7 @@ class Cli {
 
 	public static function pr($s="") {
 		print($s);
+		flush();
 	}
 
 
@@ -129,6 +133,12 @@ class Cli {
 
 	public static function version() {
 		self::pln(CorePlugin::getBaseline());
+	}
+
+
+	public static function install() {
+		self::pln("Installing the application");
+		Plugins::dispatchAllReversed("install");
 	}
 
 }

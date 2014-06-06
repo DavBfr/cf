@@ -1,8 +1,7 @@
 <?php
-configure("MEMCACHE_PREFIX", "CF");
-configure("MEMCACHE_LIFETIME", 10800);
 
 class MemCache implements arrayaccess {
+
 	private static $data = array();
 
 	private $lifetime;
@@ -12,6 +11,7 @@ class MemCache implements arrayaccess {
 		$this->lifetime = $lifetime;
 		$this->apc = false;function_exists('apc_store') && ini_get('apc.enabled') && !DEBUG;
 	}
+
 
 	public function offsetSet($offset, $value) {
 		if (is_null($offset))
@@ -23,6 +23,7 @@ class MemCache implements arrayaccess {
 		}
 	}
 
+
 	public function offsetExists($offset) {
 		if (isset(self::$data[$offset]))
 			return true;
@@ -31,11 +32,13 @@ class MemCache implements arrayaccess {
 		return false;
 	}
 
+
 	public function offsetUnset($offset) {
 		unset(self::$data[$offset]);
 		if ($this->apc)
 			apc_delete(MEMCACHE_PREFIX . $offset);
 	}
+
 
 	public function offsetGet($offset) {
 		if (isset(self::$data[$offset]))

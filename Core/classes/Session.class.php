@@ -1,8 +1,5 @@
 <?php
 
-configure("SESSION_NAME", "CF");
-
-
 class Session {
 	const rights_key = "RIGHTS";
 	

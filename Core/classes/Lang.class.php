@@ -1,14 +1,11 @@
 <?php
 
-configure("LANG_DEFAULT", "en_US");
-configure("LANG_AUTOLOAD", true);
-
 class Lang {
 	const i18n = "i18n";
-	
+
 	protected static $words = array();
 	protected static $baselang;
-	
+
 
 
 	public static function load($filename, $lang = NULL) {
@@ -17,8 +14,6 @@ class Lang {
 
 		$words = json_decode(file_get_contents($filename), true);
 		self::setWords($words, $lang);
-
-		Logger::info(print_r(self::$words, true));
 	}
 
 
@@ -34,13 +29,15 @@ class Lang {
 
 
 	public static function setLang($lang) {
+		if (self::$baselang == $lang)
+			return;
+
 		self::$baselang = $lang;
-		
+
 		if (LANG_AUTOLOAD) {
 			if (($pos = strpos($lang, "_")) !== false) {
 				$slang = substr($lang, 0, $pos);
 				foreach (Plugins::findAll(self::i18n . DIRECTORY_SEPARATOR . $slang . ".json") as $filename) {
-					Logger::info("$filename");
 					self::load($filename, $lang);
 				}
 			}
@@ -71,6 +68,9 @@ class Lang {
 			}
 		}
 
+		if (DEBUG) {
+			self::set($token, str_replace(array("_", "."), array(" ", " "), $token));
+		}
 		return $token;
 	}
 
@@ -119,7 +119,45 @@ class Lang {
 		return array_key_exists($token, self::$words);
 	}
 
+
+	public static function detect($supported_list = NULL) {
+		$languages = array();
+		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+			$languagesQ = array();
+			$languageList = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+			$languageRanges = explode(',', trim($languageList));
+			foreach ($languageRanges as $languageRange) {
+				if (preg_match('/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/', trim($languageRange), $match)) {
+					if (!is_array($supported_list) || in_array($supported_list, strtolower($match[1]))) {
+						if (!isset($match[2])) {
+							$match[2] = '1.0';
+						} else {
+							$match[2] = (string) floatval($match[2]);
+						}
+						if (!isset($languagesQ[$match[2]])) {
+							$languagesQ[$match[2]] = array();
+						}
+						$languagesQ[$match[2]][] = strtolower($match[1]);
+					}
+				}
+			}
+			krsort($languagesQ);
+			foreach ($languagesQ as $langQ) {
+				foreach ($langQ as $lang) {
+					$lang = str_replace("-", "_", $lang);
+					if (($pos = strpos($lang, "_")) !== false) {
+						$lang = strtolower(substr($lang, 0, $pos)) . strtoupper(substr($lang, $pos));
+					}
+					$languages[] = $lang;
+				}
+			}
+		}
+
+		return $languages;
+	}
+
 }
 
 Lang::setLang(LANG_DEFAULT);
-//Lang::setLang("fr");
+if (LANG_AUTODETECT)
+	Lang::setLang(Lang::detect()[0]);

@@ -24,7 +24,7 @@ class ModelData implements Iterator {
 		$this->isnew = $values === NULL || $values === False;
 		$this->values = array();
 		foreach($this->model->getFields() as $field) {
-			$this->values[$field->getName()] = $field->getDefault();
+			$this->_set($field, $field->getDefault());
 			if ($field->isPrimary()) {
 				$this->primary = $field;
 			}
@@ -114,11 +114,25 @@ class ModelData implements Iterator {
 	}
 
 
+	private function _set($field, $value) {
+		switch($field->getType()) {
+			case ModelField::TYPE_BOOL:
+				$value = intval($value);
+				break;
+		}
+
+		$this->values[$field->getName()] = $value;
+	}
+
+
 	public function set($field, $value) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
 
-		$this->values[$field] = $value;
+		if (!is_a($field, "ModelField"))
+			$field = $this->model->getField($field);
+
+		$this->_set($field, $value);
 		$this->isempty = False;
 	}
 

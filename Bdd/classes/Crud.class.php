@@ -155,4 +155,37 @@ abstract class Crud extends Rest {
 		}
 	}
 
+
+	public static function create($args) {
+		if (count($args["input"]) == 2) {
+			Cli::pln("Missing model name to create");
+			die();
+		}
+		
+		$config = Config::getInstance();
+		$rest = Plugins::get(Plugins::APP_NAME)->getDir() . DIRECTORY_SEPARATOR . self::REQUEST_DIR;
+		System::ensureDir($rest);
+		$ctrl = WWW_DIR . "/app/crud";
+		System::ensureDir($ctrl);
+
+		foreach(array_slice($args["input"], 2) as $model) {
+			$className = ucfirst($model) . "Rest";
+			Cli::pln($className);
+			$filename = $rest . "/" . $className . ".class.php";
+			if (!file_exists($filename)) {
+				$f = fopen($filename, "w");
+				fwrite($f, "<?php\nSession::ensureLoggedin();\n\nclass $className extends Crud {\n\n\tprotected function getModel() {\n\t\treturn new ".ucfirst($model)."Model();\n\t}\n\n}\n");
+				fclose($f);
+			}
+			
+			$filename = $ctrl . "/" . $className . ".js";
+			if (!file_exists($filename)) {
+				$f = fopen($filename, "w");
+				$umodel = ucfirst($model);
+				fwrite($f, "app.service('${umodel}Service', function (\$http) {\n\t angular.extend(this, new CrudService(\$http, '${umodel}'));\n});\n\napp.controller('${umodel}Controller', function (\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_list();\n});\n\napp.controller('${umodel}DetailController', function (\$scope, \$timeout, \$location, \$route, \$routeParams, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_fiche(parseInt(\$routeParams.id));\n});\n");
+				fclose($f);
+			}
+		}
+	}
+
 }

@@ -1,8 +1,5 @@
 <?php
 
-configure("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache");
-configure("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");
-
 class Cache {
 	private $filename;
 	private $filename_cache;

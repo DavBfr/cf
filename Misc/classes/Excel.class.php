@@ -1,6 +1,8 @@
 <?php
 
 class Excel {
+	private $xf;
+
 
 	function __construct($filename = Null) {
 		if ($filename !== Null) {
@@ -17,14 +19,23 @@ class Excel {
 			ob_end_clean();
 		
 		$this->output = fopen('php://output', 'w');
-		fwrite($this->output, pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0));
+		fwrite($this->output, pack('v4', 0x809, 0x0004, 0x0600, 0x10));
 		$this->rowNo = 0;
+		$this->xf = 0;
 	}
-	
+
+
 	function header($data) {
 		$this->add($data);
 	}
-	
+
+/*
+	public function newStyle() {
+		fwrite($this->output, pack("vvvvvCCCCVVv", 0xE0, 0x14, $font, $format, 0));
+		return 0;
+	}
+*/
+
 	function add($data) {
 		$colNo = 0;
 		foreach($data as $field) {
@@ -38,21 +49,21 @@ class Excel {
 		$this->rowNo++;
 	}
 
+
 	private function textFormat($row, $col, $data) {
-		$data = utf8_decode($data);
-		$length = strlen($data);
-		$field = pack("ssssss", 0x204, 8 + $length, $row, $col, 0x0, $length);
-		$field .= $data;
-		return $field . $data; 
+		$data = mb_convert_encoding($data, "UTF-16LE", "UTF-8");
+    $len = mb_strlen($data, "UTF-16LE");
+    return  pack('s6C', 0x204, 9+2*$len, $row, $col, $this->xf, $len, 0x1).$data;
 	}
+
 
 	private function numFormat($row, $col, $data) {
-		$field = pack("sssss", 0x203, 14, $row, $col, 0x0);
-		return $field . pack("d", $data);
+		return pack('s5d', 0x203, 14, $row, $col, $this->xf, $data);
 	}
 
+
 	function end() {
-		fwrite($this->output, pack("ss", 0x0A, 0x00));
+		fwrite($this->output, pack('ss', 0x0A, 0x00));
 		fclose($this->output);
 		exit();
 	}

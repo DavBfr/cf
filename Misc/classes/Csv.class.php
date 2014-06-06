@@ -26,7 +26,7 @@ class Csv {
 	
 	function add($data) {
 		$buffer = fopen('php://temp', 'r+');
-		fputcsv($buffer, $data, ';', '"');
+		fputcsv($buffer, $data, ',', '"');
 		rewind($buffer);
 		$csv = fgets($buffer);
 		fclose($buffer);
