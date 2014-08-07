@@ -52,7 +52,11 @@ abstract class Model {
 		foreach($bdd->getTables() as $table) {
 			$tables[$table] = $bdd->getTableInfo($table);
 		}
-		Cli::pln(json_encode($tables));
+		$p = 0;
+		if (version_compare(PHP_VERSION, '5.4.0') >= 0)
+			$p = JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE;
+
+		Cli::pln(json_encode($tables, $p));
 	}
 
 
@@ -64,7 +68,7 @@ abstract class Model {
 		if (! is_dir(BddPlugin::BASE_MODEL_DIR)) {
 			mkdir(BddPlugin::BASE_MODEL_DIR, 0744, true);
 		}
-		
+
 		foreach ($config->get("model", array()) as $table => $columns) {
 			$baseClassName = "Base" . ucfirst($table) . "Model";
 			$filename = BddPlugin::BASE_MODEL_DIR . "/" . $baseClassName . ".class.php";
@@ -76,7 +80,7 @@ abstract class Model {
 				fwrite($f, "\tconst ".strtoupper($name)." = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : "int") . "\n");
 				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($name), $colstr);
 			}
-			
+
 			fwrite($f, "\n\n\tprotected function getTable() {\n");
 			fwrite($f, "\t\treturn array(\n");
 			fwrite($f, "\t\t\tself::TABLE,\n");

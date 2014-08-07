@@ -21,7 +21,7 @@ class Cache {
 
 		$sha = sha1($filename);
 		if ($len > 0) {
-			$s = substr($sha, 0, 3);
+			$s = substr($sha, 0, $len);
 			return $path . "/" . $s . "/" . $sha . $ext;
 		}
 		return $path . "/" . $sha . $ext;
@@ -83,6 +83,13 @@ class Cache {
 
 	public function check() {
 		return (!is_file($this->filename_cache) || filemtime($this->filename) > filemtime($this->filename));
+	}
+
+
+	public function symlink() {
+		if (!file_exists($this->filename_cache)) {
+			symlink($this->filename, $this->filename_cache);
+		}
 	}
 
 }

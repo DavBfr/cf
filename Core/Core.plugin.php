@@ -88,7 +88,7 @@ class CorePlugin extends Plugins {
 	}
 
 
-	public static function install() {
+	public function install() {
 		global $configured_options;
 
 		Cli::pln(" * Create folders");

@@ -24,11 +24,16 @@ class Resources {
 	public static function web($filename) {
 		$localpath = WWW_DIR . DIRECTORY_SEPARATOR;
 		if (strpos($filename, $localpath) !== False) {
-			$web = WWW_PATH . DIRECTORY_SEPARATOR . str_replace($localpath, '', $filename);
+			return WWW_PATH . DIRECTORY_SEPARATOR . str_replace($localpath, '', $filename);
 		} else {
-			$web = str_replace(DOCUMENT_ROOT, '', $filename);
+			if (strpos($filename, DOCUMENT_ROOT) === 0) {
+				return str_replace(DOCUMENT_ROOT, '', $filename);
+			} else {
+				$cache = Cache::Pub($filename);
+				$cache->symlink();
+				return self::web($cache->getFilename());
+			}
 		}
-		return $web;
 	}
 
 
@@ -39,7 +44,7 @@ class Resources {
 				while (($file = readdir($dh)) !== false) {
 					if ($file[0] != ".") {
 						$file = $dir . DIRECTORY_SEPARATOR . $file;
-						if (filetype($file) == "dir") {
+						if (is_dir($file)) {
 							$dirs[] = $file;
 						} else {
 							$this->append($file);
