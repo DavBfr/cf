@@ -2,7 +2,8 @@
 
 class BootstrapPlugin extends Plugins {
 
-	public function install() {
+	public function update() {
+		Cli::pln(" * install fonts");
 		System::publish($this->getDir() . "/www/vendor/fonts");
 	}
 

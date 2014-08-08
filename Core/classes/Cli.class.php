@@ -138,7 +138,17 @@ class Cli {
 
 	public static function install() {
 		self::pln("Installing the application");
+		Plugins::dispatchAllReversed("preinstall");
+		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("install");
+		Plugins::dispatchAllReversed("update");
+	}
+
+
+	public static function update() {
+		self::pln("Updating the application");
+		Plugins::dispatchAllReversed("preupdate");
+		Plugins::dispatchAllReversed("update");
 	}
 
 }

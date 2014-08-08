@@ -88,7 +88,7 @@ class CorePlugin extends Plugins {
 	}
 
 
-	public function install() {
+	public function preupdate() {
 		global $configured_options;
 
 		Cli::pln(" * Create folders");
@@ -104,6 +104,7 @@ class CorePlugin extends Plugins {
 		$cli->addCommand("core:config", array("Cli", "configuration"), "Get framework configuration");
 		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");
 		$cli->addCommand("install", array("Cli", "install"), "Install the application");
+		$cli->addCommand("update", array("Cli", "update"), "Update the application");
 	}
 
 }

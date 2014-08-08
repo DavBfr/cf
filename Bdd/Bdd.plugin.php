@@ -27,10 +27,12 @@ class BddPlugin extends Plugins {
 	}
 
 
-	public function install() {
+	public function preupdate() {
 		Cli::pln(" * Create base classes");
 		Model::createClassesFromConfig(array());
+	}
 
+	public function install() {
 		Cli::pln(" * Create database structure");
 		$bdd = Bdd::getInstance();
 		if (is_dir(BddPlugin::MODEL_DIR)) {
