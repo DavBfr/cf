@@ -249,13 +249,19 @@ configure("ROOT_DIR", dirname(CF_DIR));
 configure("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 configure("CORE_PLUGIN", "Core");
 configure("FORCE_HTTPS", False);
+configure("USE_STS", False);
 configure("DEFAULT_TIMEZONE", "Europe/Paris");
 configure("DEBUG", False);
 configure("IS_CLI", defined("STDIN"));
 
 if (FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
-	header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
-	die();
+	if (USE_STS) {
+		header('Strict-Transport-Security: max-age=500');
+	} else {
+		header('Status-Code: 301');
+		header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+		die();
+	}
 }
 
 date_default_timezone_set(DEFAULT_TIMEZONE);
