@@ -1,4 +1,22 @@
 <?php
+/**
+ * Copyright (C) 2013 David PHAM-VAN
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ **/
+
 
 class Plugins {
 	const CLASS_DIR = "classes";
@@ -24,17 +42,17 @@ class Plugins {
 		$this->dir = $dir;
 		$this->init();
 	}
-	
-	
+
+
 	protected function init() {
-		
+
 	}
 
 
 	public static function add($name, $position = self::PLUGIN, $dir = NULL, $class_name = NULL) {
 		if (array_key_exists($name, self::$plugins))
 			return;
-		
+
 		if ($dir === NULL) {
 			$dir = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
 		    if (! is_dir($dir))
@@ -43,12 +61,12 @@ class Plugins {
 
 		if (! is_dir($dir))
 			throw Exception("Plugin $name not found");
-		
+
 		if ($class_name == NULL)
 			$class_name = $name;
-		
+
 		$class_file = $dir . DIRECTORY_SEPARATOR . $class_name . '.plugin.php';
-		 
+
 		if (file_exists($class_file)) {
 			require_once($class_file);
 			$class_name .= "Plugin";
@@ -58,7 +76,7 @@ class Plugins {
 		}
 		self::$plugins[$name] = $plugin;
 		switch($position) {
-			case self::APP: 
+			case self::APP:
 				self::$app_list[] = $name;
 				break;
 			case self::PLUGIN:
@@ -135,14 +153,14 @@ class Plugins {
 	public static function dispatch() {
 		$arguments = func_get_args();
 		$method_name = array_shift($arguments);
-		
+
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				return call_user_func_array(array($class, $method_name), $arguments); 
+				return call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
-		
+
 		return NULL;
 	}
 
@@ -151,14 +169,14 @@ class Plugins {
 		$results = array();
 		$arguments = func_get_args();
 		$method_name = array_shift($arguments);
-		
+
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				$results[] = call_user_func_array(array($class, $method_name), $arguments); 
+				$results[] = call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
-		
+
 		return $results;
 	}
 
@@ -167,14 +185,14 @@ class Plugins {
 		$results = array();
 		$arguments = func_get_args();
 		$method_name = array_shift($arguments);
-		
+
 		foreach(array_reverse(self::get_plugins()) as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				$results[] = call_user_func_array(array($class, $method_name), $arguments); 
+				$results[] = call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
-		
+
 		return $results;
 	}
 
@@ -190,7 +208,7 @@ class Plugins {
 			require($class_file);
 			return True;
 		}
-		
+
 		return False;
 	}
 
