@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013 David PHAM-VAN
+ * Copyright (C) 2013-2014 David PHAM-VAN
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -80,7 +80,7 @@ class Logger {
 			$data = "[CF] [" . @date('M j H:i:s') . "] [" . $raddr . "] [" . self::$levels[$level] . "] " . $data;
 			fwrite($this->stderr, $data . "\n");
 			if (DEBUG) {
-				$this->log[] = $data; 
+				$this->log[] = $data;
 			}
 		}
 	}
