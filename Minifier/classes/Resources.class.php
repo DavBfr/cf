@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-class Minifier extends Resources {
+class Resources extends AbstractResources {
 
 	protected function append($filename) {
 		if (substr($filename, -5) == ".less") {

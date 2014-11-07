@@ -48,10 +48,7 @@ class CorePlugin extends Plugins {
 			Rest::handle();
 		}
 
-		if (class_exists("Minifier"))
-			$resources = new Minifier();
-		else
-			$resources = new Resources();
+		$resources = new Resources();
 
 		Plugins::dispatchAll("resources", $resources);
 
