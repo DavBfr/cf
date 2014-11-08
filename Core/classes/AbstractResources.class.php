@@ -22,10 +22,12 @@ abstract class AbstractResources {
 	const VENDOR_DIR = "www/vendor";
 
 	private $resources;
+	private $added;
 
 
 	public function __construct() {
 		$this->resources = array();
+		$this->added = array();
 	}
 
 
@@ -43,7 +45,7 @@ abstract class AbstractResources {
 		if (strpos($filename, $localpath) !== false) {
 			return WWW_PATH . DIRECTORY_SEPARATOR . str_replace($localpath, '', $filename);
 		} else {
-			if (strpos($filename, DOCUMENT_ROOT) === 0) {
+			if (ALLOW_DOCUMENT_ROOT && strpos($filename, DOCUMENT_ROOT) === 0) {
 				return str_replace(DOCUMENT_ROOT, '', $filename);
 			} else {
 				$cache = Cache::Pub($filename);
@@ -78,6 +80,10 @@ abstract class AbstractResources {
 
 
 	public function add($filename) {
+		if (array_key_exists($filename, $this->added))
+			return;
+		
+		$this->added[$filename] = true;
 		$this->append(self::find($filename));
 	}
 	

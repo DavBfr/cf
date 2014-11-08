@@ -23,6 +23,7 @@ configure("INDEX_PATH", "index.php");
 configure("REST_PATH", INDEX_PATH);
 configure("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
 configure("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]));
+configure("ALLOW_DOCUMENT_ROOT", true);
 configure("MEMCACHE_PREFIX", "CF");
 configure("MEMCACHE_LIFETIME", 10800);
 configure("SESSION_NAME", "CF");
@@ -112,12 +113,6 @@ class CorePlugin extends Plugins {
 			}
 		}
 	}
-
-
-public function update() {
-	Cli::pln(" * install Core");
-	System::publish($this->getDir() . "/www/vendor/jquery");
-}
 
 
 	public function cli($cli) {

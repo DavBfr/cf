@@ -4,11 +4,8 @@
 	"plugins": ["Bootstrap", "Bdd", "Minifier"],
 
 	"scripts": [
-		"jquery/jquery.js",
-		"bootstrap/bootstrap.js",
-		"bootstrap/bootstrap.css",
 		"bootstrap/bootstrap-theme.css",
-		"media/styles.css"
+		"media/styles.less"
 	],
 
 	"model": {
