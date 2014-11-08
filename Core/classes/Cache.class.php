@@ -61,7 +61,7 @@ class Cache {
 
 
 	public function isWritable() {
-		return True;
+		return true;
 	}
 
 

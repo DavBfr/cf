@@ -38,7 +38,7 @@ class Collection {
 		$this->group = array();
 		$this->params = array();
 		$this->limit = NULL;
-		$this->distinct = False;
+		$this->distinct = false;
 	}
 
 
@@ -57,7 +57,7 @@ class Collection {
 
 
 	public function distinct() {
-		$this->distinct = True;
+		$this->distinct = true;
 		return $this;
 	}
 
@@ -116,9 +116,9 @@ class Collection {
 			$this->where[] = $name . "=" . $bdd->quote($value);
 		elseif ($value === NULL)
 			$this->where[] = $name . " IS NULL";
-		elseif ($value === True)
+		elseif ($value === true)
 			$this->where[] = $name . "=1";
-		elseif ($value === False)
+		elseif ($value === false)
 			$this->where[] = $name . "=0";
 		else
 			$this->where[] = $name . "=" . $value;

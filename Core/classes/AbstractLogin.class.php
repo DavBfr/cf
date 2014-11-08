@@ -47,7 +47,7 @@ abstract class AbstractLogin extends Rest {
 		$post = $this->jsonpost();
 		Input::ensureRequest($post, array("username", "password"));
 
-		if (($user = $this->login($post["username"], $post["password"])) !== False) {
+		if (($user = $this->login($post["username"], $post["password"])) !== false) {
 			Session::Set("userid", $user);
 			Session::addRight("logged");
 			Output::success();
@@ -59,7 +59,7 @@ abstract class AbstractLogin extends Rest {
 	protected function doApiLogin($r) {
 		Input::ensureRequest($_REQUEST, array("token"));
 
-		if (($apiid = $this->apiLogin($_REQUEST["token"])) !== False) {
+		if (($apiid = $this->apiLogin($_REQUEST["token"])) !== false) {
 			Session::Set("apiid", $apiid);
 			Session::addRight("logged_api");
 			Output::success();

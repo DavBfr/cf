@@ -39,10 +39,10 @@ class Resources extends AbstractResources {
 			return $filename;
 
 		if (substr($filename, -strlen($type) - 4) == "min." . $type) {
-			return True;
+			return true;
 		}
 
-		return False;
+		return false;
 	}
 
 

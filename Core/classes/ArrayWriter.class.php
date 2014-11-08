@@ -39,7 +39,7 @@ class ArrayWriter {
 			return $val;
 
 		if (is_bool($val))
-			return $val ? "True" : "False";
+			return $val ? "true" : "false";
 
 		return "\"" . $val . "\"";
 	}

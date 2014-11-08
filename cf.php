@@ -31,7 +31,7 @@ class Plugins {
 	private static $plugins_list = array();
 	private static $core_list = array();
 	private static $app_list = array();
-	private static $autoload_registered = False;
+	private static $autoload_registered = false;
 
 	private $name;
 	private $dir;
@@ -206,10 +206,10 @@ class Plugins {
 		$class_file = $this->dir . DIRECTORY_SEPARATOR . self::CLASS_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php';
 		if (is_readable($class_file)) {
 			require($class_file);
-			return True;
+			return true;
 		}
 
-		return False;
+		return false;
 	}
 
 
@@ -224,7 +224,7 @@ class Plugins {
 	public static function registerAutoload() {
 		if (!self::$autoload_registered) {
 			spl_autoload_register("Plugins::spl_autoload");
-			self::$autoload_registered = True;
+			self::$autoload_registered = true;
 		}
 	}
 
@@ -266,10 +266,10 @@ configure("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins");
 configure("ROOT_DIR", dirname(CF_DIR));
 configure("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 configure("CORE_PLUGIN", "Core");
-configure("FORCE_HTTPS", False);
-configure("USE_STS", False);
+configure("FORCE_HTTPS", false);
+configure("USE_STS", false);
 configure("DEFAULT_TIMEZONE", "Europe/Paris");
-configure("DEBUG", False);
+configure("DEBUG", false);
 configure("IS_CLI", defined("STDIN"));
 
 if (FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {

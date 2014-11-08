@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-class BootstrapPlugin extends Plugins {
+class AngularPlugin extends Plugins {
 
 	public function update() {
-		Cli::pln(" * install Bootstrap");
-		System::publish($this->getDir() . "/www/vendor/fonts");
-		System::publish($this->getDir() . "/www/vendor/bootstrap");
+		Cli::pln(" * install Angular");
+		System::publish($this->getDir() . "/www/vendor/angular");
+		System::publish($this->getDir() . "/www/app_angular", "app/angular");
 	}
 
 }

@@ -1,3 +1,3 @@
 <?php
 
-configure("DEBUG", True);
+configure("DEBUG", true);

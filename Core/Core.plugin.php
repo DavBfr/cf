@@ -114,6 +114,12 @@ class CorePlugin extends Plugins {
 	}
 
 
+public function update() {
+	Cli::pln(" * install Core");
+	System::publish($this->getDir() . "/www/vendor/jquery");
+}
+
+
 	public function cli($cli) {
 		$cli->addCommand("core:config", array("Cli", "configuration"), "Get framework configuration");
 		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");

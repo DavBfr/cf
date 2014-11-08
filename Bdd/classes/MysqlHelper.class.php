@@ -62,17 +62,17 @@ class MysqlHelper extends PDOHelper {
 		if ($res !== false) {
 			foreach($res as $row) {
 				$field = array();
-				if (strpos($row["Type"], "int") !== False) $field["type"] = "int";
-				elseif (strpos($row["Type"], "text") !== False) $field["type"] = "text";
-				elseif (strpos($row["Type"], "varchar") !== False) $field["type"] = "text";
-				elseif (strpos($row["Type"], "date") !== False) $field["type"] = "date";
-				elseif (strpos($row["Type"], "timestamp") !== False) $field["type"] = "date";
+				if (strpos($row["Type"], "int") !== false) $field["type"] = "int";
+				elseif (strpos($row["Type"], "text") !== false) $field["type"] = "text";
+				elseif (strpos($row["Type"], "varchar") !== false) $field["type"] = "text";
+				elseif (strpos($row["Type"], "date") !== false) $field["type"] = "date";
+				elseif (strpos($row["Type"], "timestamp") !== false) $field["type"] = "date";
 				else $field["type"] = $row["Type"];
 
 				$field["null"] = $row["Null"] == "YES";
-				$field["primary"] = strpos($row["Key"], "PRI") !== False;
+				$field["primary"] = strpos($row["Key"], "PRI") !== false;
 				$field["default"] = $row["Default"];
-				$field["autoincrement"] = strpos($row["Extra"], "auto_increment") !== False;
+				$field["autoincrement"] = strpos($row["Extra"], "auto_increment") !== false;
 				$fields[$row["Field"]] = $field;
 			}
 		}

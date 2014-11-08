@@ -40,7 +40,7 @@ abstract class AbstractResources {
 
 	public static function web($filename) {
 		$localpath = WWW_DIR . DIRECTORY_SEPARATOR;
-		if (strpos($filename, $localpath) !== False) {
+		if (strpos($filename, $localpath) !== false) {
 			return WWW_PATH . DIRECTORY_SEPARATOR . str_replace($localpath, '', $filename);
 		} else {
 			if (strpos($filename, DOCUMENT_ROOT) === 0) {

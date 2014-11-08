@@ -35,12 +35,12 @@ class Output {
 
 
 	public static function success($object = array()) {
-		self::json(array_merge($object, array("success"=>True)));
+		self::json(array_merge($object, array("success"=>true)));
 	}
 
 
 	public static function error($message) {
-		self::json(array("error"=>$message, "success"=>False));
+		self::json(array("error"=>$message, "success"=>false));
 	}
 
 	public static function debug($message) {

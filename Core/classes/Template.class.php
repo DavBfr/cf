@@ -44,7 +44,7 @@ class Template {
 			if ($template_file !== NULL) {
 				return $template_file;
 			}
-			return False;
+			return false;
 		}
 		return file_exists($filename);
 	}
@@ -52,7 +52,7 @@ class Template {
 
 	public function parse($filename) {
 		$template = self::findTemplate($filename);
-		if ($template === False)
+		if ($template === false)
 			ErrorHandler::error(404, NULL, $filename);
 
 		ob_start();
@@ -65,7 +65,7 @@ class Template {
 
 	public function insert($filename, $optional = false) {
 		$template = self::findTemplate($filename);
-		if ($template === False) {
+		if ($template === false) {
 			if ($optional) {
 				return;
 			}

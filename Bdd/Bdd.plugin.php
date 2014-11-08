@@ -28,20 +28,20 @@ class BddPlugin extends Plugins {
 
 	protected function autoload($class_name) {
 		if (parent::autoload($class_name))
-			return True;
+			return true;
 
 		$plugin = Plugins::find(self::MODEL_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php');
 		if ($plugin !== NULL) {
 			require_once($plugin);
-			return True;
+			return true;
 		}
 		$plugin = Plugins::find(self::BASE_MODEL_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php');
 		if ($plugin !== NULL) {
 			require_once($plugin);
-			return True;
+			return true;
 		}
 
-		return False;
+		return false;
 	}
 
 

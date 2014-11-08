@@ -31,14 +31,14 @@ class ModelData implements Iterator {
 	function __construct($model, $values = NULL) {
 		$this->model = $model;
 		$this->foreign = array();
-		$this->isempty = True;
+		$this->isempty = true;
 
 		if (is_a($values, "PDOStatement")) {
 			$this->statement = $values;
 			$values = $this->statement->fetch();
 		}
 
-		$this->isnew = $values === NULL || $values === False;
+		$this->isnew = $values === NULL || $values === false;
 		$this->values = array();
 		foreach($this->model->getFields() as $field) {
 			$this->_set($field, $field->getDefault());
@@ -79,23 +79,23 @@ class ModelData implements Iterator {
 
 	public function next() {
 		if (!$this->statement) {
-			$this->isempty = True;
-			$this->isnew = True;
+			$this->isempty = true;
+			$this->isnew = true;
 			foreach($this->model->getFields() as $field) {
 				$this->values[$field->getName()] = $field->getDefault();
 			}
 			return $this;
 		}
 		$values = $this->statement->fetch();
-		if ($values === False) {
-			$this->isempty = True;
-			$this->isnew = True;
+		if ($values === false) {
+			$this->isempty = true;
+			$this->isnew = true;
 			foreach($this->model->getFields() as $field) {
 				$this->values[$field->getName()] = $field->getDefault();
 			}
 			return $this;
 		}
-		$this->isnew = False;
+		$this->isnew = false;
 		$this->setValues($values);
 		return $this;
 	}
@@ -150,7 +150,7 @@ class ModelData implements Iterator {
 			$field = $this->model->getField($field);
 
 		$this->_set($field, $value);
-		$this->isempty = False;
+		$this->isempty = false;
 	}
 
 
@@ -201,7 +201,7 @@ class ModelData implements Iterator {
 					break;
 				}
 			}
-			$this->isnew = False;
+			$this->isnew = false;
 		} else {
 			foreach($this->model->getFields() as $field) {
 				if ($field->isAutoincrement()) {

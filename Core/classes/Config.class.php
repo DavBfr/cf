@@ -64,7 +64,7 @@ class Config implements arrayaccess {
 
 
 	public function load($filename) {
-		$this->data = json_decode(file_get_contents($filename), True);
+		$this->data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
 		}

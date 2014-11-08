@@ -19,9 +19,9 @@
 
 class ErrorHandler {
 	private static $instance = NULL;
-	private $inerror = False;
+	private $inerror = false;
 	private $backtrace = Array();
-	private $raise_exception = False;
+	private $raise_exception = false;
 
 	public static $messagecode = array(
 				500 => "Internal server error",
@@ -58,7 +58,7 @@ class ErrorHandler {
 
 	public static function RaiseExceptionOnError() {
 		$i = self::getInstance();
-		$i->raise_exception = True;
+		$i->raise_exception = true;
 	}
 
 
@@ -121,7 +121,7 @@ class ErrorHandler {
 			die("Already processing error (send_error) $code $message $body");
 		}
 
-		$this->inerror = True;
+		$this->inerror = true;
 		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 
 		if ($message == NULL) {
@@ -150,7 +150,7 @@ class ErrorHandler {
 
 		IS_CLI && die();
 
-		if ($backtrace !== False) {
+		if ($backtrace !== false) {
 			$this->debugBacktrace($backtrace);
 		}
 
@@ -169,7 +169,7 @@ class ErrorHandler {
 		}
 
 		$this->addBacktrace($errfile, $errline);
-		$this->send_error(500, NULL, "Error $errno $errstr", False);
+		$this->send_error(500, NULL, "Error $errno $errstr", false);
 	}
 
 
@@ -189,7 +189,7 @@ class ErrorHandler {
 
 	public function exceptionHandler(Exception $e) {
 		$this->addBacktrace($e->getFile(), $e->getLine());
-		$this->send_error(500, NULL, get_class( $e ) . ": " . $e->getMessage(), False);
+		$this->send_error(500, NULL, get_class( $e ) . ": " . $e->getMessage(), false);
 	}
 
 
@@ -197,7 +197,7 @@ class ErrorHandler {
 		$e = error_get_last();
 		if ($e && error_reporting() & $e["type"]) {
 			$this->addBacktrace($e["file"], $e["line"]);
-			$this->send_error(500, NULL, $e["type"] . " " . $e["message"], False);
+			$this->send_error(500, NULL, $e["type"] . " " . $e["message"], false);
 
 		}
 	}

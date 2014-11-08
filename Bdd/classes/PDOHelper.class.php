@@ -67,13 +67,13 @@ class PDOHelper {
 		}
 		$this->query("UPDATE " .
 			$table . " SET " . implode(", ", $s) ." WHERE $key = :$key", $fields);
-		return True;
+		return true;
 	}
 
 
 	public function delete($table, $key, $value) {
 		$this->query("DELETE FROM " . $table . " WHERE $key = :key", array("key" => $value));
-		return True;
+		return true;
 	}
 
 
