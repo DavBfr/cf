@@ -30,6 +30,7 @@ $conf = Config::getInstance();
 foreach($conf->get("plugins", Array()) as $plugin) {
 	Plugins::add($plugin);
 }
+Plugins::add("Skel");
 //Plugins::addAll(PLUGINS_DIR);
 //Plugins::addAll(CF_PLUGINS_DIR);
 

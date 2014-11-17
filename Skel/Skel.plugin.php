@@ -29,7 +29,16 @@ class SkelPlugin extends Plugins {
 		$index = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . "index.php");
 		$index = str_replace("@CF_DIR@", CF_DIR, $index);
 		file_put_contents(getcwd() . DIRECTORY_SEPARATOR . "index.php", $index);
+		$index = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . "www" . DIRECTORY_SEPARATOR . "index.php");
+		$index = str_replace("@CF_DIR@", CF_DIR, $index);
+		file_put_contents(getcwd() . DIRECTORY_SEPARATOR . "www" . DIRECTORY_SEPARATOR . "index.php", $index);
 		System::ensureDir(DATA_DIR);
+		$conf = Config::getInstance();
+		$conf->load(JCONFIG_FILE);
+		foreach($conf->get("plugins", Array()) as $plugin) {
+			Plugins::add($plugin);
+		}
+		Cli::install();
 	}
 
 }
