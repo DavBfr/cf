@@ -18,12 +18,16 @@
  **/
 
 configure("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www");
-configure("WWW_PATH", "www");
-configure("INDEX_PATH", "index.php");
-configure("REST_PATH", INDEX_PATH);
+
 configure("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
 configure("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]));
 configure("ALLOW_DOCUMENT_ROOT", true);
+if (substr(WWW_DIR, 0, strlen(DOCUMENT_ROOT)) == DOCUMENT_ROOT )
+	configure("WWW_PATH", str_replace(DOCUMENT_ROOT, '', WWW_DIR));
+else
+	configure("WWW_PATH", "www");
+configure("INDEX_PATH", WWW_PATH."/index.php");
+configure("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER)?WWW_PATH."/r":INDEX_PATH);
 configure("MEMCACHE_PREFIX", "CF");
 configure("MEMCACHE_LIFETIME", 10800);
 configure("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
@@ -50,21 +54,10 @@ class CorePlugin extends Plugins {
 			Rest::handle();
 		}
 
-		$resources = new Resources();
-
-		Plugins::dispatchAll("resources", $resources);
-
-		foreach($conf->get("scripts", Array()) as $script) {
-			$resources->add($script);
-		}
-		foreach(Plugins::findAll("www/app") as $dir) {
-			$resources->addDir($dir);
-		}
-
-		$tpt = new Template(array(
-				"scripts" => $resources->getScripts(),
-				"stylesheets" => $resources->getStylesheets(),
-				"title" => $conf->get("title", "CF")
+		$tpt = new TemplateRes(array(
+				"title" => $conf->get("title", "CF " . CF_VERSION),
+				"description" => $conf->get("description", NULL),
+				"favicon" => $conf->get("favicon", NULL),
 		));
 
 		return $tpt;

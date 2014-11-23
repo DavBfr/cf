@@ -82,7 +82,7 @@ class ErrorHandler {
 		}
 
 		if (Template::findTemplate(ERROR_TEMPLATE) && !IS_CLI) {
-			$tpt = new Template(array(
+			$tpt = new TemplateRes(array(
 				"code" => $code,
 				"message" => $message,
 				"body" => $body,

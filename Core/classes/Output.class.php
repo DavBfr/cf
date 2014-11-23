@@ -43,6 +43,15 @@ class Output {
 		self::json(array("error"=>$message, "success"=>false));
 	}
 
+
+	public static function redirect($url) {
+		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+		header("$protocol 302 Redirect");
+		header("Location: $url");
+		die();
+	}
+
+
 	public static function debug($message) {
 		if (!DEBUG)
 			return;

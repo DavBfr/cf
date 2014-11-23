@@ -117,12 +117,14 @@ class Template {
 
 	protected function filter($value, $filter) {
 		switch($filter) {
-			case 'row':
+			case 'raw':
 				return $value;
 			case 'tr':
 				return Lang::get($value);
 			case 'esc':
 				return htmlspecialchars($value);
+			case 'st':
+				return strip_tags($value);
 			case 'int':
 				return number_format($value, 0, ',', ' ');
 			default:
@@ -136,30 +138,33 @@ class Template {
 	}
 
 
-	public function get($param, $filter='row') {
+	public function get($param, $filter='raw', $default = NULL) {
 		if (array_key_exists($param, $this->params)) {
 			$value = $this->params[$param];
 		} else {
-			$value = $param;
+			if ($default === NULL)
+				$value = $param;
+			else
+				$value = $default;
 		}
 		return $this->filter($value, $filter);
 	}
 
 
-	public function config($key, $filter='row') {
+	public function config($key, $filter='raw', $default = NULL) {
 		$config = Config::getInstance();
-		$value = $config->get($key, $key);
+		$value = $config->get($key, $key, $default);
 		return $this->filter($value, $filter);
 	}
 
 
-	public function out($param, $filtre='row') {
-		print($this->get($param, $filtre));
+	public function out($param, $filtre='raw', $default = NULL) {
+		print($this->get($param, $filtre, $default));
 	}
 
 
 	public function tr($param) {
-		print(Lang::get($param));
+		print($this->get($param, 'tr'));
 	}
 
 

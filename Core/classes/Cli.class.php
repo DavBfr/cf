@@ -142,6 +142,9 @@ class Cli {
 		if (isset($configured_options)) {
 			foreach($configured_options as $key) {
 				$val = constant($key);
+				if (is_bool($val))
+					$val = $val?"true":"false";
+				
 				self::pln($key.' = '.$val);
 			}
 		}

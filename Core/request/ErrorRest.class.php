@@ -21,16 +21,21 @@ class ErrorRest extends Rest {
 
 	public function getRoutes() {
 		$this->addRoute("/", "GET", "error");
+		$this->addRoute("/:code", "GET", "error");
 	}
 	
 	protected function error($r) {
-		$code = $_SERVER["REDIRECT_STATUS"];
+		if (array_key_exists("code", $r))
+			$code = $r["code"];
+		else
+			$code = $_SERVER["REDIRECT_STATUS"];
+		
 		if (array_key_exists($code, ErrorHandler::$messagecode))
 			$message = ErrorHandler::$messagecode[$code];
 		else
 			$message = "";
 		
-		$tpt = new Template(array(
+		$tpt = new TemplateRes(array(
 			"code"=>$code,
 			"message"=>$message,
 			"body"=>(DEBUG?CorePlugin::info():""),

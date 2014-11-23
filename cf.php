@@ -205,7 +205,7 @@ class Plugins {
 	protected function autoload($class_name) {
 		$class_file = $this->dir . DIRECTORY_SEPARATOR . self::CLASS_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php';
 		if (is_readable($class_file)) {
-			require($class_file);
+			require_once($class_file);
 			return true;
 		}
 
@@ -253,7 +253,7 @@ if (defined("ROOT_DIR")) {
 }
 
 if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php")) {
-	require(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php");
+	require_once(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php");
 }
 
 if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
