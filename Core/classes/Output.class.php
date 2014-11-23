@@ -20,7 +20,7 @@
 class Output {
 
 	public static function json($object) {
-		if (!DEBUG)
+		if (JSON_HEADER)
 			header("Content-Type: text/json");
 		else
 			header("Content-Type: text/plain");

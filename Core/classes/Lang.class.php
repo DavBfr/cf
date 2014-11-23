@@ -71,6 +71,11 @@ class Lang {
 	}
 
 
+	public static function getLangHtml() {
+		return str_replace("_", "-", self::getLang());
+	}
+
+
 	public static function get($token, $lang = NULL, $context = NULL) {
 		if ($lang == NULL)
 			$lang = self::$baselang;

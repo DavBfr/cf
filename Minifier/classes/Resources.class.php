@@ -23,6 +23,7 @@ class Resources extends AbstractResources {
 		if (substr($filename, -5) == ".less") {
 			$script =Cache::Pub($filename, ".css");
 			if ($script->check()) {
+				Logger::info("Compile less file $filename");
 				$less = new lessc();
 				$less->compileFile($filename, $script->getFilename());
 			}

@@ -99,7 +99,7 @@ class Cache {
 
 
 	public function check() {
-		return (!is_file($this->filename_cache) || filemtime($this->filename) > filemtime($this->filename));
+		return (!is_file($this->filename_cache) || filemtime($this->filename) > filemtime($this->filename_cache));
 	}
 
 

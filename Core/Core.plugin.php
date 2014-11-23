@@ -26,6 +26,7 @@ configure("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SC
 configure("ALLOW_DOCUMENT_ROOT", true);
 configure("MEMCACHE_PREFIX", "CF");
 configure("MEMCACHE_LIFETIME", 10800);
+configure("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
 configure("SESSION_NAME", "CF");
 configure("ERROR_TEMPLATE", "error.php");
 configure("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache");

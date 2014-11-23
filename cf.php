@@ -284,6 +284,9 @@ if (FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 
 date_default_timezone_set(DEFAULT_TIMEZONE);
 
+if (function_exists('mb_internal_encoding'))
+	mb_internal_encoding('UTF-8');
+
 Plugins::registerAutoload();
 Plugins::add(CORE_PLUGIN, Plugins::CORE);
 Plugins::addApp();
