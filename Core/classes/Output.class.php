@@ -40,6 +40,7 @@ class Output {
 
 
 	public static function error($message) {
+		Logger::error($message);
 		self::json(array("error"=>$message, "success"=>false));
 	}
 
