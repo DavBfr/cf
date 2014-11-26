@@ -60,7 +60,7 @@ class Plugins {
 		}
 
 		if (! is_dir($dir))
-			throw Exception("Plugin $name not found");
+			throw new Exception("Plugin $name not found");
 
 		if ($class_name == NULL)
 			$class_name = $name;
