@@ -61,7 +61,7 @@ class ModelField {
 	protected function getDefaults() {
 		return array(
 			"type"=>self::TYPE_INT,
-			"foreign"=>NULL,
+			"foreign"=>NULL, // (tablename, key, value)
 			"display"=>$this->table.".".$this->name,
 			"name"=>$this->table."_".$this->name,
 			"caption"=>ucwords(str_replace("_", " ", $this->name)),
@@ -112,6 +112,11 @@ class ModelField {
 
 	public function isDate() {
 		return $this->props["type"] == self::TYPE_DATE;
+	}
+
+
+	public function isSelect() {
+		return $this->isForeign();
 	}
 
 
@@ -172,5 +177,13 @@ class ModelField {
 		return $this->props["primary"];
 	}
 
+	public function getForeign() {
+		return $this->props["foreign"];
+	}
+
+
+	public function isForeign() {
+		return $this->props["foreign"] !== NULL;
+	}
 
 }

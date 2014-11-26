@@ -58,6 +58,11 @@ class ModelData implements Iterator {
 	}
 
 
+	public function getModel() {
+		return $this->model;
+	}
+
+
 	public function rewind() {
 	}
 
@@ -214,9 +219,13 @@ class ModelData implements Iterator {
 	}
 
 
-	public function getForeign($field, $class) {
+	public function getForeign($field, $class = NULL) {
 		if (! array_key_exists($field, $this->foreign)) {
-			$obj = new $class();
+			if ($class === NULL)
+				$obj = $this->model->getForeign($field);
+			else
+				$obj = new $class();
+			
 			$this->foreign[$field] = $obj->getById($this->get($field));
 		}
 

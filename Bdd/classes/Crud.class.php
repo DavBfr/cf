@@ -20,18 +20,34 @@
 abstract class Crud extends Rest {
 	const ID = "CRUD_ID_FIELD";
 
+	protected $options;
 	protected $model;
 	protected $limit;
 
 
 	function __construct() {
 		parent::__construct();
+		$this->options = array_merge(array(
+			"list_title"=>Lang::get("core.list"),
+			"detail_title"=>Lang::get("core.form"),
+			"new_title"=>Lang::get("core.new_form"),
+			"can_create"=>true,
+			"can_delete"=>true,
+			"can_view"=>true,
+			"list_partial"=>"crud-list.php",
+			"detail_partial"=>"crud-detail.php",
+		), $this->getOptions());
 		$this->model = $this->getModel();
 		$this->limit = CRUD_LIMIT;
 	}
 
 
 	protected abstract function getModel();
+
+
+	protected function getOptions() {
+		return array();
+	}
 
 
 	public function getRoutes() {
@@ -43,24 +59,12 @@ abstract class Crud extends Rest {
 		$this->addRoute("/:id", "DELETE", "delete_item");
 		$this->addRoute("/", "PUT", "new_item");
 		$this->addRoute("/:id", "POST", "update_item");
+		$this->addRoute("/foreign/:name", "GET", "get_foreign");
 	}
 
 
-	public function build_query($fields, $tables, $where = array(1), $limit=NULL, $order=NULL) {
-		$query = "SELECT ";
-		$query .= implode(", ", $fields);
-		$query .= " FROM ";
-		$query .= implode(", ", $tables);
-		$query .= " WHERE (";
-		$query .= implode(") AND (", $where);
-		$query .= ")";
-		if ($order) {
-			$query .= ' ORDER BY '. implode(", ", $order);
-		}
-		if ($limit) {
-			$query .= ' LIMIT '. implode(", ", $limit);
-		}
-		return $query;
+	public function getOption($name, $value) {
+		return $this->options[$name];
 	}
 
 
@@ -73,6 +77,30 @@ abstract class Crud extends Rest {
 	}
 
 
+	protected function get_foreign($r) {
+		Input::ensureRequest($r, array("name"));
+		$name = $r["name"];
+		$field = $this->model->getField($name);
+
+		list($table, $key, $value) = $field->getForeign();
+		$col = Collection::Query($table)
+		->SelectAs($key, 'key')
+		->SelectAs($value, 'val')
+		->limit($this->limit);
+		
+		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
+			$col->filter("%".$_GET["q"]."%", "LIKE");
+		}
+
+		$list = [];
+		foreach ($col->getValues(isset($_GET["p"])?intval($_GET["p"]):0) as $row) {
+			$list[] = array("key"=>$row['key'], "value"=>$row['val']);
+		}
+
+		Output::success(array("list"=>$list));
+	}
+
+
 	protected function get_list($r) {
 		$col = Collection::Query($this->model->getTableName())
 			->SelectAs($this->model->getPrimaryField(), self::ID)
@@ -82,19 +110,20 @@ abstract class Crud extends Rest {
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
 			$col->filter("%".$_GET["q"]."%", "LIKE");
 		}
+		
 		Output::success(array("list"=>$col->getValuesArray(isset($_GET["p"])?intval($_GET["p"]):0)));
 	}
 
 
 	protected function get_list_partial($r) {
-		$tpt = new Template(array("model" => $this->model->getFields()));
-		$tpt->output("crud-list.php");
+		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
+		$tpt->output($this->options["list_partial"]);
 	}
 
 
 	protected function get_detail_partial($r) {
-		$tpt = new Template(array("model" => $this->model->getFields()));
-		$tpt->output("crud-detail.php");
+		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
+		$tpt->output($this->options["detail_partial"]);
 	}
 
 
@@ -119,11 +148,24 @@ abstract class Crud extends Rest {
 	}
 
 
+	protected function getForeigns($item) {
+		$foreigns = array();
+		foreach($this->model->getFields() as $name => $field) {
+			if ($field->isForeign())
+				$foreigns[] = $name;
+		}
+		return $foreigns;
+	}
+
+
 	protected function get_item($r) {
 		Input::ensureRequest($r, array("id"));
 		$id = $r["id"];
 		$item = $this->model->getById($id);
-		Output::success(array(self::ID=>$id, "data"=>$item->getValues()));
+		
+		$foreigns = $this->getForeigns($item);
+		
+		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$item->getValues()));
 	}
 
 

@@ -21,7 +21,6 @@ function CrudService($http, service) {
 	var service_url = cf_options.rest_path + "/" + service;
 
 	var onerror = function(data, status) {
-		console.log(data, status);
 	};
 
 	this.get_list = function (filter, page, onsuccess, onerror) {
@@ -90,12 +89,23 @@ function CrudService($http, service) {
 	this.getOne = function (id, onsuccess, onerror) {
 		$http.get(service_url + "/" + id).success(function (data, status) {
 			if (data.success)
-				onsuccess && onsuccess(data.data, status);
+				onsuccess && onsuccess(data, status);
 			else
 				onerror && onerror(data.error);
 		}).error(function (data, status) {
 			onerror && onerror(data, status);
 		});
+	};
+
+	this.getForeign = function (field, onsuccess, onerror) {
+		$http.get(service_url + "/foreign/" + field).success(function (data, status) {
+			if (data.success)
+				onsuccess && onsuccess(data, status);
+			else
+				onerror && onerror(data.error);
+			}).error(function (data, status) {
+				onerror && onerror(data, status);
+			});
 	};
 
 }
@@ -106,6 +116,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		$scope.perpages = null;
 		$scope.list = [];
 		$scope.item = {};
+		$scope.foreign = {};
 		$scope.filter = "";
 		$scope.pages = 0;
 		$scope.count = 0;
@@ -136,7 +147,17 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		CrudService.getOne(id, function (data) {
 			$scope.loading = false;
 			$scope.id = id;
-			$scope.item = data;
+			$scope.item = data.data;
+			if (data.foreigns) {
+				for (item in data.foreigns) {
+					var name = data.foreigns[item];
+					(function(name_){
+						CrudService.getForeign(name, function(data) {
+							$scope.foreign[name_] = data.list;
+						});
+					})(name);
+				}
+			}
 		}, function (data) {
 			$scope.loading = false;
 			NotificationFactory.error(data);

@@ -196,4 +196,14 @@ abstract class Model {
 		throw new Exception("Field $field not found");
 	}
 
+
+	public function getForeign($field) {
+		if (array_key_exists($field, $this->fields)) {
+			list($table, $key, $value) = $this->fields[$field]->getForeign();
+			return new $table;
+		}
+		
+		return NULL;
+	}
+
 }

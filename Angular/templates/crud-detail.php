@@ -1,6 +1,6 @@
 <div class="page-header">
-	<h1 data-ng-show="id"><?php $this->tr("core.form") ?> #{{id}}</h1>
-	<h1 data-ng-hide="id || loading"><?php $this->tr("core.new_form") ?></h1>
+	<h1 data-ng-show="id"><?php $this->out("detail_title") ?></h1>
+	<h1 data-ng-hide="id || loading"><?php $this->out("new_title") ?></h1>
 </div>
 
 <div style="margin-bottom:20px;">
@@ -34,9 +34,15 @@
 				<?php elseif($field->isInt()): ?>
 					<input type="number" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>">
 				<?php elseif($field->isDate()): ?>
-					<input type="date" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>">
+					<input type="date" data-date-type="number" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>" data-autoclose="true" data-placement="top-left" data-bs-datepicker data-date-format="yyyy-MM-dd">
+				<?php elseif($field->isEmail()): ?>
+					<input type="email" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>">
 				<?php elseif($field->isPassword()): ?>
 					<input type="password" class="form-control" id="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" name="<?php echo $field->getName() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>">
+				<?php elseif($field->isSelect()): ?>
+					<select ng-options="item.key as item.value for item in foreign.<?php echo $field->getName() ?>" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>">
+						<option value="" disabled selected><?php echo $field->getCaption() ?></option>
+					</select>
 				<?php else: ?>
 					<input type="text" class="form-control" id="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" name="<?php echo $field->getName() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>">
 				<?php endif; ?>

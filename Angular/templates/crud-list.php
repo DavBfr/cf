@@ -1,5 +1,5 @@
 <div class="page-header">
-	<h1><?php $this->tr("core.list") ?></h1>
+	<h1><?php $this->out("list_title") ?></h1>
 </div>
 
 <form class="form-inline" data-role="form">
@@ -7,9 +7,11 @@
 		<label class="sr-only" for="filter"><?php $this->tr("core.filter") ?></label>
 		<input type="search" class="form-control" id="filter" placeholder="<?php $this->tr("core.filter") ?>" data-ng-model="filter" data-ng-change="Search()">
 	</div>
+	<?php if ($this->get("can_create")): ?>
 	<button data-ng-click="go_detail('new')" type="button" class="btn btn-default">
 		<span class="glyphicon glyphicon-plus"></span> <?php $this->tr("core.new") ?>
 	</button>
+	<?php endif ?>
 </form>
 
 <div data-ng-hide="!loading" class="panel panel-default">
@@ -38,7 +40,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr data-ng-repeat="item in list" data-ng-click="go_detail(item.<?php echo Crud::ID ?>)">
+		<tr data-ng-repeat="item in list" <?php if ($this->get("can_view")): ?> data-ng-click="go_detail(item.<?php echo Crud::ID ?>)" <?php endif; ?>>
 			<?php foreach($this->get("model") as $field): ?>
 			<?php if($field->inList()): ?>
 			<td>
@@ -51,12 +53,16 @@
 			<?php endif; ?>
 			<?php endforeach; ?>
 			<td>
+				<?php if ($this->get("can_delete")): ?>
 				<button data-ng-click="del(item.<?php echo Crud::ID ?>);$event.stopPropagation();" type="button" class="btn btn-danger btn-xs">
 					<span class="glyphicon glyphicon-remove"></span> <?php $this->tr("core.del") ?>
 				</button>
+				<?php endif ?>
+				<?php if ($this->get("can_view")): ?>
 				<button data-ng-click="go_detail(item.<?php echo Crud::ID ?>)" type="button" class="btn btn-primary btn-xs">
 					<span class="glyphicon glyphicon-info-sign"></span> <?php $this->tr("core.details") ?>
 				</button>
+				<?php endif ?>
 			</td>
 		</tr>
 	</tbody>
