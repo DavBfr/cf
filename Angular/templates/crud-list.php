@@ -46,6 +46,8 @@
 			<td>
 				<?php if($field->isBool()): ?>
 				<span data-ng-show="{{item.<?php echo $field->getName() ?>}}" class="glyphicon glyphicon-ok"></span>
+			<?php elseif($field->isDate()): ?>
+				{{item.<?php echo $field->getName() ?>*1000|date:'yyyy-MM-dd'}}
 				<?php else: ?>
 				{{item.<?php echo $field->getName() ?>}}
 				<?php endif; ?>
@@ -63,6 +65,7 @@
 					<span class="glyphicon glyphicon-info-sign"></span> <?php $this->tr("core.details") ?>
 				</button>
 				<?php endif ?>
+				<?php if ($this->has("buttons_list")) $this->out("buttons_list"); ?>
 			</td>
 		</tr>
 	</tbody>

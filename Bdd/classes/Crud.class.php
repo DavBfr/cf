@@ -101,6 +101,11 @@ abstract class Crud extends Rest {
 	}
 
 
+	protected function list_values($row) {
+		return $row;
+	}
+
+
 	protected function get_list($r) {
 		$col = Collection::Query($this->model->getTableName())
 			->SelectAs($this->model->getPrimaryField(), self::ID)
@@ -111,7 +116,12 @@ abstract class Crud extends Rest {
 			$col->filter("%".$_GET["q"]."%", "LIKE");
 		}
 		
-		Output::success(array("list"=>$col->getValuesArray(isset($_GET["p"])?intval($_GET["p"]):0)));
+		$list = array();
+		foreach($col->getValues(isset($_GET["p"])?intval($_GET["p"]):0) as $row) {
+			$list[] = $this->list_values($row);
+		}
+
+		Output::success(array("list"=>$list));
 	}
 
 

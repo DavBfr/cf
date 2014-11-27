@@ -58,6 +58,7 @@
 			<button type="submit" data-loading-text="<?php $this->tr("core.saving") ?> ..." class="btn btn-primary" data-ng-disabled="form.$invalid" data-ng-click="save(id, item)"><?php $this->tr("core.submit") ?></button>
 			<button type="button" class="btn btn-danger" data-ng-show="id" data-ng-click="del(id)"><?php $this->tr("core.delete") ?></button>
 			<button type="button" class="btn btn-default" data-ng-click="go_list()"><?php $this->tr("core.cancel") ?></button>
+			<?php if ($this->has("buttons_detail")) $this->out("buttons_detail"); ?>
 		</div>
 	</div>
 
