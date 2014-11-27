@@ -81,11 +81,12 @@ abstract class Crud extends Rest {
 		Input::ensureRequest($r, array("name"));
 		$name = $r["name"];
 		$field = $this->model->getField($name);
+		$bdd = Bdd::getInstance();
 
 		list($table, $key, $value) = $field->getForeign();
 		$col = Collection::Query($table)
-		->SelectAs($key, 'key')
-		->SelectAs($value, 'val')
+		->SelectAs($bdd->quoteIdent($key), $bdd->quoteIdent('key'))
+		->SelectAs($bdd->quoteIdent($value), $bdd->quoteIdent('val'))
 		->limit($this->limit);
 		
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
