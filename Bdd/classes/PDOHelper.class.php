@@ -23,6 +23,7 @@ class PDOHelper {
 	public function __construct($dsn, $login, $password) {
 		try {
 			$this->pdo = new PDO($dsn, $login, $password, $this->getParams());
+			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
 			ErrorHandler::error(500, NULL, "Unable to connect to Database: " . $e->getMessage());
 		} catch (Exeption $e) {
