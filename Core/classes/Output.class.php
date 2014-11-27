@@ -53,6 +53,23 @@ class Output {
 	}
 
 
+	public static function file($filename, $data) {
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment; filename='.$filename);
+		header('Content-Transfer-Encoding: binary');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Pragma: public');
+
+		while (ob_get_length())
+			ob_end_clean();
+		
+		print($data);
+		exit();
+	}
+
+
 	public static function debug($message) {
 		if (!DEBUG)
 			return;
