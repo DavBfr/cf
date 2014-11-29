@@ -38,6 +38,7 @@ class SkelPlugin extends Plugins {
 			Plugins::add($plugin);
 		}
 		Cli::install();
+		Crud::create(array("input"=>array("", "", "user")));
 	}
 
 }

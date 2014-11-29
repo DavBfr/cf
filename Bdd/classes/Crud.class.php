@@ -244,7 +244,7 @@ abstract class Crud extends Rest {
 			$filename = $rest . "/" . $className . ".class.php";
 			if (!file_exists($filename)) {
 				$f = fopen($filename, "w");
-				fwrite($f, "<?php\nSession::ensureLoggedin();\n\nclass $className extends Crud {\n\n\tprotected function getModel() {\n\t\treturn new ".ucfirst($model)."Model();\n\t}\n\n}\n");
+				fwrite($f, "<?php\n//Session::ensureLoggedin();\n\nclass $className extends Crud {\n\n\tprotected function getModel() {\n\t\treturn new ".ucfirst($model)."Model();\n\t}\n\n}\n");
 				fclose($f);
 			}
 			
@@ -252,7 +252,7 @@ abstract class Crud extends Rest {
 			if (!file_exists($filename)) {
 				$f = fopen($filename, "w");
 				$umodel = ucfirst($model);
-				fwrite($f, "app.service('${umodel}Service', function (\$http) {\n\t angular.extend(this, new CrudService(\$http, '${umodel}'));\n});\n\napp.controller('${umodel}Controller', function (\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_list();\n});\n\napp.controller('${umodel}DetailController', function (\$scope, \$timeout, \$location, \$route, \$routeParams, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_fiche(parseInt(\$routeParams.id));\n});\n");
+				fwrite($f, "if (typeof app != 'undefined') {\n\napp.service('${umodel}Service', function (\$http) {\n\t angular.extend(this, new CrudService(\$http, '${model}'));\n});\n\napp.controller('${umodel}Controller', function (\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_list();\n});\n\napp.controller('${umodel}DetailController', function (\$scope, \$timeout, \$location, \$route, \$routeParams, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_fiche(parseInt(\$routeParams.id));\n});\n\n}\n");
 				fclose($f);
 			}
 		}
