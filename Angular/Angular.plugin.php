@@ -22,5 +22,8 @@ class AngularPlugin extends Plugins {
 	public function resources($res) {
 		$res->add("jquery/jquery.js");
 		$res->add("angular/angular.js");
+		$res->add("angular/angular-route.js");
+		$res->add("angular-strap/angular-strap.js");
+		$res->add("angular-strap/angular-strap.tpl.js");
 	}
 }
