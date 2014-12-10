@@ -108,8 +108,14 @@ class Session {
 	}
 
 
-	public static function ensureRight($value) {
-		if (!self::hasRight($value)) {
+	public static function ensureRight() {
+		$pass = false;
+		foreach (func_get_args() as $right) {
+			if (self::hasRight($right)) {
+				$pass = true;
+			}
+		}
+		if (!$pass) {
 			ErrorHandler::error(401);
 		}
 	}
