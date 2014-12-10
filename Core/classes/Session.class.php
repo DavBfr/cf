@@ -26,6 +26,19 @@ class Session {
 	protected function __construct() {
 		session_name(SESSION_NAME);
 		session_start();
+
+		if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > SESSION_TIMEOUT)) {
+			session_unset();
+			session_destroy();
+		}
+		$_SESSION['LAST_ACTIVITY'] = time();
+
+		if (!isset($_SESSION['CREATED'])) {
+			$_SESSION['CREATED'] = time();
+		} else if (time() - $_SESSION['CREATED'] > SESSION_REGENERATE) {
+			session_regenerate_id(true);
+			$_SESSION['CREATED'] = time();
+		}
 	}
 
 
@@ -40,6 +53,7 @@ class Session {
 
 	public static function delete() {
 		self::getInstance();
+		session_unset();
 		session_destroy();
 		session_write_close();
 		self::$instance = NULL;
@@ -63,6 +77,11 @@ class Session {
 
 	public static function hasSession() {
 		return array_key_exists(SESSION_NAME, $_COOKIE);
+	}
+
+
+	public static function nextCheck() {
+		return SESSION_TIMEOUT;
 	}
 
 

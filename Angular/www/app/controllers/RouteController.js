@@ -16,12 +16,16 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-app.controller('RouteController', function ($scope, $route, $location, $http) {
+app.controller('RouteController', function ($scope, $route, $location, $http, $timeout) {
+	var timeout = 20000;
+	var timeoutHandler = null;
 	init();
 
 	function init() {
 		$scope.route=$route;
 		$scope.menu = [];
+		$scope.lastcheck = new Date();
+		timeoutHandler = $timeout(check, timeout);
 
 		for (path in $route.routes) {
 			var route = $route.routes[path];
@@ -35,6 +39,8 @@ app.controller('RouteController', function ($scope, $route, $location, $http) {
 			}
 		}
 
+		$scope.$on('$routeChangeStart', check);
+
 		$scope.$on('$routeChangeSuccess', function(event, data) {
 			for (menuid in $scope.menu) {
 				if ($scope.menu[menuid].menu == data.menu) {
@@ -45,12 +51,31 @@ app.controller('RouteController', function ($scope, $route, $location, $http) {
 			}
 		});
 	}
-	
+
+	function check() {
+		var self = this;
+		if ((new Date()).getTime() - $scope.lastcheck.getTime() >= timeout) {
+			$http.get(cf_options.rest_path + "/login/check").success(function (data, status) {
+				if (!data.success) {
+					window.location.reload();
+				}
+				timeout = data.next * 1000 + 1000;
+			}).error(function (data, status) {
+				window.location.reload()
+			})
+		}
+		if (timeoutHandler) {
+			$timeout.cancel(timeoutHandler);
+			timeoutHandler = $timeout(check, timeout);
+		}
+		$scope.lastcheck=new Date();
+	}
+
 	$scope.logout = function() {
 		$http.get(cf_options.rest_path + "/login/logout").success(function (data, status) {
 			window.location.reload()
 		}).error(function (data, status) {
-			//console.log(data);
+			NotificationFactory.error(data);
 		})
 	}
 

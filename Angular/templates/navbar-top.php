@@ -14,6 +14,10 @@
 			<li data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
 		</ul>
 
-		<button type="button" class="btn btn-default navbar-btn navbar-right" data-ng-click="logout()"><?php $this->tr("core.logout") ?></button>
+		<ul class="nav navbar-nav navbar-right">
+			<li>
+				<a href="javascript:void(0)" data-ng-click="logout()"><?php $this->tr("core.logout") ?></a>
+			</li>
+		</ul>
 	</div>
 </nav>

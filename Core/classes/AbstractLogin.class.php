@@ -37,7 +37,7 @@ abstract class AbstractLogin extends Rest {
 		$user = Session::isLogged();
 		$api = Session::isLoggedApi();
 		if ($user || $api) {
-			Output::success(array("user"=>$user, "api"=>$api));
+			Output::success(array("user"=>$user, "api"=>$api, "next"=>Session::nextCheck()));
 		}
 		Output::error("Not loggied in");
 	}
