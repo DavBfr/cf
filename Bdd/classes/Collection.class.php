@@ -135,7 +135,9 @@ class Collection {
 		foreach ($this->fields as $field) {
 			$filter[] = $bdd->quoteIdent($field) . " " . $operator . " " . $value;
 		}
-		$this->where[] = implode(" OR ", $filter);
+		if (count($filter) > 0) {
+			$this->where[] = implode(" OR ", $filter);
+		}
 	}
 
 
