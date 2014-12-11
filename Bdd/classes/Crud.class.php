@@ -194,11 +194,16 @@ abstract class Crud extends Rest {
 	}
 
 
+	protected function fixValues(& $post) {
+	}
+
+
 	protected function new_item($r) {
 		ErrorHandler::RaiseExceptionOnError();
 		try {
 			Logger::debug("Crud::new_item in table " . $this->model->getTableName());
 			$post = $this->jsonpost();
+			$this->fixValues($post);
 			$item = $this->model->newRow();
 			$item->setValues($post);
 			$item->save();
@@ -216,6 +221,7 @@ abstract class Crud extends Rest {
 			$id = $r["id"];
 			Logger::debug("Crud::update_item id:" . $id . " in table " . $this->model->getTableName());
 			$post = $this->jsonpost();
+			$this->fixValues($post);
 			$item = $this->model->getById($id);
 			$item->setValues($post);
 			$item->save();

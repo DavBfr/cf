@@ -63,9 +63,9 @@ class SqliteHelper extends PDOHelper {
 		if ($res !== false) {
 			foreach($res as $row) {
 				$field = array();
-				if (strpos($row["type"], "INTEGER") !== false) $field["type"] = "int";
-				elseif (strpos($row["type"], "TEXT") !== false) $field["type"] = "text";
-				elseif (strpos($row["type"], "DATE") !== false) $field["type"] = "date";
+				if (strpos($row["type"], "INTEGER") !== false) $field["type"] = ModelField::TYPE_INT;
+				elseif (strpos($row["type"], "TEXT") !== false) $field["type"] = ModelField::TYPE_TEXT;
+				elseif (strpos($row["type"], "DATE") !== false) $field["type"] = ModelField::TYPE_DATE;
 				else $field["type"] = $row["type"];
 
 				$field["null"] = $row["notnull"] == 0;

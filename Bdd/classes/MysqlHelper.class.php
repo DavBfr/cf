@@ -62,11 +62,11 @@ class MysqlHelper extends PDOHelper {
 		if ($res !== false) {
 			foreach($res as $row) {
 				$field = array();
-				if (strpos($row["Type"], "int") !== false) $field["type"] = "int";
-				elseif (strpos($row["Type"], "text") !== false) $field["type"] = "text";
-				elseif (strpos($row["Type"], "varchar") !== false) $field["type"] = "text";
-				elseif (strpos($row["Type"], "date") !== false) $field["type"] = "date";
-				elseif (strpos($row["Type"], "timestamp") !== false) $field["type"] = "date";
+				if (strpos($row["Type"], "int") !== false) $field["type"] = ModelField::TYPE_INT;
+				elseif (strpos($row["Type"], "text") !== false) $field["type"] = ModelField::TYPE_TEXT;
+				elseif (strpos($row["Type"], "varchar") !== false) $field["type"] = ModelField::TYPE_TEXT;
+				elseif (strpos($row["Type"], "date") !== false) $field["type"] = ModelField::TYPE_DATE;
+				elseif (strpos($row["Type"], "timestamp") !== false) $field["type"] = ModelField::TYPE_TIMESTAMP;
 				else $field["type"] = $row["Type"];
 
 				$field["null"] = $row["Null"] == "YES";

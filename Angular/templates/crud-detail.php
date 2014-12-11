@@ -34,7 +34,7 @@
 				<?php elseif($field->isInt()): ?>
 					<input type="number" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>">
 				<?php elseif($field->isDate()): ?>
-					<input type="date" data-date-type="number" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>" data-autoclose="true" data-placement="top-left" data-bs-datepicker data-date-format="yyyy-MM-dd">
+					<input type="date" data-date-type="date" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>" data-autoclose="true" data-placement="top-left" data-bs-datepicker data-date-format="yyyy-MM-dd">
 				<?php elseif($field->isEmail()): ?>
 					<input type="email" class="form-control" id="<?php echo $field->getName() ?>" name="<?php echo $field->getName() ?>" data-ng-required="<?php echo !$field->hasNull() ?>" data-ng-model="item.<?php echo $field->getName() ?>" placeholder="<?php echo $field->getCaption() ?>">
 				<?php elseif($field->isPassword()): ?>

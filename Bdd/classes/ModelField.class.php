@@ -19,12 +19,15 @@
 
 class ModelField {
 	const TYPE_INT = "int";
+	const TYPE_DECIMAL = "num";
 	const TYPE_BOOL = "bool";
 	const TYPE_TEXT = "text";
 	const TYPE_PASSWD = "password";
 	const TYPE_EMAIL = "email";
 	const TYPE_URL = "url";
-	const TYPE_DATE = "date";
+	const TYPE_DATE = "date"; // Y-m-d
+	const TYPE_TIME = "time"; // h:i:s
+	const TYPE_TIMESTAMP = "ts";
 
 	protected $table;
 	protected $name;
@@ -115,6 +118,21 @@ class ModelField {
 	}
 
 
+	public function isTime() {
+		return $this->props["type"] == self::TYPE_TIME;
+	}
+
+
+	public function isDecimal() {
+		return $this->props["type"] == self::TYPE_DECIMAL;
+	}
+
+
+	public function isTimestamp() {
+		return $this->props["type"] == self::TYPE_TIMESTAMP;
+	}
+
+
 	public function isSelect() {
 		return $this->isForeign();
 	}
@@ -143,15 +161,20 @@ class ModelField {
 	public function getDbType() {
 		switch ($this->props["type"]) {
 			case self::TYPE_INT:
-			case "bool":
+			case self::TYPE_TIMESTAMP:
+			case self::TYPE_BOOL:
 				return "INTEGER";
-			case self::TYPE_TEXT:
+			case self::TYPE_DECIMAL:
+				return "NUMBER";
+				case self::TYPE_TEXT:
 			case self::TYPE_PASSWD:
 			case self::TYPE_EMAIL:
 			case self::TYPE_URL:
 				return "TEXT";
 			case self::TYPE_DATE:
 				return "DATE";
+			case self::TYPE_TIME:
+				return "TIME";
 			default:
 				throw new Exception("Unable to find column type for " . $this->getName());
 		}
@@ -184,6 +207,29 @@ class ModelField {
 
 	public function isForeign() {
 		return $this->props["foreign"] !== NULL;
+	}
+
+
+	public function valid($value) {
+		switch ($this->getType()) {
+			case self::TYPE_INT:
+				return is_int($value) || preg_match('/^\d*$/', $value);
+			case self::TYPE_TEXT:
+			case self::TYPE_PASSWD:
+			case self::TYPE_EMAIL:
+			case self::TYPE_URL:
+			case self::TYPE_DATE:
+			case self::TYPE_TIME:
+				return is_string($value);
+			case self::TYPE_BOOL:
+				return $value === true || $value === false;
+			case self::TYPE_DECIMAL:
+				return is_numeric($value) || preg_match('/^(.\d)*$/', $value);
+			case self::TYPE_TIMESTAMP:
+				return preg_match('/^\d\d\d\d-(\d)?\d-(\d)?\d \d\d:\d\d:\d\d$/', $value);
+			default:
+				throw new Exception("Unknown field type '".$this->getType()."'!");
+		}
 	}
 
 }

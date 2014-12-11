@@ -78,7 +78,14 @@ class ModelData implements Iterator {
 
 
 	public function valid() {
-		return !$this->isempty;
+		if ($this->isempty)
+			throw new Exception("Empty data");
+		
+		foreach($this->model->getFields() as $field) {
+			if (!$field->valid($this->get($field->getName()))) {
+				throw new Exception("Invalid data for ".$field->getName());
+			}
+		}
 	}
 
 
@@ -141,7 +148,11 @@ class ModelData implements Iterator {
 			case ModelField::TYPE_BOOL:
 				$value = intval($value);
 				break;
-		}
+			case ModelField::TYPE_DATE:
+				if (is_int($value))
+					$value = date("Y-m-d", intval($value));
+				break;
+			}
 
 		$this->values[$field->getName()] = $value;
 	}
@@ -190,6 +201,8 @@ class ModelData implements Iterator {
 
 
 	public function save() {
+		//$this->valid();
+		
 		$bdd = Bdd::getInstance();
 		if ($this->isnew) {
 			$values = array();

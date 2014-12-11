@@ -45,11 +45,13 @@
 			<?php if($field->inList()): ?>
 			<td>
 				<?php if($field->isBool()): ?>
-				<span data-ng-show="{{item.<?php echo $field->getName() ?>}}" class="glyphicon glyphicon-ok"></span>
-			<?php elseif($field->isDate()): ?>
-				{{item.<?php echo $field->getName() ?>*1000|date:'yyyy-MM-dd'}}
+					<span data-ng-show="{{item.<?php echo $field->getName() ?>}}" class="glyphicon glyphicon-ok"></span>
+				<?php elseif($field->isDate()): ?>
+					{{item.<?php echo $field->getName() ?>}}
+				<?php elseif($field->isTimestamp()): ?>
+					{{item.<?php echo $field->getName() ?>*1000|date:'yyyy-MM-dd H:mm:ss'}}
 				<?php else: ?>
-				{{item.<?php echo $field->getName() ?>}}
+					{{item.<?php echo $field->getName() ?>}}
 				<?php endif; ?>
 			</td>
 			<?php endif; ?>
