@@ -21,7 +21,7 @@ class Resources extends AbstractResources {
 
 	protected function append($filename) {
 		if (substr($filename, -5) == ".less") {
-			$script =Cache::Pub($filename, ".css");
+			$script = Cache::Pub($filename, ".css");
 			if ($script->check()) {
 				Logger::info("Compile less file $filename");
 				$less = new lessc();
@@ -124,17 +124,21 @@ class Resources extends AbstractResources {
 
 
 	public function getScripts() {
+		
 		$res = $this->getResourcesByExt(".js");
 		$output = Cache::Pub("app.min.js");
 		if (! MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}
-		$out = $output->openWrite();
-		foreach($res as $item) {
-			fwrite($out, $this->minifyJavascript($item)."\n");
+		
+		if ($output->check()) {
+			$out = $output->openWrite();
+			foreach($res as $item) {
+				fwrite($out, $this->minifyJavascript($item)."\n");
+			}
+			fclose($out);
 		}
-		fclose($out);
 		return array($this->web($output->getFilename()));
 	}
 
@@ -146,11 +150,14 @@ class Resources extends AbstractResources {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}
-		$out = $output->openWrite();
-		foreach($res as $item) {
-			fwrite($out, $this->minifyStylesheet($item)."\n");
+		
+		if ($output->check()) {
+			$out = $output->openWrite();
+			foreach($res as $item) {
+				fwrite($out, $this->minifyStylesheet($item)."\n");
+			}
+			fclose($out);
 		}
-		fclose($out);
 		return array($this->web($output->getFilename()));
 	}
 

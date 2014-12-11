@@ -98,7 +98,13 @@ class Cache {
 	}
 
 
+	/**
+	* Return true if the cache file is to be (re)created
+	**/
 	public function check() {
+		if (!is_file($this->filename) && is_file($this->filename_cache))
+			return false;
+
 		return (!is_file($this->filename_cache) || filemtime($this->filename) > filemtime($this->filename_cache));
 	}
 
