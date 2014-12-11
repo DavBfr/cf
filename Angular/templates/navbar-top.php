@@ -9,7 +9,7 @@
 		<a class="navbar-brand" href="#"><?php $this->out("title") ?></a>
 	</div>
 
-	<div class="collapse navbar-collapse navbar-ex1-collapse">
+	<div data-ng-cloak class="collapse navbar-collapse navbar-ex1-collapse">
 		<ul class="nav navbar-nav">
 			<li data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
 		</ul>

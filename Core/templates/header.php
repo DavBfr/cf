@@ -12,5 +12,10 @@
 	<?php if ($this->has("stylesheets")) foreach($this->get("stylesheets") as $stylesheet): ?>
 	<link href="<?php echo $stylesheet ?>" rel="stylesheet" media="screen">
 	<?php endforeach; ?>
+	<style type="text/css">
+	[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+		display: none !important;
+	}
+	</style>
 </head>
 <body>

@@ -24,11 +24,11 @@
 	</div>
 </div>
 
-<div data-ng-hide="count > 0 || loading" class="well">
+<div data-ng-cloak data-ng-hide="count > 0 || loading" class="well">
 	<?php $this->tr("core.none_found") ?>
 </div>
 
-<table data-ng-hide="count == 0" class="table table-hover">
+<table data-ng-cloak data-ng-hide="count == 0 || loading" class="table table-hover">
 	<thead>
 		<tr>
 			<?php foreach($this->get("model") as $field): ?>

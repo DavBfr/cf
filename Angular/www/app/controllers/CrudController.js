@@ -145,7 +145,6 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 
 	this.get_fiche = function(id) {
 		CrudService.getOne(id, function (data) {
-			$scope.loading = false;
 			$scope.id = id;
 			$scope.item = data.data;
 			if (data.foreigns) {
@@ -158,6 +157,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 					})(name);
 				}
 			}
+			$scope.loading = false;
 		}, function (data) {
 			$scope.loading = false;
 			NotificationFactory.error(data);

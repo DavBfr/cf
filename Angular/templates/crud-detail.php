@@ -18,7 +18,7 @@
 	</div>
 </div>
 
-<form data-ng-hide="loading" name="form" class="form-horizontal" data-role="form">
+<form data-ng-cloak data-ng-hide="loading" name="form" class="form-horizontal" data-role="form">
 	<?php foreach($this->get("model") as $field): ?>
 		<?php if($field->isEditable()): ?>
 		<div class="form-group" data-ng-class="{'has-error': form.<?php echo $field->getName() ?>.$invalid}">

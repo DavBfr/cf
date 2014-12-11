@@ -18,7 +18,7 @@
 	</div>
 </div>
 
-<form data-ng-hide="loading" name="form" class="form-horizontal" data-role="form">
+<form data-ng-cloak data-ng-hide="loading" name="form" class="form-horizontal" data-role="form">
 	<?php foreach($this->get("model") as $field): ?>
 			<div class="form-group">
 				<label class="col-sm-2 control-label"><?php echo $field->getCaption() ?></label>

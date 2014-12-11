@@ -1,6 +1,6 @@
 <?php $this->insert("header.php"); ?>
 <?php $this->insert("notifications.php"); ?>
-	<div class="container loginForm" data-ng-controller="LoginController">
+	<div data-ng-cloak class="container loginForm" data-ng-controller="LoginController">
 		<?php $this->insert("login-head.php"); ?>
 		<form role="form">
 			<div class="form-group">
