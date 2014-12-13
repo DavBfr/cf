@@ -27,16 +27,7 @@ abstract class Crud extends Rest {
 
 	function __construct() {
 		parent::__construct();
-		$this->options = array_merge(array(
-			"list_title"=>Lang::get("core.list"),
-			"detail_title"=>Lang::get("core.form"),
-			"new_title"=>Lang::get("core.new_form"),
-			"can_create"=>true,
-			"can_delete"=>true,
-			"can_view"=>true,
-			"list_partial"=>"crud-list.php",
-			"detail_partial"=>"crud-detail.php",
-		), $this->getOptions());
+		$this->options = array_merge(self::defaultOptions(), $this->getOptions());
 		$this->model = $this->getModel();
 		$this->limit = CRUD_LIMIT;
 	}
@@ -44,6 +35,20 @@ abstract class Crud extends Rest {
 
 	protected abstract function getModel();
 
+
+	private static function defaultOptions() {
+		return array(
+			"list_title"=>Lang::get("core.list"),
+			"detail_title"=>Lang::get("core.form"),
+			"new_title"=>Lang::get("core.new_form"),
+			"can_create"=>true,
+			"can_delete"=>true,
+			"can_view"=>true,
+			"can_filter"=>true,
+			"list_partial"=>"crud-list.php",
+			"detail_partial"=>"crud-detail.php",
+		);
+	}
 
 	protected function getOptions() {
 		return array();
@@ -238,6 +243,8 @@ abstract class Crud extends Rest {
 			die();
 		}
 		
+		$create_tpt = isset($args["t"]) && $args["t"] ? true : false;
+		
 		$config = Config::getInstance();
 		$rest = Plugins::get(Plugins::APP_NAME)->getDir() . DIRECTORY_SEPARATOR . self::REQUEST_DIR;
 		System::ensureDir($rest);
@@ -246,21 +253,54 @@ abstract class Crud extends Rest {
 
 		foreach(array_slice($args["input"], 2) as $model) {
 			$className = ucfirst($model) . "Rest";
-			Cli::pln($className);
+			$modelClass = ucfirst($model) . "Model";;
+			Cli::pln(" * " . $className);
 			$filename = $rest . "/" . $className . ".class.php";
+			$tpt = new Template(array(
+				"className" => $className,
+				"model" => $model,
+				"umodel" => ucfirst($model),
+				"modelClass" => $modelClass,
+			));
 			if (!file_exists($filename)) {
 				$f = fopen($filename, "w");
-				fwrite($f, "<?php\n//Session::ensureLoggedin();\n\nclass $className extends Crud {\n\n\tprotected function getModel() {\n\t\treturn new ".ucfirst($model)."Model();\n\t}\n\n}\n");
+				fwrite($f, $tpt->parse("crud-rest-skel.php"));
 				fclose($f);
 			}
 			
 			$filename = $ctrl . "/" . $className . ".js";
 			if (!file_exists($filename)) {
 				$f = fopen($filename, "w");
-				$umodel = ucfirst($model);
-				fwrite($f, "if (typeof app != 'undefined') {\n\napp.service('${umodel}Service', function (\$http) {\n\t angular.extend(this, new CrudService(\$http, '${model}'));\n});\n\napp.controller('${umodel}Controller', function (\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_list();\n});\n\napp.controller('${umodel}DetailController', function (\$scope, \$timeout, \$location, \$route, \$routeParams, ${umodel}Service, NotificationFactory) {\n\tangular.extend(this, new CrudController(\$scope, \$timeout, \$location, \$route, ${umodel}Service, NotificationFactory));\n\tthis.init();\n\tthis.get_fiche(parseInt(\$routeParams.id));\n});\n\n}\n");
+				fwrite($f, $tpt->parse("crud-app-skel.php"));
 				fclose($f);
 			}
+
+			if ($create_tpt) {
+				$templates = Plugins::get(Plugins::APP_NAME)->getDir() . DIRECTORY_SEPARATOR . Template::TEMPLATES_DIR;
+				System::ensureDir($templates);
+				$afields = $config->get("model." .     $model);
+				$fields = array();
+				foreach ($afields as $name => $prop) {
+					$fields[$name] = new ModelField($model, $name, $prop);
+				}
+				$options = self::defaultOptions();
+				$tpt = new Template(array_merge($options, array("model" => $fields)));
+				
+				$filename = $templates . "/" . $model . "-crud-list.php";
+				if (!file_exists($filename)) {
+					$f = fopen($filename, "w");
+					fwrite($f, $tpt->parse($options["list_partial"]));
+					fclose($f);
+				}
+				
+				$filename = $templates . "/" . $model . "-crud-detail.php";
+				if (!file_exists($filename)) {
+					$f = fopen($filename, "w");
+					fwrite($f, $tpt->parse($options["detail_partial"]));
+					fclose($f);
+				}
+			}
+
 		}
 	}
 
