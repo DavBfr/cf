@@ -12,7 +12,7 @@
 		"user": {
 			"id": {"type":"int","primary":true,"edit":false,"autoincrement":true},
 			"login": {"type":"text","caption":"Utilisateur","list":true},
-			"password": {"type":"text","caption":"Mot de passe","list":false}
+			"password": {"type":"password","caption":"Mot de passe","list":false}
 		}
 	}
 

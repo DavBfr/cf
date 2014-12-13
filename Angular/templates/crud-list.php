@@ -3,10 +3,12 @@
 </div>
 
 <form class="form-inline" data-role="form">
+	<?php if ($this->get("can_filter")): ?>
 	<div class="form-group">
 		<label class="sr-only" for="filter"><?php $this->tr("core.filter") ?></label>
 		<input type="search" class="form-control" id="filter" placeholder="<?php $this->tr("core.filter") ?>" data-ng-model="filter" data-ng-change="Search()">
 	</div>
+	<?php endif ?>
 	<?php if ($this->get("can_create")): ?>
 	<button data-ng-click="go_detail('new')" type="button" class="btn btn-default">
 		<span class="glyphicon glyphicon-plus"></span> <?php $this->tr("core.new") ?>

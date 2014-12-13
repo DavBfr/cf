@@ -27,9 +27,8 @@ abstract class Crud extends Rest {
 
 	function __construct() {
 		parent::__construct();
-		$this->options = array_merge(self::defaultOptions(), $this->getOptions());
 		$this->model = $this->getModel();
-		$this->limit = CRUD_LIMIT;
+		$this->options = array_merge(self::defaultOptions(), $this->getOptions());
 	}
 
 
@@ -47,11 +46,15 @@ abstract class Crud extends Rest {
 			"can_filter"=>true,
 			"list_partial"=>"crud-list.php",
 			"detail_partial"=>"crud-detail.php",
+			"limit" => CRUD_LIMIT,
 		);
 	}
 
 	protected function getOptions() {
-		return array();
+		return array(
+			"list_partial"=>array($this->model->getTableName() . "-crud-list.php", "crud-list.php"),
+			"detail_partial"=>array($this->model->getTableName() . "-crud-detail.php", "crud-detail.php"),
+		);
 	}
 
 
@@ -76,7 +79,12 @@ abstract class Crud extends Rest {
 	protected function filterList($col) {
 		foreach ($this->model->getFields() as $field) {
 			if ($field->inList()) {
-				$col->select($field->getName());
+				/*if ($field->isForeign()) {
+					list($t, $k, $v) = $field->getForeign();
+					$col->leftJoin("$t as t1", "1");
+				} else {*/
+					$col->select($field->getName());
+				//}
 			}
 		}
 	}
@@ -92,7 +100,7 @@ abstract class Crud extends Rest {
 		$col = Collection::Query($table)
 		->SelectAs($bdd->quoteIdent($key), $bdd->quoteIdent('key'))
 		->SelectAs($bdd->quoteIdent($value), $bdd->quoteIdent('val'))
-		->limit($this->limit);
+		->limit($this->options["limit"]);
 		
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
 			$col->filter("%".$_GET["q"]."%", "LIKE");
@@ -115,7 +123,7 @@ abstract class Crud extends Rest {
 	protected function get_list($r) {
 		$col = Collection::Query($this->model->getTableName())
 			->SelectAs($this->model->getPrimaryField(), self::ID)
-			->limit($this->limit);
+			->limit($this->options["limit"]);
 		$this->filterList($col);
 		
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
@@ -156,8 +164,8 @@ abstract class Crud extends Rest {
 		if ($count)
 			Output::success(array(
 				'count'=>intVal($count[0]),
-				'limit'=>$this->limit,
-				'pages'=>ceil(intVal($count[0]) / $this->limit)
+				'limit'=>$this->options["limit"],
+				'pages'=>ceil(intVal($count[0]) / $this->options["limit"])
 			));
 
 		Output::error("No data");

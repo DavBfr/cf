@@ -50,10 +50,19 @@ class Template {
 	}
 
 
-	public function parse($filename) {
-		$template = self::findTemplate($filename);
+	public function parse($filenames) {
+		if (!is_array($filenames)) {
+			$filenames = array($filenames);
+		}
+
+		$template = false;
+		foreach ($filenames as $filename) {
+			$template = self::findTemplate($filename);
+			if ($template !== false)
+			break;
+		}
 		if ($template === false)
-			ErrorHandler::error(404, NULL, $filename);
+			ErrorHandler::error(404, NULL, implode(", ", $filenames));
 
 		ob_start();
 		include($template);
@@ -76,8 +85,16 @@ class Template {
 	}
 
 
+	public function insertNew($filenames, $params = NULL) {
+		$tpt = new Template(array_merge($this->params, $params));
+		echo $tpt->parse($filenames);
+	}
+
+
 	public function output($filename, $contentType="text/html", $encoding="utf-8") {
-		ob_end_clean();
+		while (ob_get_length())
+			ob_end_clean();
+		
 		header("Content-Type: ${contentType};charset=${encoding}");
 		echo $this->parse($filename);
 		die();
