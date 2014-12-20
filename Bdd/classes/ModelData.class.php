@@ -139,6 +139,13 @@ class ModelData implements Iterator {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
 
+		$func = "get".ucfirst($field);
+		if (is_callable(array($this, $func))) {
+			return call_user_func(array($this, $func), $value);
+		} elseif (is_callable(array($this->model, $func))) {
+			return call_user_func(array($this->model, $func), $this, $value);
+		}
+
 		return $this->values[$field];
 	}
 
@@ -152,8 +159,8 @@ class ModelData implements Iterator {
 				if (is_int($value))
 					$value = date("Y-m-d", intval($value));
 				break;
-			}
-
+		}
+		
 		$this->values[$field->getName()] = $value;
 	}
 
@@ -164,6 +171,13 @@ class ModelData implements Iterator {
 
 		if (!is_a($field, "ModelField"))
 			$field = $this->model->getField($field);
+
+		$func = "set".ucfirst($field->getName());
+		if (is_callable(array($this, $func))) {
+			$value = call_user_func(array($this, $func), $value);
+		} elseif (is_callable(array($this->model, $func))) {
+			$value = call_user_func(array($this->model, $func), $this, $value);
+		}
 
 		$this->_set($field, $value);
 		$this->isempty = false;

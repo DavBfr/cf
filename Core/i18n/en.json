@@ -26,6 +26,7 @@
 		"password": "Password",
 		"none_found": "None found.",
 		"enter_value": "please enter a value",
-		"enter_valid_value": "please enter a valid value"
+		"enter_valid_value": "please enter a valid value",
+		"fields_not_equal": "the values are not the same"
 	}
 }
