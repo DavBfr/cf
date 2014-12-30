@@ -48,7 +48,9 @@ class ModelData implements Iterator {
 		}
 
 		if (! $this->isnew) {
-			$this->setValues($values);
+			foreach($values as $key=>$val) {
+				$this->_set($key, $val);
+			}
 		}
 	}
 
@@ -94,7 +96,7 @@ class ModelData implements Iterator {
 			$this->isempty = true;
 			$this->isnew = true;
 			foreach($this->model->getFields() as $field) {
-				$this->values[$field->getName()] = $field->getDefault();
+				$this->_set($field->getName(), $field->getDefault());
 			}
 			return $this;
 		}
@@ -103,12 +105,14 @@ class ModelData implements Iterator {
 			$this->isempty = true;
 			$this->isnew = true;
 			foreach($this->model->getFields() as $field) {
-				$this->values[$field->getName()] = $field->getDefault();
+				$this->_set($field->getName(), $field->getDefault());
 			}
 			return $this;
 		}
 		$this->isnew = false;
-		$this->setValues($values);
+		foreach($values as $key=>$val) {
+			$this->_set($key, $val);
+		}
 		return $this;
 	}
 
@@ -151,6 +155,9 @@ class ModelData implements Iterator {
 
 
 	private function _set($field, $value) {
+		if (!is_a($field, "ModelField"))
+			$field = $this->model->getField($field);
+		
 		switch($field->getType()) {
 			case ModelField::TYPE_BOOL:
 				$value = intval($value);
