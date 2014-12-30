@@ -25,8 +25,8 @@ abstract class Crud extends Rest {
 	protected $limit;
 
 
-	function __construct() {
-		parent::__construct();
+	protected function postProcess($r) {
+		parent::postProcess($r);
 		$this->model = $this->getModel();
 		$this->options = array_merge(self::defaultOptions(), $this->getOptions());
 	}

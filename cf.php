@@ -157,6 +157,7 @@ class Plugins {
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
+				Logger::debug("Dispatch ".$plugin."::".$method_name);
 				return call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
@@ -173,6 +174,7 @@ class Plugins {
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
+				Logger::debug("Dispatch ".$plugin."::".$method_name);
 				$results[] = call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
@@ -189,6 +191,7 @@ class Plugins {
 		foreach(array_reverse(self::get_plugins()) as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
+				Logger::debug("Dispatch ".$plugin."::".$method_name);
 				$results[] = call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}

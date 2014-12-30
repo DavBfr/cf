@@ -210,6 +210,10 @@ class Template {
 			$options["rights"] = Array();
 		}
 		
+		foreach (Plugins::dispatchAll("cf_options") as $opt) {
+			$options = array_merge($options, $opt);
+		}
+		
 		print(json_encode($options));
 	}
 

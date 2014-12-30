@@ -16,7 +16,7 @@ app.controller('<?php echo $this->out("umodel") ?>DetailController', function ($
 	this.get_fiche(parseInt($routeParams.id));
 });
 
-app.config(function ($routeProvider) {
+function Add<?php echo $this->out("umodel") ?>Routes($routeProvider) {
 	$routeProvider.when('/<?php echo $this->out("model") ?>', {
 		controller: '<?php echo $this->out("umodel") ?>Controller',
 		templateUrl: cf_options.rest_path + '/<?php echo $this->out("model") ?>/list',

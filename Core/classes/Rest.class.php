@@ -62,11 +62,21 @@ abstract class Rest {
 	}
 
 
+	protected function postProcess($r) {
+	}
+
+
+	protected function processNotFound($method) {
+		ErrorHandler::error(404, NULL, $method."@".$path);
+	}
+
+
 	public function handleRequest($method, $path) {
 		if ($path == "")
 			$path = "/";
 
 		if (isset($this->routes[$method."@".$path])) {
+			$this->postProcess(array());
 			call_user_func(array($this, $this->routes[$method."@".$path]), array());
 			ErrorHandler::error(204);
 		} else {
@@ -79,12 +89,13 @@ abstract class Rest {
 						foreach($v as $i => $k) {
 							$pa[$k] = $matches[$i+1];
 						}
+						$this->postProcess($pa);
 						call_user_func(array($this, $c), $pa);
 						ErrorHandler::error(204);
 					}
 				}
 			}
-			ErrorHandler::error(404, NULL, $method."@".$path);
+			$this->processNotFound($method."@".$path);
 		}
 	}
 
