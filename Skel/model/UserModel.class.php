@@ -22,7 +22,7 @@ class UserModel extends BaseUserModel {
 	public function setPassword($data, $value) {
 		$pwd = new Password();
 		
-		if ($data->get(self::PASSWORD) === NULL || $value == $data->get(self::PASSWORD)) {
+		if ($value == $data->get(self::PASSWORD)) {
 			return $value;
 		}
 		
