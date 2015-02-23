@@ -51,6 +51,7 @@ class ModelData implements Iterator {
 			foreach($values as $key=>$val) {
 				$this->_set($key, $val);
 			}
+			$this->isempty = false;
 		}
 	}
 
