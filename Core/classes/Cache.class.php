@@ -75,7 +75,24 @@ class Cache {
 		//if (! is_writable($this->filename_cache))
 		//	ErrorHandler::error(500, NULL, $this->filename_cache." is not writable");
 			
-		return file_put_contents($this->filename_cache, $value);
+		file_put_contents($this->filename_cache, $value);
+	}
+
+
+	public function getArray() {
+		$data = json_decode(file_get_contents($this->filename_cache), true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
+		}
+
+		return $data;
+	}
+
+
+	public function setArray($value) {
+		System::ensureDir(dirname($this->filename_cache));
+		
+		file_put_contents($this->filename_cache, json_encode($value));
 	}
 
 

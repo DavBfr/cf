@@ -18,6 +18,8 @@
  **/
 
 class Config implements arrayaccess {
+	const config = "config/config.json";
+	
 	private static $instance = NULL;
 	private $data;
 
@@ -34,9 +36,16 @@ class Config implements arrayaccess {
 			if (array_key_exists("JCONFIG_FILE", $memcache)) {
 				self::$instance->data = $memcache["JCONFIG_FILE"];
 				Logger::debug("Config loaded from cache");
-			}
-			elseif (file_exists(JCONFIG_FILE)) {
-				self::$instance->load(JCONFIG_FILE);
+			} else {
+				$cache = Cache::Priv(self::config);
+				if ($cache->check() || DEBUG) {
+					foreach (array_reverse(Plugins::findAll(self::config)) as $filename) {
+						self::$instance->append($filename);
+					}
+					$cache->setArray(self::$instance->data);
+				} else  {
+					self::$instance->data = $cache->getArray();
+				}
 				$memcache["JCONFIG_FILE"] = self::$instance->data;
 			}
 		}
@@ -64,10 +73,17 @@ class Config implements arrayaccess {
 
 
 	public function load($filename) {
-		$this->data = json_decode(file_get_contents($filename), true);
+		$this->data = array();
+		$this->append($filename);
+	}
+
+
+	public function append($filename) {
+		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
 		}
+		$this->data = array_merge($this->data, $data);
 	}
 
 

@@ -33,7 +33,7 @@ class SkelPlugin extends Plugins {
 		}
 		System::ensureDir(DATA_DIR);
 		$conf = Config::getInstance();
-		$conf->load(JCONFIG_FILE);
+		$conf->load(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
 		foreach($conf->get("plugins", Array()) as $plugin) {
 			Plugins::add($plugin);
 		}

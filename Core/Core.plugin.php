@@ -30,6 +30,7 @@ configure("INDEX_PATH", WWW_PATH."/index.php");
 configure("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER)?WWW_PATH."/r":INDEX_PATH);
 configure("MEMCACHE_PREFIX", "CF");
 configure("MEMCACHE_LIFETIME", 10800);
+configure("MEMCACHE_ENABLED", false);
 configure("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
 configure("SESSION_NAME", "CF");
 configure("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"));
@@ -40,7 +41,6 @@ configure("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");
 configure("LANG_DEFAULT", "en_US");
 configure("LANG_AUTOLOAD", true);
 configure("LANG_AUTODETECT", true);
-configure("JCONFIG_FILE", CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
 configure("CF_URL", "http://cf.nfet.net");
 
 class CorePlugin extends Plugins {

@@ -19,7 +19,14 @@
 
 class ArrayWriter {
 
+	public static function toFile($array, $filename) {
+		file_put_contents($filename, "<?php\nreturn " . $this->toString($array) . ";");
+	}
+
+
 	public static function toString($array, $indent=2, $indentchar="\t") {
+		return var_export($array, true);
+
 		if (!is_array($array)) {
 			return quote($array);
 		}

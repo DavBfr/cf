@@ -26,7 +26,7 @@ class MemCache implements arrayaccess {
 
 	public function __construct($lifetime = MEMCACHE_LIFETIME) {
 		$this->lifetime = $lifetime;
-		$this->apc = false;function_exists('apc_store') && ini_get('apc.enabled') && !DEBUG;
+		$this->apc = MEMCACHE_ENABLED && function_exists('apc_store') && ini_get('apc.enabled') && !DEBUG;
 	}
 
 
