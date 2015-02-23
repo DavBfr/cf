@@ -89,7 +89,7 @@ abstract class Model {
 		foreach ($config->get("model", array()) as $table => $columns) {
 			$baseClassName = "Base" . ucfirst($table) . "Model";
 			$filename = BddPlugin::BASE_MODEL_DIR . "/" . $baseClassName . ".class.php";
-			Cli::pln($baseClassName);
+			Cli::pln("     $baseClassName");
 			$f = fopen($filename, "w");
 			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
 			$colstr = ArrayWriter::toString($columns, 4);

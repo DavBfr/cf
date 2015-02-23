@@ -161,7 +161,9 @@ class Cli {
 		Plugins::dispatchAllReversed("preinstall");
 		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("install");
+		Plugins::dispatchAll("postinstall");
 		Plugins::dispatchAllReversed("update");
+		Plugins::dispatchAll("postupdate");
 	}
 
 
@@ -169,6 +171,14 @@ class Cli {
 		self::pln("Updating the application");
 		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("update");
+		Plugins::dispatchAll("postupdate");
+	}
+
+
+	public static function clean() {
+		self::pln("Clean the application cache");
+		System::rmtree(CACHE_DIR);
+		System::rmtree(WWW_CACHE_DIR);
 	}
 
 }

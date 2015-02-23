@@ -33,12 +33,29 @@ class System {
 			$dest = WWW_DIR . "/" . basename($resource);
 		else
 			$dest = WWW_DIR . "/" . $dest;
+		
+		Logger::debug("publish $resource => $dest");
 
 		if (is_link($dest))
 			unlink($dest);
 
 		if (! file_exists($dest)) {
 			symlink($resource, $dest);
+		}
+	}
+
+
+	public static function rmtree($path) {
+		if (is_dir($path)) {
+			foreach (glob("{$path}/*") as $file) {
+				if (is_dir($file)) {
+					self::rmtree($file);
+				} else {
+					Logger::debug("delete $file");
+					unlink($file);
+				}
+			}
+			rmdir($path);
 		}
 	}
 

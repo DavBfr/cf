@@ -116,6 +116,7 @@ class CorePlugin extends Plugins {
 		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");
 		$cli->addCommand("install", array("Cli", "install"), "Install the application");
 		$cli->addCommand("update", array("Cli", "update"), "Update the application");
+		$cli->addCommand("clean", array("Cli", "clean"), "Clean the application cache");
 	}
 
 }
