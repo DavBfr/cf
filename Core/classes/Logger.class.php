@@ -77,6 +77,18 @@ class Logger {
 	public function log($data, $level) {
 		if ($level >= $this->level || DEBUG) {
 			$raddr = array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : '-';
+			if (is_array($data)) {
+				$output = array();
+				foreach($data as $item) {
+					if (is_string($item) || is_numeric($item))
+						$output[] = (string)$item;
+					elseif (is_object($item))
+						$output[] = "<" . get_class($item) . (method_exists($item, '__toString') ? ": " . (string)$item : "") . ">";
+					else
+					$output[] = json_encode($item);
+				}
+				$data = implode(" ", $output);
+			}
 			$data = "[CF] [" . @date('M j H:i:s') . "] [" . $raddr . "] [" . self::$levels[$level] . "] " . $data;
 			fwrite($this->stderr, $data . "\n");
 			if (DEBUG) {
@@ -86,33 +98,33 @@ class Logger {
 	}
 
 
-	public static function debug($data) {
+	public static function debug() {
 		$logger = Logger::getInstance();
-		$logger->log($data, self::DEBUG);
+		$logger->log(func_get_args(), self::DEBUG);
 	}
 
 
-	public static function info($data) {
+	public static function info() {
 		$logger = Logger::getInstance();
-		$logger->log($data, self::INFO);
+		$logger->log(func_get_args(), self::INFO);
 	}
 
 
-	public static function warning($data) {
+	public static function warning() {
 		$logger = Logger::getInstance();
-		$logger->log($data, self::WARNING);
+		$logger->log(func_get_args(), self::WARNING);
 	}
 
 
-	public static function error($data) {
+	public static function error() {
 		$logger = Logger::getInstance();
-		$logger->log($data, self::ERROR);
+		$logger->log(func_get_args(), self::ERROR);
 	}
 
 
-	public static function critical($data) {
+	public static function critical() {
 		$logger = Logger::getInstance();
-		$logger->log($data, self::CRITICAL);
+		$logger->log(func_get_args(), self::CRITICAL);
 	}
 
 }
