@@ -33,9 +33,10 @@ class ModelData implements Iterator {
 		$this->foreign = array();
 		$this->isempty = true;
 
-		if (is_a($values, "PDOStatement")) {
+		if (!is_null($values) && !is_array($values)) {
 			$this->statement = $values;
-			$values = $this->statement->fetch();
+			$this->statement->rewind();
+			$values = $this->statement->current();
 		}
 
 		$this->isnew = $values === NULL || $values === false;
@@ -243,13 +244,19 @@ class ModelData implements Iterator {
 			}
 			$this->isnew = false;
 		} else {
-			foreach($this->model->getFields() as $field) {
-				if ($field->isAutoincrement()) {
-					$bdd->update($this->model->getTableName(), $this->values, $field->getName());
-					$this->model->dataChanged();
-					break;
-				}
-			}
+			$bdd->update($this->model->getTableName(), $this->values, $this->model->getPrimaryField());
+			$this->model->dataChanged();
+		}
+	}
+
+
+	public function delete() {
+		$bdd = Bdd::getInstance();
+		if (!$this->isnew) {
+			$pf = $this->model->getPrimaryField();
+			$pv = $this->get($pf);
+			$bdd->delete($this->model->getTableName(), $pf, $pv);
+			$this->isnew = true;
 		}
 	}
 

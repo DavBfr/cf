@@ -87,7 +87,18 @@ function CrudService($http, service) {
 	};
 
 	this.getOne = function (id, onsuccess, onerror) {
-		$http.get(service_url + "/" + id).success(function (data, status) {
+		$http.get(service_url + "/get/" + id).success(function (data, status) {
+			if (data.success)
+				onsuccess && onsuccess(data, status);
+			else
+				onerror && onerror(data.error);
+		}).error(function (data, status) {
+			onerror && onerror(data, status);
+		});
+	};
+
+	this.getNew = function (onsuccess, onerror) {
+		$http.get(service_url + "/new").success(function (data, status) {
 			if (data.success)
 				onsuccess && onsuccess(data, status);
 			else
@@ -144,24 +155,45 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 	};
 
 	this.get_fiche = function(id) {
-		CrudService.getOne(id, function (data) {
-			$scope.id = id;
-			$scope.item = data.data;
-			if (data.foreigns) {
-				for (item in data.foreigns) {
-					var name = data.foreigns[item];
-					(function(name_){
-						CrudService.getForeign(name, function(data) {
-							$scope.foreign[name_] = data.list;
-						});
-					})(name);
+		if (!id || id=='new') {
+			$scope.id = null;
+			CrudService.getNew(function (data) {
+				$scope.item = data.data;
+				if (data.foreigns) {
+					for (item in data.foreigns) {
+						var name = data.foreigns[item];
+						(function(name_){
+							CrudService.getForeign(name, function(data) {
+								$scope.foreign[name_] = data.list;
+							});
+						})(name);
+					}
 				}
-			}
-			$scope.loading = false;
-		}, function (data) {
-			$scope.loading = false;
-			NotificationFactory.error(data);
-		});
+				$scope.loading = false;
+			}, function (data) {
+				$scope.loading = false;
+				NotificationFactory.error(data);
+			});
+		} else {
+			CrudService.getOne(id, function (data) {
+				$scope.id = id;
+				$scope.item = data.data;
+				if (data.foreigns) {
+					for (item in data.foreigns) {
+						var name = data.foreigns[item];
+						(function(name_){
+							CrudService.getForeign(name, function(data) {
+								$scope.foreign[name_] = data.list;
+							});
+						})(name);
+					}
+				}
+				$scope.loading = false;
+			}, function (data) {
+				$scope.loading = false;
+				NotificationFactory.error(data);
+			});
+		}
 	};
 
 	$scope.del = function(id) {

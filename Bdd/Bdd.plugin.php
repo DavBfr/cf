@@ -59,8 +59,8 @@ class BddPlugin extends Plugins {
 					if (substr($file, -15) == "Model.class.php" && substr($file, 0, 4) != "Base") {
 						$class = substr($file, 0, -10);
 						$model = new $class();
-						$bdd->query($bdd->dropTable($model->getTableName()));
-						$bdd->query($model->createTable());
+						$bdd->dropTable($model->getTableName());
+						$model->createTable();
 					}
 				}
 				closedir($dh);

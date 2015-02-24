@@ -18,6 +18,7 @@
  **/
 
 class Collection {
+	private $bdd;
 	private $fields;
 	private $tables;
 	private $joint;
@@ -29,7 +30,12 @@ class Collection {
 	private $distinct;
 
 
-	protected function __construct() {
+	protected function __construct($bdd) {
+		if ($bdd === NULL)
+			$this->bdd = Bdd::getInstance();
+		else
+		$this->bdd = $bdd;
+
 		$this->fields = array();
 		$this->tables = array();
 		$this->joint = array();
@@ -42,8 +48,8 @@ class Collection {
 	}
 
 
-	public static function Query($from=NULL) {
-		$c = new self();
+	public static function Query($from=NULL, $bdd=NULL) {
+		$c = new self($bdd);
 		if ($from !== NULL)
 		  $c->from($from);
 		return $c;
@@ -95,7 +101,7 @@ class Collection {
 
 
 	public function leftJoin($table, $filter) {
-		$this->joint[] = "LEFT JOIN $table ON $filter";
+		$this->joint[] = array($table, $filter);
 		return $this;
 	}
 
@@ -173,59 +179,23 @@ class Collection {
 	}
 
 
-	public function getQuery($pos = 0) {
-		$query = "SELECT ".($this->distinct ? "DISTINCT ":"");
-
-		if (count($this->fields) == 0)
-			$query .= "*";
-		else {
-			$fields = array();
-			foreach($this->fields as $k=>$v) {
-				if (is_int($k))
-					$fields[] = $v;
-				else
-					$fields[] = "$v as $k";
-			}
-			$query .= implode(", ", $fields);
-
-		}
-
-		$query .= " FROM ".implode(", ", $this->tables);
-
-		if (count($this->joint) > 0)
-			$query .= " ".implode(" ", $this->joint);
-
-		if (count($this->where) > 0)
-			$query .= " WHERE (".implode(") AND (", $this->where).")";
-
-		if (count($this->group) > 0)
-			$query .= " GROUP BY ".implode(", ", $this->group);
-
-		if (count($this->order) > 0)
-			$query .= ' ORDER BY '. implode(", ", $this->order);
-
-		if ($this->limit)
-			$query .= ' LIMIT ' . ($pos * $this->limit) .", " . $this->limit;
-
-		return $query;
+	public function getQueryString($pos = 0) {
+		return $this->bdd->getQueryString($this->fields, $this->tables, $this->joint, $this->where, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValues($pos = 0) {
-		$bdd = Bdd::getInstance();
-		$sql = $this->getQuery($pos);
-		$result = $bdd->query($sql, $this->params);
-		return $result;
+		return $this->bdd->getQueryValues($this->fields, $this->tables, $this->joint, $this->where, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValuesArray($pos = 0) {
-		$collection = array();
-		$result = $this->getValues($pos);
-		foreach ($result as $row) {
-			$collection[] = $row;
-		}
-		return $collection;
+		return $this->bdd->getQueryValuesArray($this->fields, $this->tables, $this->joint, $this->where, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
+	}
+
+
+	public function getCount() {
+		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->group, $this->params, $this->distinct);
 	}
 
 }

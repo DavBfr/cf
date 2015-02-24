@@ -51,9 +51,14 @@ abstract class Model {
 					if (substr($file, -15) == "Model.class.php" && substr($file, 0, 4) != "Base") {
 						$class = substr($file, 0, -10);
 						$model = new $class();
-						Cli::pln($bdd->dropTable($model->getTableName()) . ";");
-						Cli::pln($model->createTable() . ";");
-						Cli::pln("");
+						$drop = $bdd->dropTableQuery($model->getTableName());
+						$create = $bdd->createTableQuery($model->table, $model->fields);
+						if ($create) {
+							if ($drop)
+								Cli::pln($drop . ";");
+							Cli::pln($create . ";");
+							Cli::pln("");
+						}
 					}
 				}
 				closedir($dh);
@@ -78,6 +83,7 @@ abstract class Model {
 
 
 	public static function createClassesFromConfig($args) {
+		$bdd = Bdd::getInstance();
 		$config = Config::getInstance();
 		if (! is_dir(BddPlugin::MODEL_DIR)) {
 			mkdir(BddPlugin::MODEL_DIR, 0744, true);
@@ -92,10 +98,17 @@ abstract class Model {
 			Cli::pln("     $baseClassName");
 			$f = fopen($filename, "w");
 			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
-			$colstr = ArrayWriter::toString($columns, 4);
+			$new_columns = array();
+			$new_names = array();
 			foreach($columns as $name => $params) {
-				fwrite($f, "\tconst ".strtoupper($name)." = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : "int") . "\n");
-				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($name), $colstr);
+				list($_name, $params) = $bdd->updateModelField($name, $params);
+				$new_columns[$_name] = $params;
+				$new_names[$_name] = $name;
+			}
+			$colstr = ArrayWriter::toString($new_columns, 4);
+			foreach($new_columns as $name => $params) {
+				fwrite($f, "\tconst ".strtoupper($new_names[$name])." = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : ModelField::TYPE_AUTO) . "\n");
+				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($new_names[$name]), $colstr);
 			}
 
 			fwrite($f, "\n\n\tprotected function getTable() {\n");

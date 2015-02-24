@@ -63,7 +63,8 @@ abstract class Crud extends Rest {
 		$this->addRoute("/count", "GET", "get_count");
 		$this->addRoute("/list", "GET", "get_list_partial");
 		$this->addRoute("/detail", "GET", "get_detail_partial");
-		$this->addRoute("/:id", "GET", "get_item");
+		$this->addRoute("/new", "GET", "get_new");
+		$this->addRoute("/get/:id", "GET", "get_item");
 		$this->addRoute("/:id", "DELETE", "delete_item");
 		$this->addRoute("/", "PUT", "new_item");
 		$this->addRoute("/:id", "POST", "update_item");
@@ -157,18 +158,12 @@ abstract class Crud extends Rest {
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
 			$col->filter("%".$_GET["q"]."%", "LIKE");
 		}
-		$col->resetSelect()->SelectAs("COUNT(".$this->model->getPrimaryField().")", "n");
-
-		$reponse = $col->getValues();
-		$count = $reponse->fetch(PDO::FETCH_NUM);
-		if ($count)
-			Output::success(array(
-				'count'=>intVal($count[0]),
-				'limit'=>$this->options["limit"],
-				'pages'=>ceil(intVal($count[0]) / $this->options["limit"])
-			));
-
-		Output::error("No data");
+		$count = $col->getCount();
+		Output::success(array(
+			'count'=>intVal($count),
+			'limit'=>$this->options["limit"],
+			'pages'=>ceil(intVal($count) / $this->options["limit"])
+		));
 	}
 
 
@@ -186,6 +181,15 @@ abstract class Crud extends Rest {
 		Input::ensureRequest($r, array("id"));
 		$id = $r["id"];
 		$item = $this->model->getById($id);
+		
+		$foreigns = $this->getForeigns($item);
+		
+		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$item->getValues()));
+	}
+
+
+	protected function get_new($r) {
+		$item = $this->model->newRow();
 		
 		$foreigns = $this->getForeigns($item);
 		

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-class PDOHelper {
+class PDOHelper extends BddHelper {
 	protected $pdo;
 
 	public function __construct($dsn, $login, $password) {
@@ -32,11 +32,6 @@ class PDOHelper {
 	}
 
 
-	protected function getParams() {
-		return array();
-	}
-
-
 	public function quote($string) {
 		return $this->pdo->quote($string);
 	}
@@ -47,16 +42,11 @@ class PDOHelper {
 	}
 
 
-	public function lastInsertId() {
-		return $this->pdo->lastInsertId();
-	}
-
-
 	public function insert($table, $fields) {
 		$this->query("INSERT INTO " .
 			$table . "(" . implode(", ", array_keys($fields)) .
 			") VALUES (:" . implode(", :", array_keys($fields)) . ")", $fields);
-		return $this->lastInsertId();
+		return $this->pdo->lastInsertId();
 	}
 
 
@@ -79,7 +69,7 @@ class PDOHelper {
 
 
 	public function query($sql, $params = array()) {
-		Logger::Debug("Query ${sql} " . json_encode($params));
+		Logger::Debug("Query ${sql} ", $params);
 		$reponse = $this->pdo->prepare($sql);
 		if ($reponse === false) {
 			$error = $this->pdo->errorInfo();
@@ -106,12 +96,17 @@ class PDOHelper {
 	}
 
 
-	public function dropTable($name) {
+	public function dropTableQuery($name) {
 		return "DROP TABLE IF EXISTS `$name`";
 	}
 
 
-	public function createTable($name, $table_structure) {
+	public function dropTable($name) {
+		$this->query($this->dropTableQuery($name));
+	}
+
+
+	public function createTableQuery($name, $table_structure) {
 		$columns = $this->buildTableColumns($table_structure);
 		$query  = "CREATE TABLE IF NOT EXISTS `${name}` (\n  ";
 		$cols = array();
@@ -122,6 +117,11 @@ class PDOHelper {
 		$query .= "\n)";
 		return $query;
 	}
+	
+	
+	public function createTable($name, $table_structure) {
+		$this->query($this->createTableQuery($name, $table_structure));
+	}
 
 
 	public function getTables() {
@@ -131,6 +131,107 @@ class PDOHelper {
 
 	public function getTableInfo($name) {
 		return NULL;
+	}
+
+
+	public function getQueryString($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct) {
+		$query = "SELECT ".($distinct ? "DISTINCT ":"");
+
+		if (count($fields) == 0)
+			$query .= "*";
+		else {
+			$_fields = array();
+			foreach($fields as $k=>$v) {
+				if (is_int($k))
+					$_fields[] = $v;
+				else
+					$_fields[] = "$v as $k";
+			}
+			$query .= implode(", ", $_fields);
+
+		}
+
+		$query .= " FROM ".implode(", ", $tables);
+
+		if (count($joint) > 0) {
+			$joints = array();
+		
+			foreach($joint as $k=>$v) {
+				$joints[] = "LEFT JOIN ${v[0]} ON ${v[1]}";
+			}
+			$query .= " ".implode(" ", $joint);
+		}
+
+		if (count($where) > 0)
+			$query .= " WHERE (".implode(") AND (", $where).")";
+
+		if (count($group) > 0)
+			$query .= " GROUP BY ".implode(", ", $group);
+
+		if (count($order) > 0)
+			$query .= ' ORDER BY '. implode(", ", $order);
+
+		if ($limit)
+			$query .= ' LIMIT ' . ($pos * $limit) .", " . $limit;
+
+		return $query;
+	}
+
+
+	public function getQueryValues($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct) {
+		$sql = $this->getQueryString($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct);
+		return new PDOStatementHelper($this->query($sql, $params));
+	}
+
+
+	public function getQueryValuesArray($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct) {
+		$collection = array();
+		$result = $this->getQueryValues($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct);
+		foreach ($result as $row) {
+			$collection[] = $row;
+		}
+		return $collection;
+	}
+
+
+	public function getQueryCount($tables, $joint, $where, $group, $params, $distinct) {
+		$sql = $this->getQueryString(array("COUNT(*)"), $tables, $joint, $where, array(), $group, $params, NULL, 0, $distinct);
+		$values = $this->query($sql, $params);
+		$count = $values->fetch(PDO::FETCH_NUM);
+		return intVal($count[0]);
+	}
+
+}
+
+
+class PDOStatementHelper extends BddCursorHelper {
+	protected $current = null;
+
+	public function current() {
+		return $this->current;
+	}
+
+
+	public function key() {
+		return null;
+	}
+
+
+	public function next() {
+		$this->current = $this->cursor->fetch(PDO::FETCH_ASSOC);
+	}
+
+
+	public function rewind() {
+		if ($this->current === null)
+			$this->current = $this->cursor->fetch(PDO::FETCH_ASSOC);
+		else
+			throw new Exception("Cannot rewind PDOStatement");
+	}
+
+
+	public function valid() {
+		return $this->current !== false && $this->current !== null;
 	}
 
 }

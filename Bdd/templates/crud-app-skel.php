@@ -13,7 +13,7 @@ app.controller('<?php echo $this->out("umodel") ?>Controller', function ($scope,
 app.controller('<?php echo $this->out("umodel") ?>DetailController', function ($scope, $timeout, $location, $route, $routeParams, <?php echo $this->out("umodel") ?>Service, NotificationFactory) {
 	angular.extend(this, new CrudController($scope, $timeout, $location, $route, <?php echo $this->out("umodel") ?>Service, NotificationFactory));
 	this.init();
-	this.get_fiche(parseInt($routeParams.id));
+	this.get_fiche($routeParams.id);
 });
 
 function Add<?php echo $this->out("umodel") ?>Routes($routeProvider) {

@@ -18,6 +18,7 @@
  **/
 
 class ModelField {
+	const TYPE_AUTO = "auto";
 	const TYPE_INT = "int";
 	const TYPE_DECIMAL = "num";
 	const TYPE_BOOL = "bool";

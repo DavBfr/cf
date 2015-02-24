@@ -44,63 +44,8 @@ class Bdd {
 	}
 
 
-	public function quote($string) {
-		return $this->helper->quote($string);
-	}
-
-
-	public function quoteIdent($field) {
-		return $this->helper->quoteIdent($field);
-	}
-
-
-	public function lastInsertId() {
-		return $this->helper->lastInsertId();
-	}
-
-
-	public function insert($table, $fields) {
-		return $this->helper->insert($table, $fields);
-	}
-
-
-	public function update($table, $fields, $key) {
-		return $this->helper->update($table, $fields, $key);
-	}
-
-
-	public function delete($table, $key, $value) {
-		return $this->helper->delete($table, $key, $value);
-	}
-
-
-	public function query($sql, $params = array()) {
-		return $this->helper->query($sql, $params);
-	}
-
-
-	public function tableExists($name) {
-		return $this->helper->tableExists($name);
-	}
-
-
-	public function dropTable($name) {
-		return $this->helper->dropTable($name);
-	}
-
-
-	public function createTable($name, $table_structure) {
-		return $this->helper->createTable($name, $table_structure);
-	}
-
-
-	public function getTables() {
-		return $this->helper->getTables();
-	}
-
-
-	public function getTableInfo($name) {
-		return $this->helper->getTableInfo($name);
+	public function __call($name, $arguments) {
+		return call_user_func_array(array($this->helper, $name), $arguments);
 	}
 
 }
