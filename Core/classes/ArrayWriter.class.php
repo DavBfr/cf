@@ -28,7 +28,7 @@ class ArrayWriter {
 		return var_export($array, true);
 
 		if (!is_array($array)) {
-			return quote($array);
+			return self::quote($array);
 		}
 
 		$strings=array();
@@ -48,7 +48,7 @@ class ArrayWriter {
 		if (is_bool($val))
 			return $val ? "true" : "false";
 
-		return "\"" . $val . "\"";
+		return "'" . preg_quote((string)$val, "'") . "'";
 	}
 
 }
