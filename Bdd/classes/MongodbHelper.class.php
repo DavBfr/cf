@@ -229,6 +229,31 @@ class MongodbHelper extends BddHelper {
 		return array($name, $params);
 	}
 
+
+	public function getBlob($id) {
+		Logger::debug("getBlob($id)");
+		$gridFS = $this->db->getGridFS();
+		$file = $gridFS->get($id);
+		if ($file)
+			return $file->getBytes();
+		
+		return null;
+	}
+
+
+	public function setBlob($id, $value) {
+		Logger::debug("setBlob($id)");
+		$gridFS = $this->db->getGridFS();
+		$metadata = array();
+		if ($id !== null) {
+			$gridFS->delete($id);
+			$metadata['_id'] = $id;
+		}
+		
+		$id = $gridFS->storeBytes($value, $metadata);
+		return $id;
+	}
+
 }
 
 

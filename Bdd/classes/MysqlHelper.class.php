@@ -30,7 +30,7 @@ class MysqlHelper extends PDOHelper {
 	protected function buildTableColumns($table_structure) {
 		$columns = Array();
 		foreach ($table_structure as $column) {
-			$ctype = $column->getDbType();
+			$ctype = $this->getDbType($column->getType());
 			if (!$column->hasNull())
 				$ctype .= " NOT NULL";
 			if ($column->isPrimary())
@@ -78,5 +78,16 @@ class MysqlHelper extends PDOHelper {
 		}
 		return $fields;
 	}
+
+
+	protected function getDbType($type) {
+		switch ($type) {
+			case ModelField::TYPE_BLOB:
+				return "LONGBLOB";
+			default:
+				return parent::getDbType($type);
+		}
+	}
+
 
 }

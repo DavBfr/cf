@@ -62,6 +62,15 @@ abstract class BddHelper {
 
 	abstract public function getTableInfo($name);
 
+	public function getBlob($value) {
+		return $value;
+	}
+
+
+	public function setBlob($oldvalue, $newvalue) {
+		return $newvalue;
+	}
+
 
 	public function updateModelField($name, $params) {
 		if (!array_key_exists("type", $params) || $params["type"] == ModelField::TYPE_AUTO) {
@@ -110,5 +119,10 @@ abstract class BddCursorHelper implements Iterator {
 	public function valid() {
 		return $this->cursor->valid();
 	}
+
+}
+
+
+class BddBlobHelper {
 
 }

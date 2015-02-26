@@ -156,6 +156,24 @@ class ModelData implements Iterator {
 	}
 
 
+	public function getBlob($field) {
+		if (!array_key_exists($field, $this->values))
+			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
+		
+		$bdd = Bdd::getInstance();
+		return $bdd->getBlob($this->values[$field]);
+	}
+
+
+	public function setBlob($field, $value) {
+		if (!array_key_exists($field, $this->values))
+			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
+		
+		$bdd = Bdd::getInstance();
+		$this->values[$field] = $bdd->setBlob($this->values[$field], $value);
+	}
+
+
 	private function _set($field, $value) {
 		if (!is_a($field, "ModelField"))
 			$field = $this->model->getField($field);

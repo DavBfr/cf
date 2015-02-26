@@ -22,7 +22,7 @@ class SqliteHelper extends PDOHelper {
 	protected function buildTableColumns($table_structure) {
 		$columns = Array();
 		foreach ($table_structure as $column) {
-			$ctype = $column->getDbType();
+			$ctype = $this->getDbType($column->getType());
 			if (!$column->hasNull())
 				$ctype .= " NOT NULL";
 			if ($column->isPrimary())

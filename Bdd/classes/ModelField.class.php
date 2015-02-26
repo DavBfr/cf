@@ -29,6 +29,7 @@ class ModelField {
 	const TYPE_DATE = "date"; // Y-m-d
 	const TYPE_TIME = "time"; // h:i:s
 	const TYPE_TIMESTAMP = "ts";
+	const TYPE_BLOB = "blob";
 
 	protected $table;
 	protected $name;
@@ -134,6 +135,11 @@ class ModelField {
 	}
 
 
+	public function isBlob() {
+		return $this->props["type"] == self::TYPE_BLOB;
+	}
+
+
 	public function isSelect() {
 		return $this->isForeign();
 	}
@@ -156,29 +162,6 @@ class ModelField {
 
 	public function getType() {
 		return $this->props["type"];
-	}
-
-
-	public function getDbType() {
-		switch ($this->props["type"]) {
-			case self::TYPE_INT:
-			case self::TYPE_TIMESTAMP:
-			case self::TYPE_BOOL:
-				return "INTEGER";
-			case self::TYPE_DECIMAL:
-				return "NUMBER";
-				case self::TYPE_TEXT:
-			case self::TYPE_PASSWD:
-			case self::TYPE_EMAIL:
-			case self::TYPE_URL:
-				return "TEXT";
-			case self::TYPE_DATE:
-				return "DATE";
-			case self::TYPE_TIME:
-				return "TIME";
-			default:
-				throw new Exception("Unable to find column type for " . $this->getName());
-		}
 	}
 
 
@@ -228,6 +211,8 @@ class ModelField {
 				return is_numeric($value) || preg_match('/^(.\d)*$/', $value);
 			case self::TYPE_TIMESTAMP:
 				return preg_match('/^\d\d\d\d-(\d)?\d-(\d)?\d \d\d:\d\d:\d\d$/', $value);
+			case self::TYPE_BLOB:
+				return true;
 			default:
 				throw new Exception("Unknown field type '".$this->getType()."'!");
 		}

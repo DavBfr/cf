@@ -201,6 +201,31 @@ class PDOHelper extends BddHelper {
 		return intVal($count[0]);
 	}
 
+
+	protected function getDbType($type) {
+		switch ($type) {
+			case ModelField::TYPE_INT:
+			case ModelField::TYPE_TIMESTAMP:
+			case ModelField::TYPE_BOOL:
+				return "INTEGER";
+			case ModelField::TYPE_DECIMAL:
+				return "NUMBER";
+				case ModelField::TYPE_TEXT:
+			case ModelField::TYPE_PASSWD:
+			case ModelField::TYPE_EMAIL:
+			case ModelField::TYPE_URL:
+				return "TEXT";
+			case ModelField::TYPE_DATE:
+				return "DATE";
+			case ModelField::TYPE_TIME:
+				return "TIME";
+			case ModelField::TYPE_BLOB:
+				return "BLOB";
+			default:
+				throw new Exception("Unable to find column type for " . $this->getName());
+		}
+	}
+
 }
 
 

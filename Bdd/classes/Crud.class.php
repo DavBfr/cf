@@ -181,10 +181,17 @@ abstract class Crud extends Rest {
 		Input::ensureRequest($r, array("id"));
 		$id = $r["id"];
 		$item = $this->model->getById($id);
+		$values = array();
+		foreach ($this->model->getFields() as $field) {
+			if ($field->isEditable()) {
+				$name = $field->getName();
+				$values[$name] = $item->get($name);
+			}
+		}
 		
 		$foreigns = $this->getForeigns($item);
 		
-		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$item->getValues()));
+		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$values));
 	}
 
 
