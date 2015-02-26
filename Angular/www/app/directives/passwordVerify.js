@@ -28,7 +28,6 @@ app.directive("passwordVerify", function() {
 				
 				if (scope.passwordVerify || ctrl.$viewValue) {
 					combined = scope.passwordVerify + '_' + ctrl.$viewValue;
-					console.log(combined);
 				}
 				return combined;
 			}, function(value) {
