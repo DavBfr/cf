@@ -35,6 +35,7 @@ configure("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && 
 configure("SESSION_NAME", "CF");
 configure("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"));
 configure("SESSION_REGENERATE", SESSION_TIMEOUT);
+configure("API_TOKEN_HEADER", "cf-token");
 configure("ERROR_TEMPLATE", "error.php");
 configure("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache");
 configure("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");

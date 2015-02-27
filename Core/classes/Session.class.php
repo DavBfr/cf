@@ -145,7 +145,16 @@ class Session {
 
 
 	public static function isLoggedApi() {
-		return self::hasSession() && self::hasRight("logged_api");
+		if (self::hasSession() && self::hasRight("logged_api"))
+			return true;
+		
+		$headers = array_change_key_case(getallheaders(), CASE_LOWER);
+		if (array_key_exists(API_TOKEN_HEADER, $headers)) {
+			$token = $headers[API_TOKEN_HEADER];
+			return Plugins::dispatch("token_login", $token) === true;
+		}
+
+		return false;
 	}
 
 
