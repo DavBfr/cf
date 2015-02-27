@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  **/
 
  /**
@@ -23,7 +23,7 @@
  * Version 0.3 / genuine.
  *
  * Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
- * the public domain.  Revised in subsequent years, still public domain.
+ * the public domain. Revised in subsequent years, still public domain.
  *
  * There's absolutely no warranty.
  *
@@ -63,7 +63,7 @@ class Password {
 	}
 	
 	
-	private function getRandomBytes($count) {
+	public function getRandomBytes($count) {
 		$output = '';
 		if (is_readable('/dev/urandom') &&
 		($fh = @fopen('/dev/urandom', 'rb'))) {
@@ -142,7 +142,7 @@ class Password {
 		
 		# We're kind of forced to use MD5 here since it's the only
 		# cryptographic primitive available in all versions of PHP
-		# currently in use.  To implement our own low-level crypto
+		# currently in use. To implement our own low-level crypto
 		# in PHP would result in much worse performance and
 		# consequently in lower iteration counts and hashes that are
 		# quicker to crack (by non-PHP code).
@@ -187,7 +187,7 @@ class Password {
 		# This one needs to use a different order of characters and a
 		# different encoding scheme from the one in encode64() above.
 		# We care because the last character in our encoded string will
-		# only represent 2 bits.  While two known implementations of
+		# only represent 2 bits. While two known implementations of
 		# bcrypt will happily accept and correct a salt string which
 		# has the 4 unused bits set to non-zero, we do not want to take
 		# chances and we also do not want to waste an additional byte
@@ -229,28 +229,24 @@ class Password {
 		
 		if (CRYPT_BLOWFISH == 1 && !$this->portable_hashes) {
 			$random = $this->getRandomBytes(16);
-			$hash =
-			crypt($password, $this->gensalt_blowfish($random));
+			$hash = crypt($password, $this->gensalt_blowfish($random));
 			if (strlen($hash) == 60)
-			return $hash;
+				return $hash;
 		}
 		
 		if (CRYPT_EXT_DES == 1 && !$this->portable_hashes) {
 			if (strlen($random) < 3)
-			$random = $this->getRandomBytes(3);
-			$hash =
-			crypt($password, $this->gensalt_extended($random));
+				$random = $this->getRandomBytes(3);
+			$hash = crypt($password, $this->gensalt_extended($random));
 			if (strlen($hash) == 20)
-			return $hash;
+				return $hash;
 		}
 		
 		if (strlen($random) < 6)
-		$random = $this->getRandomBytes(6);
-		$hash =
-		$this->crypt_private($password,
-		$this->gensalt_private($random));
+			$random = $this->getRandomBytes(6);
+		$hash = $this->crypt_private($password, $this->gensalt_private($random));
 		if (strlen($hash) == 34)
-		return $hash;
+			return $hash;
 		
 		# Returning '*' on error is safe here, but would _not_ be safe
 		# in a crypt(3)-like function used _both_ for generating new
@@ -262,7 +258,7 @@ class Password {
 	public function check($password, $stored_hash) {
 		$hash = $this->crypt_private($password, $stored_hash);
 		if ($hash[0] == '*')
-		$hash = crypt($password, $stored_hash);
+			$hash = crypt($password, $stored_hash);
 		
 		return $hash == $stored_hash;
 	}
@@ -345,7 +341,7 @@ class Password {
 		
 		$status = proc_close($process);
 		
-		// There must be a linefeed character at the end.  Remove it.
+		// There must be a linefeed character at the end. Remove it.
 		if (substr($output, -1) === "\n")
 			$output = substr($output, 0, -1);
 		else
