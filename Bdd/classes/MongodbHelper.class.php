@@ -177,7 +177,7 @@ class MongodbHelper extends BddHelper {
 				case ">="; $query[$field] = array('$gte' => $value); break;
 				case "<="; $query[$field] = array('$lte' => $value); break;
 				case "<"; $query[$field] = array('$lt' => $value); break;
-				case "IS"; $query[$field] = 'null'; break;
+				case "IS"; $query[$field] = null; break;
 				default: throw new Exception("Unknown operation $w");
 			}
 		}
