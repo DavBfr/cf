@@ -14,6 +14,7 @@
 		<span class="glyphicon glyphicon-plus"></span> <?php $this->tr("core.new") ?>
 	</button>
 	<?php endif ?>
+	<?php if ($this->has("buttons_top")) $this->out("buttons_top"); ?>
 </form>
 
 <div data-ng-hide="!loading" class="panel panel-default">
