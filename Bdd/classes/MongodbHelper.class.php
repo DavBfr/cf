@@ -265,8 +265,10 @@ class MongodbHelper extends BddHelper {
 			$metadata['_id'] = $id;
 		}
 		
-		$id = $gridFS->storeBytes($value, $metadata);
-		return $id;
+		if ($value === null)
+			return null;
+		
+		return $gridFS->storeBytes($value, $metadata);
 	}
 
 }
