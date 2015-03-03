@@ -72,6 +72,11 @@ abstract class BddHelper {
 	}
 
 
+	public function updateTableName($name) {
+		return $name;
+	}
+
+
 	public function updateModelField($name, $params) {
 		if (!array_key_exists("type", $params) || $params["type"] == ModelField::TYPE_AUTO) {
 			$params["type"] = ModelField::TYPE_INT;

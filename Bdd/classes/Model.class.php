@@ -97,7 +97,7 @@ abstract class Model {
 			$filename = BddPlugin::BASE_MODEL_DIR . "/" . $baseClassName . ".class.php";
 			Cli::pln("     $baseClassName");
 			$f = fopen($filename, "w");
-			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($table) . ";\n");
+			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($bdd->updateTableName($table)) . ";\n");
 			$new_columns = array();
 			$new_names = array();
 			foreach($columns as $name => $params) {
