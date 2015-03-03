@@ -40,13 +40,13 @@ abstract class BddHelper {
 
 	abstract public function delete($table, $key, $value);
 
-	abstract public function getQueryString($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct);
+	abstract public function getQueryString($fields, $tables, $joint, $where, $filter, $order, $group, $params, $limit, $pos, $distinct);
 
-	abstract public function getQueryValues($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct);
+	abstract public function getQueryValues($fields, $tables, $joint, $where, $filter, $order, $group, $params, $limit, $pos, $distinct);
 
-	abstract public function getQueryValuesArray($fields, $tables, $joint, $where, $order, $group, $params, $limit, $pos, $distinct);
+	abstract public function getQueryValuesArray($fields, $tables, $joint, $where, $filter, $order, $group, $params, $limit, $pos, $distinct);
 
-	abstract public function getQueryCount($tables, $joint, $where, $group, $params, $distinct);
+	abstract public function getQueryCount($tables, $joint, $where, $filter, $group, $params, $distinct);
 
 	abstract public function tableExists($name);
 

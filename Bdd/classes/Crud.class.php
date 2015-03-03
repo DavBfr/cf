@@ -104,7 +104,7 @@ abstract class Crud extends Rest {
 		->limit($this->options["limit"]);
 		
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
-			$col->filter("%".$_GET["q"]."%", "LIKE");
+			$col->filter($_GET["q"]);
 		}
 
 		$list = [];
@@ -128,7 +128,7 @@ abstract class Crud extends Rest {
 		$this->filterList($col);
 		
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
-			$col->filter("%".$_GET["q"]."%", "LIKE");
+			$col->filter($_GET["q"]);
 		}
 		
 		$list = array();
@@ -156,7 +156,7 @@ abstract class Crud extends Rest {
 		$col = Collection::Query($this->model->getTableName());
 		$this->filterList($col);
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
-			$col->filter("%".$_GET["q"]."%", "LIKE");
+			$col->filter($_GET["q"]);
 		}
 		$count = $col->getCount();
 		Output::success(array(

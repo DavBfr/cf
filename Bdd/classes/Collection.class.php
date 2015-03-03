@@ -23,6 +23,7 @@ class Collection {
 	private $tables;
 	private $joint;
 	private $where;
+	private $filter;
 	private $order;
 	private $group;
 	private $params;
@@ -133,17 +134,8 @@ class Collection {
 	}
 
 
-	public function filter($value, $operator="=") {
-		$bdd = Bdd::getInstance();
-		$value = $bdd->quote($value);
-		
-		$filter = array();
-		foreach ($this->fields as $field) {
-			$filter[] = $bdd->quoteIdent($field) . " " . $operator . " " . $value;
-		}
-		if (count($filter) > 0) {
-			$this->where[] = implode(" OR ", $filter);
-		}
+	public function filter($value) {
+		$this->filter = $value;
 	}
 
 
@@ -180,22 +172,22 @@ class Collection {
 
 
 	public function getQueryString($pos = 0) {
-		return $this->bdd->getQueryString($this->fields, $this->tables, $this->joint, $this->where, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
+		return $this->bdd->getQueryString($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValues($pos = 0) {
-		return $this->bdd->getQueryValues($this->fields, $this->tables, $this->joint, $this->where, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
+		return $this->bdd->getQueryValues($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValuesArray($pos = 0) {
-		return $this->bdd->getQueryValuesArray($this->fields, $this->tables, $this->joint, $this->where, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
+		return $this->bdd->getQueryValuesArray($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getCount() {
-		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->group, $this->params, $this->distinct);
+		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->filter, $this->group, $this->params, $this->distinct);
 	}
 
 }
