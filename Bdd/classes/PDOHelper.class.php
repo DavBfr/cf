@@ -97,7 +97,7 @@ class PDOHelper extends BddHelper {
 
 
 	public function dropTableQuery($name) {
-		return "DROP TABLE IF EXISTS `$name`";
+		return "DROP TABLE IF EXISTS ".$this->quoteIdent($name);
 	}
 
 
@@ -108,10 +108,10 @@ class PDOHelper extends BddHelper {
 
 	public function createTableQuery($name, $table_structure) {
 		$columns = $this->buildTableColumns($table_structure);
-		$query  = "CREATE TABLE IF NOT EXISTS `${name}` (\n  ";
+		$query  = "CREATE TABLE IF NOT EXISTS ".$this->quoteIdent($name)." (\n  ";
 		$cols = array();
 		foreach ($columns as $column_name => $column_type) {
-			$cols[] = '`'.$column_name.'` '.$column_type;
+			$cols[] = $this->quoteIdent($column_name).' '.$column_type;
 		}
 		$query .= implode(",\n  ", $cols);
 		$query .= "\n)";
