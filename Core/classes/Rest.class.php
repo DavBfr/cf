@@ -24,6 +24,10 @@ abstract class Rest {
 	private $routes = array();
 	private $complex_routes = array();
 	private $jsonpost_data = Null;
+	
+	protected $path = Null;
+	protected $method = Null;
+	protected $mp = Null;
 
 
 	public function __construct() {
@@ -34,17 +38,17 @@ abstract class Rest {
 	protected function addRoute($path, $method, $callback) {
 		if (strpos($path, ":") !== false) {
 			$vars = array();
-			$path = explode("/", $path);
-			foreach($path as $key => $item) {
+			$aPath = explode("/", $path);
+			foreach($aPath as $key => $item) {
 				if (substr($item, 0, 1) == ":") {
 					$vars[] = substr($item, 1);
-					$path[$key] = "([^/]+)";
+					$aPath[$key] = "([^/]+)";
 				} else {
-					$path[$key] = str_replace(".", "\\.", $item);
+					$aPath[$key] = str_replace(".", "\\.", $item);
 				}
 			}
-			$path = "#^" . implode("/", $path) . "$#";
-			$this->complex_routes[] = array($method, $path, $vars, $callback);
+			$rPath = "#^" . implode("/", $aPath) . "$#";
+			$this->complex_routes[$method."@".$path] = array($method, $rPath, $vars, $callback);
 		} else {
 			$this->routes[$method."@".$path] = $callback;
 		}
@@ -62,25 +66,37 @@ abstract class Rest {
 	}
 
 
+	protected function preCheck($mp) {
+		return true;
+	}
+
+
 	protected function preProcess($r) {
 	}
 
 
 	protected function processNotFound($method) {
-		ErrorHandler::error(404, NULL, $method."@".$path);
+		ErrorHandler::error(404, NULL, $method);
 	}
 
 
 	public function handleRequest($method, $path) {
 		if ($path == "")
 			$path = "/";
+		
+		$this->method = $method;
+		$this->path = $path;
+		$this->mp = $method."@".$path;
 
-		if (isset($this->routes[$method."@".$path])) {
+		if (isset($this->routes[$this->mp])) {
+			if (!$this->preCheck($this->mp)) {
+				ErrorHandler::error(401);
+			}
 			$this->preProcess(array());
-			call_user_func(array($this, $this->routes[$method."@".$path]), array());
+			call_user_func(array($this, $this->routes[$this->mp]), array());
 			ErrorHandler::error(204);
 		} else {
-			foreach($this->complex_routes as $route) {
+			foreach($this->complex_routes as $cPath=>$route) {
 				list($m, $p, $v, $c) = $route;
 				if ($m == $method) {
 					
@@ -89,13 +105,17 @@ abstract class Rest {
 						foreach($v as $i => $k) {
 							$pa[$k] = $matches[$i+1];
 						}
+						$this->mp = $cPath;
+						if (!$this->preCheck($this->mp)) {
+							ErrorHandler::error(401);
+						}
 						$this->preProcess($pa);
 						call_user_func(array($this, $c), $pa);
 						ErrorHandler::error(204);
 					}
 				}
 			}
-			$this->processNotFound($method."@".$path);
+			$this->processNotFound($this->mp);
 		}
 	}
 
