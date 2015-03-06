@@ -43,10 +43,10 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr data-ng-repeat="item in list" <?php if ($this->get("can_view")): ?> data-ng-click="go_detail(item.<?php echo Crud::ID ?>)" <?php endif; ?>>
+		<tr data-ng-repeat="item in list">
 			<?php foreach($this->get("model") as $field): ?>
 			<?php if($field->inList()): ?>
-			<td>
+			<td <?php if ($this->get("can_view")): ?> data-ng-click="go_detail(item.<?php echo Crud::ID ?>)" <?php endif; ?>>
 				<?php if($field->isBool()): ?>
 					<span data-ng-show="{{item.<?php echo $field->getName() ?>}}" class="glyphicon glyphicon-ok"></span>
 				<?php elseif($field->isDate()): ?>
