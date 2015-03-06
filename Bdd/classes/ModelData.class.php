@@ -82,14 +82,7 @@ class ModelData implements Iterator {
 
 
 	public function valid() {
-		if ($this->isempty)
-			throw new Exception("Empty data");
-		
-		foreach($this->model->getFields() as $field) {
-			if (!$field->valid($this->get($field->getName()))) {
-				throw new Exception("Invalid data for ".$field->getName());
-			}
-		}
+		return !$this->isempty;
 	}
 
 
@@ -102,7 +95,8 @@ class ModelData implements Iterator {
 			}
 			return $this;
 		}
-		$values = $this->statement->fetch();
+		$this->statement->next();
+		$values = $this->statement->current();
 		if ($values === false) {
 			$this->isempty = true;
 			$this->isnew = true;
@@ -145,7 +139,7 @@ class ModelData implements Iterator {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
 
-		$func = "get".ucfirst($field);
+		$func = "get".ucfirst($field)."Field";
 		if (is_callable(array($this, $func))) {
 			return call_user_func(array($this, $func), $value);
 		} elseif (is_callable(array($this->model, $func))) {
@@ -178,14 +172,18 @@ class ModelData implements Iterator {
 		if (!is_a($field, "ModelField"))
 			$field = $this->model->getField($field);
 		
-		switch($field->getType()) {
-			case ModelField::TYPE_BOOL:
-				$value = intval($value);
-				break;
-			case ModelField::TYPE_DATE:
-				if (is_int($value))
-					$value = date("Y-m-d", intval($value));
-				break;
+		if ($value != null) {
+			switch($field->getType()) {
+				case ModelField::TYPE_INT:
+					$value = intval($value);
+				case ModelField::TYPE_BOOL:
+					$value = intval($value);
+					break;
+				case ModelField::TYPE_DATE:
+					if (is_int($value))
+						$value = date("Y-m-d", intval($value));
+					break;
+			}
 		}
 		
 		$this->values[$field->getName()] = $value;
@@ -199,7 +197,7 @@ class ModelData implements Iterator {
 		if (!is_a($field, "ModelField"))
 			$field = $this->model->getField($field);
 
-		$func = "set".ucfirst($field->getName());
+		$func = "set".ucfirst($field->getName())."Field";
 		if (is_callable(array($this, $func))) {
 			$value = call_user_func(array($this, $func), $value);
 		} elseif (is_callable(array($this->model, $func))) {
