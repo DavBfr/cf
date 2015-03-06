@@ -48,7 +48,19 @@ class BddPlugin extends Plugins {
 	public function preupdate() {
 		Cli::pln(" * Create base classes");
 		Model::createClassesFromConfig(array());
+		$bdd = Bdd::getInstance();
+		
+		$config = Config::getInstance();
+		foreach ($config->get("model", array()) as $table => $columns) {
+			$className = ucfirst($table) . "Model";
+			$model = new $className();
+			if (!$bdd->tableExists($model->getTableName())) {
+				Cli::pln(" * Create table ".$model->getTableName());
+				$model->createTable();
+			}
+		}
 	}
+
 
 	public function install() {
 		Cli::pln(" * Create database structure");
