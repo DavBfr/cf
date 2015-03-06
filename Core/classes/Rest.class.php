@@ -62,7 +62,7 @@ abstract class Rest {
 	}
 
 
-	protected function postProcess($r) {
+	protected function preProcess($r) {
 	}
 
 
@@ -76,7 +76,7 @@ abstract class Rest {
 			$path = "/";
 
 		if (isset($this->routes[$method."@".$path])) {
-			$this->postProcess(array());
+			$this->preProcess(array());
 			call_user_func(array($this, $this->routes[$method."@".$path]), array());
 			ErrorHandler::error(204);
 		} else {
@@ -89,7 +89,7 @@ abstract class Rest {
 						foreach($v as $i => $k) {
 							$pa[$k] = $matches[$i+1];
 						}
-						$this->postProcess($pa);
+						$this->preProcess($pa);
 						call_user_func(array($this, $c), $pa);
 						ErrorHandler::error(204);
 					}
