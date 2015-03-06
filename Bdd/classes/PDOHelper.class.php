@@ -86,8 +86,12 @@ class PDOHelper extends BddHelper {
 
 
 	public function tableExists($name) {
-		$ret = $this->pdo->query('SELECT 1 FROM '.$name);
-		return $ret !== false;
+		try {
+			$ret = $this->pdo->query('SELECT 1 FROM '.$name);
+			return $ret !== false;
+		} catch (PDOException $e) {
+			return false;
+		}
 	}
 
 
