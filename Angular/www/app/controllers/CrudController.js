@@ -22,6 +22,10 @@ function CrudService($http, service) {
 
 	var onerror = function(data, status) {
 	};
+	
+	this.getServiceUrl = function() {
+		return service_url;
+	}
 
 	this.get_list = function (filter, page, onsuccess, onerror) {
 		if (page<0) {
