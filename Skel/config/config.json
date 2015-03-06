@@ -1,7 +1,7 @@
 {
 	"title": "CoreFramework",
 	"description": "Skeletton site made with <i>CoreFramework</i>.",
-	"plugins": ["Bootstrap", "Bdd", "Minifier"],
+	"plugins": ["Angular", "Bootstrap", "Bdd", "Minifier"],
 
 	"scripts": [
 		"bootstrap/bootstrap-theme.css",
@@ -10,7 +10,7 @@
 
 	"model": {
 		"user": {
-			"id": {"type":"int","primary":true,"edit":false,"autoincrement":true},
+			"id": {"type":"auto","primary":true,"edit":false,"autoincrement":true},
 			"login": {"type":"text","caption":"Utilisateur","list":true},
 			"password": {"type":"password","caption":"Mot de passe","list":false}
 		}

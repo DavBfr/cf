@@ -27,6 +27,6 @@ function Add<?php echo $this->out("umodel") ?>Routes($routeProvider) {
 		templateUrl: cf_options.rest_path + '/<?php echo $this->out("model") ?>/detail',
 		menu: '<?php echo $this->out("model") ?>',
 	});
-});
+}
 
 }
