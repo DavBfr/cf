@@ -191,6 +191,15 @@ abstract class Model {
 
 	public function deleteById($id) {
 		$bdd = Bdd::getInstance();
+		$data = $this->getById($id);
+		if ($data->isEmpty())
+			return;
+		
+		foreach($this->fields as $name => $field) {
+			if ($field->isBlob()) {
+				$data->setBlob($name, null);
+			}
+		}
 		$bdd->delete($this->getTableName(), $this->getPrimaryField(), $id);
 		$this->dataChanged();
 	}

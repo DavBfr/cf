@@ -183,7 +183,7 @@ abstract class Crud extends Rest {
 		$item = $this->model->getById($id);
 		$values = array();
 		foreach ($this->model->getFields() as $field) {
-			if ($field->isEditable()) {
+			if ($field->isEditable() && !$field->isBlob()) {
 				$name = $field->getName();
 				$values[$name] = $item->get($name);
 			}
