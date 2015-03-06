@@ -150,8 +150,17 @@ class ModelField {
 	}
 
 
+	public function setInList($value) {
+		$this->props["list"] = (boolean)$value;
+	}
+
+
 	public function isEditable() {
 		return $this->props["edit"];
+	}
+	
+	public function setEditable($value) {
+		$this->props["edit"] = (boolean)$value;
 	}
 
 
