@@ -59,4 +59,14 @@ class System {
 		}
 	}
 
+
+	public static function sanitize($filename) {
+		$filename = preg_replace("([^\w\d\-_.])", '-', $filename);
+		$filename = preg_replace("([\.]{2,})", '', $filename);
+		$filename = preg_replace("([-]{2,})", '-', $filename);
+		$filename = str_replace("-.", '.', $filename);
+
+		return $filename;
+	}
+
 }
