@@ -204,6 +204,9 @@ class ModelField {
 
 
 	public function valid($value) {
+		if ($this->hasNull() && $value === Null) {
+			return true;
+		}
 		switch ($this->getType()) {
 			case self::TYPE_INT:
 				return is_int($value) || preg_match('/^\d*$/', $value);
