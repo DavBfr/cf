@@ -88,7 +88,12 @@ class Config implements arrayaccess {
 
 
 	public function save($filename) {
-		file_put_contents($filename, json_encode($this->data));
+		file_put_contents($filename, $this->getAsJson());
+	}
+
+
+	public function getAsJson() {
+		return json_encode($this->data);
 	}
 
 
