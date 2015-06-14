@@ -163,7 +163,7 @@ class PDOHelper extends BddHelper {
 			foreach($joint as $k=>$v) {
 				$joints[] = "LEFT JOIN ${v[0]} ON ${v[1]}";
 			}
-			$query .= " ".implode(" ", $joint);
+			$query .= " ".implode(" ", $joints);
 		}
 
 		if ($filter) {

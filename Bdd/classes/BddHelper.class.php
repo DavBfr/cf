@@ -97,7 +97,7 @@ abstract class BddHelper {
 
 
 abstract class BddCursorHelper implements Iterator {
-	protected $cursor;
+	protected $cursor = null;
 
 	public function __construct($cursor) {
 		$this->cursor = $cursor;

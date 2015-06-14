@@ -172,7 +172,7 @@ class ModelData implements Iterator {
 		if (!is_a($field, "ModelField"))
 			$field = $this->model->getField($field);
 		
-		if ($value != null) {
+		if ($value !== null) {
 			switch($field->getType()) {
 				case ModelField::TYPE_INT:
 					$value = intval($value);
