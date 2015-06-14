@@ -1,0 +1,4 @@
+#!/usr/bin/env php
+<?php
+include_once(dirname(__file__) . "/config/paths.php");
+include(CF_DIR . "/setup.php");

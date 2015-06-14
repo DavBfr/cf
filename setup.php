@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /**
- * Copyright (C) 2013-2014 David PHAM-VAN
+ * Copyright (C) 2013-2015 David PHAM-VAN
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,9 +18,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+if (!defined("ROOT_DIR"))
+	define("ROOT_DIR", getcwd());
 
-define("DEBUG", true);
-define("ROOT_DIR", getcwd());
 require_once(dirname(__file__) . DIRECTORY_SEPARATOR . "cf.php");
 
 if (!IS_CLI)

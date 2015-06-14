@@ -26,11 +26,12 @@ class SkelPlugin extends Plugins {
 	public function skel() {
 		Cli::copyTree($this->getDir(), getcwd());
 		unlink(getcwd() . DIRECTORY_SEPARATOR . basename(__file__));
-		foreach(array("index.php", "www" . DIRECTORY_SEPARATOR . "index.php") as $file) {
+		foreach(array("config" . DIRECTORY_SEPARATOR . "paths.php") as $file) {
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
 			$content = str_replace("@CF_DIR@", CF_DIR, $content);
 			file_put_contents(getcwd() . DIRECTORY_SEPARATOR . $file, $content);
 		}
+		chmod(getcwd() . DIRECTORY_SEPARATOR . "setup", 0755);
 		System::ensureDir(DATA_DIR);
 		$conf = Config::getInstance();
 		$conf->load(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
