@@ -61,6 +61,10 @@ abstract class BddHelper {
 	abstract public function getTables();
 
 	abstract public function getTableInfo($name);
+	
+	public function strftime($format, $date) {
+		return $date;
+	}
 
 	public function getBlob($value) {
 		return $value;

@@ -27,6 +27,11 @@ class MysqlHelper extends PDOHelper {
 	}
 
 
+	public function strftime($format, $date) {
+		return "DATE_FORMAT($date, '$format')";
+	}
+
+
 	protected function buildTableColumns($table_structure) {
 		$columns = Array();
 		foreach ($table_structure as $column) {
@@ -65,6 +70,8 @@ class MysqlHelper extends PDOHelper {
 				if (strpos($row["Type"], "int") !== false) $field["type"] = ModelField::TYPE_INT;
 				elseif (strpos($row["Type"], "text") !== false) $field["type"] = ModelField::TYPE_TEXT;
 				elseif (strpos($row["Type"], "varchar") !== false) $field["type"] = ModelField::TYPE_TEXT;
+				elseif (strpos($row["Type"], "datetime") !== false) $field["type"] = ModelField::TYPE_DATETIME;
+				elseif (strpos($row["Type"], "time") !== false) $field["type"] = ModelField::TYPE_TIME;
 				elseif (strpos($row["Type"], "date") !== false) $field["type"] = ModelField::TYPE_DATE;
 				elseif (strpos($row["Type"], "timestamp") !== false) $field["type"] = ModelField::TYPE_TIMESTAMP;
 				else $field["type"] = $row["Type"];

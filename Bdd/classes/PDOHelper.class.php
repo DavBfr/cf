@@ -235,6 +235,8 @@ class PDOHelper extends BddHelper {
 				return "DATE";
 			case ModelField::TYPE_TIME:
 				return "TIME";
+			case ModelField::TYPE_DATETIME:
+					return "DATETIME";
 			case ModelField::TYPE_BLOB:
 				return "BLOB";
 			default:

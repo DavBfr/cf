@@ -169,6 +169,10 @@ class Collection {
 		$this->params[$param] = $value;
 		return $this;
 	}
+	
+	public function strftime($format, $date) {
+		return $this->bdd->strftime($format, $date);
+	}
 
 
 	public function getQueryString($pos = 0) {

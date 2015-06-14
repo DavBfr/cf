@@ -19,6 +19,12 @@
 
 class SqliteHelper extends PDOHelper {
 
+
+	public function strftime($format, $date) {
+		return "strftime('$format', $date)";
+	}
+
+
 	protected function buildTableColumns($table_structure) {
 		$columns = Array();
 		foreach ($table_structure as $column) {
@@ -65,6 +71,8 @@ class SqliteHelper extends PDOHelper {
 				$field = array();
 				if (strpos($row["type"], "INTEGER") !== false) $field["type"] = ModelField::TYPE_INT;
 				elseif (strpos($row["type"], "TEXT") !== false) $field["type"] = ModelField::TYPE_TEXT;
+				elseif (strpos($row["Type"], "DATETIME") !== false) $field["type"] = ModelField::TYPE_DATETIME;
+				elseif (strpos($row["Type"], "TIME") !== false) $field["type"] = ModelField::TYPE_TIME;
 				elseif (strpos($row["type"], "DATE") !== false) $field["type"] = ModelField::TYPE_DATE;
 				else $field["type"] = $row["type"];
 

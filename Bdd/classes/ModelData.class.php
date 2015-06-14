@@ -180,8 +180,22 @@ class ModelData implements Iterator {
 					$value = intval($value);
 					break;
 				case ModelField::TYPE_DATE:
-					if (is_int($value))
+					if ($value instanceof DateTime)
+						$value = $value->format("Y-m-d");
+					elseif (is_int($value))
 						$value = date("Y-m-d", intval($value));
+					break;
+				case ModelField::TYPE_TIME:
+				if ($value instanceof DateTime)
+						$value = $value->format("h:i:s");
+					elseif (is_int($value))
+						$value = date("h:i:s", intval($value));
+					break;
+				case ModelField::TYPE_DATETIME:
+				if ($value instanceof DateTime)
+						$value = $value->format("Y-m-d h:i:s");
+					elseif (is_int($value))
+						$value = date("Y-m-d h:i:s", intval($value));
 					break;
 			}
 		}

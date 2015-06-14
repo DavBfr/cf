@@ -28,6 +28,7 @@ class ModelField {
 	const TYPE_URL = "url";
 	const TYPE_DATE = "date"; // Y-m-d
 	const TYPE_TIME = "time"; // h:i:s
+	const TYPE_DATETIME = "datetime"; // Y-m-d h:i:s
 	const TYPE_TIMESTAMP = "ts";
 	const TYPE_BLOB = "blob";
 
@@ -125,6 +126,11 @@ class ModelField {
 	}
 
 
+	public function isDateTime() {
+		return $this->props["type"] == self::TYPE_DATETIME;
+	}
+
+
 	public function isDecimal() {
 		return $this->props["type"] == self::TYPE_DECIMAL;
 	}
@@ -216,6 +222,7 @@ class ModelField {
 			case self::TYPE_URL:
 			case self::TYPE_DATE:
 			case self::TYPE_TIME:
+			case self::TYPE_DATETIME:
 				return is_string($value);
 			case self::TYPE_BOOL:
 				return $value === true || $value === false;
