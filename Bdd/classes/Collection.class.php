@@ -24,6 +24,7 @@ class Collection {
 	private $joint;
 	private $where;
 	private $filter;
+	private $filter_fields;
 	private $order;
 	private $group;
 	private $params;
@@ -41,6 +42,8 @@ class Collection {
 		$this->tables = array();
 		$this->joint = array();
 		$this->where = array();
+		$this->filter = NULL;
+		$this->filter_fields = NULL;
 		$this->order = array();
 		$this->group = array();
 		$this->params = array();
@@ -134,8 +137,9 @@ class Collection {
 	}
 
 
-	public function filter($value) {
+	public function filter($value, $fields = NULL) {
 		$this->filter = $value;
+		$this->filter_fields = $fields;
 	}
 
 
@@ -176,22 +180,26 @@ class Collection {
 
 
 	public function getQueryString($pos = 0) {
-		return $this->bdd->getQueryString($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
+		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		return $this->bdd->getQueryString($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValues($pos = 0) {
-		return $this->bdd->getQueryValues($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
+		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		return $this->bdd->getQueryValues($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValuesArray($pos = 0) {
-		return $this->bdd->getQueryValuesArray($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
+		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		return $this->bdd->getQueryValuesArray($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getCount() {
-		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->filter, $this->group, $this->params, $this->distinct);
+		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->group, $this->params, $this->distinct);
 	}
 
 }

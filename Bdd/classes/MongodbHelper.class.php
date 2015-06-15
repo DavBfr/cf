@@ -139,12 +139,12 @@ class MongodbHelper extends BddHelper {
 	}
 
 
-	public function getQueryString($fields, $tables, $joint, $where, $filter, $order, $group, $params, $limit, $pos, $distinct) {
+	public function getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
 		return false;
 	}
 
 	
-	private function createQuery($where, $filter, $group, $params) {
+	private function createQuery($where, $filter, $filter_fields, $group, $params) {
 		$query = array();
 		if ($filter) {
 			$value = "/".$filter."/";
@@ -201,10 +201,10 @@ class MongodbHelper extends BddHelper {
 	}
 
 
-	public function getQueryValues($fields, $tables, $joint, $where, $filter, $order, $group, $params, $limit, $pos, $distinct) {
+	public function getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
 		Logger::debug("getQueryValues " . json_encode(array("fields"=>$fields, "tables"=>$tables, "joint"=>$joint, "where"=>$where, "order"=>$order, "group"=>$group, "params"=>$params, "limit"=>$limit, "pos"=>$pos, "distinct"=>$distinct)));
 		$collection = $this->db->selectCollection($tables[0]);
-		$_query = $this->createQuery($where, $filter, $group, $params);
+		$_query = $this->createQuery($where, $filter, $filter_fields, $group, $params);
 		$_fields = array();
 		foreach ($fields as $field) {
 			$_fields[$field] = true;
@@ -214,9 +214,9 @@ class MongodbHelper extends BddHelper {
 	}
 
 
-	public function getQueryValuesArray($fields, $tables, $joint, $where, $filter, $order, $group, $params, $limit, $pos, $distinct) {
+	public function getQueryValuesArray($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
 		$collection = array();
-		$result = $this->getQueryValues($fields, $tables, $joint, $where, $filter, $order, $group, $params, $limit, $pos, $distinct);
+		$result = $this->getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 		foreach ($result as $row) {
 			$collection[] = $row;
 		}
@@ -224,9 +224,9 @@ class MongodbHelper extends BddHelper {
 	}
 
 
-	public function getQueryCount($tables, $joint, $where, $filter, $group, $params, $distinct) {
+	public function getQueryCount($tables, $joint, $where, $filter, $filter_fields, $group, $params, $distinct) {
 		$collection = $this->db->selectCollection($tables[0]);
-		$_query = $this->createQuery($where, $filter, $group, $params);
+		$_query = $this->createQuery($where, $filter, $filter_fields, $group, $params);
 		return $collection->count($_query);
 	}
 
