@@ -77,15 +77,27 @@ abstract class Crud extends Rest {
 	}
 
 
+	protected function filterListField($col, $field) {
+		if ($field->isForeign()) {
+			$f = $field->getForeign();
+			if (is_array($f) && count($f) == 3) {
+				list($t, $k, $v) = $f;
+				$col->leftJoin("$t as foreign_$fnum", "foreign_$fnum.$k = ".$field->getFullName());
+				$col->selectAs("foreign_$fnum.$v", $field->getName());
+				$f++;
+			} else {
+				$col->selectAs($field->getFullName(), $field->getName());
+			}
+		} else {
+			$col->selectAs($field->getFullName(), $field->getName());
+		}
+	}
+
 	protected function filterList($col) {
+		$fnum = 0;
 		foreach ($this->model->getFields() as $field) {
 			if ($field->inList()) {
-				/*if ($field->isForeign()) {
-					list($t, $k, $v) = $field->getForeign();
-					$col->leftJoin("$t as t1", "1");
-				} else {*/
-					$col->select($field->getName());
-				//}
+				$this->filterListField($col, $field);
 			}
 		}
 	}
@@ -119,11 +131,11 @@ abstract class Crud extends Rest {
 	protected function list_values($row) {
 		return $row;
 	}
-
+	
 
 	protected function get_list($r) {
 		$col = Collection::Query($this->model->getTableName())
-			->SelectAs($this->model->getPrimaryField(), self::ID)
+			->SelectAs($this->model->getField($this->model->getPrimaryField())->getFullName(), self::ID)
 			->limit($this->options["limit"]);
 		$this->filterList($col);
 		

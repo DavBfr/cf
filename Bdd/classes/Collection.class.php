@@ -94,6 +94,18 @@ class Collection {
 	}
 
 
+	public function unSelect($field, $name) {
+		$args = func_get_args();
+		if (count($args) == 1 && is_array($args[0]))
+			$args = $args[0];
+
+		foreach($args as $field) {
+			unset($this->fields[$field]);
+		}
+		return $this;
+	}
+
+
 	public function from() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))

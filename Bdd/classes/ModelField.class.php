@@ -52,6 +52,11 @@ class ModelField {
 	public function getName() {
 		return $this->name;
 	}
+	
+	
+	public function getFullName() {
+		return $this->table . "." . $this->name;
+	}
 
 
 	public function getAttributes() {
