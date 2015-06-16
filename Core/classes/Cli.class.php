@@ -162,8 +162,7 @@ class Cli {
 		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("install");
 		Plugins::dispatchAll("postinstall");
-		Plugins::dispatchAllReversed("update");
-		Plugins::dispatchAll("postupdate");
+		self::update();
 	}
 
 
