@@ -174,7 +174,7 @@ class PDOHelper extends BddHelper {
 				$filter_fields = $fields;
 			}
 			foreach ($filter_fields as $field) {
-				$filter[] = $this->quoteIdent($field) . " LIKE " . $value;
+				$filter[] = $field . " LIKE " . $value;
 			}
 			if (count($filter) > 0) {
 				$where[] = implode(" OR ", $filter);
