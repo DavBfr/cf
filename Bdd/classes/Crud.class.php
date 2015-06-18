@@ -23,8 +23,6 @@ abstract class Crud extends Rest {
 	protected $options;
 	protected $model;
 	protected $limit;
-	
-	private $fnum;
 
 
 	protected function preProcess($r) {
@@ -83,10 +81,10 @@ abstract class Crud extends Rest {
 		if ($field->isForeign()) {
 			$f = $field->getForeign();
 			if (is_array($f) && count($f) == 3) {
+				$fname = $field->getForeignTable();
 				list($t, $k, $v) = $f;
-				$col->leftJoin("$t as foreign_{$this->fnum}", "foreign_{$this->fnum}.$k = ".$field->getFullName());
-				$col->selectAs("foreign_{$this->fnum}.$v", $field->getName());
-				$this->fnum++;
+				$col->leftJoin("$t as {$fname}", "{$fname}.$k = ".$field->getFullName());
+				$col->selectAs("{$fname}.$v", $field->getName());
 			} else {
 				$col->selectAs($field->getFullName(), $field->getName());
 			}
@@ -96,12 +94,14 @@ abstract class Crud extends Rest {
 	}
 
 	protected function filterList($col) {
-		$this->fnum = 0;
 		foreach ($this->model->getFields() as $field) {
 			if ($field->inList()) {
 				$this->filterListField($col, $field);
 			}
 		}
+	}
+	
+	protected function filterForeign($col, $field) {
 	}
 
 
@@ -120,6 +120,8 @@ abstract class Crud extends Rest {
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
 			$col->filter($_GET["q"]);
 		}
+		
+		$this->filterForeign($col, $field);
 
 		$list = [];
 		foreach ($col->getValues(isset($_GET["p"])?intval($_GET["p"]):0) as $row) {

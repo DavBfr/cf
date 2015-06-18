@@ -212,6 +212,11 @@ class ModelField {
 	public function isForeign() {
 		return $this->props["foreign"] !== NULL;
 	}
+	
+	
+	public function getForeignTable() {
+		return "foreign_" . $this->name;
+	}
 
 
 	public function valid($value) {
