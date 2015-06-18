@@ -23,6 +23,8 @@ abstract class Crud extends Rest {
 	protected $options;
 	protected $model;
 	protected $limit;
+	
+	private $fnum;
 
 
 	protected function preProcess($r) {
@@ -82,9 +84,9 @@ abstract class Crud extends Rest {
 			$f = $field->getForeign();
 			if (is_array($f) && count($f) == 3) {
 				list($t, $k, $v) = $f;
-				$col->leftJoin("$t as foreign_$fnum", "foreign_$fnum.$k = ".$field->getFullName());
-				$col->selectAs("foreign_$fnum.$v", $field->getName());
-				$f++;
+				$col->leftJoin("$t as foreign_{$this->fnum}", "foreign_{$this->fnum}.$k = ".$field->getFullName());
+				$col->selectAs("foreign_{$this->fnum}.$v", $field->getName());
+				$this->fnum++;
 			} else {
 				$col->selectAs($field->getFullName(), $field->getName());
 			}
@@ -94,7 +96,7 @@ abstract class Crud extends Rest {
 	}
 
 	protected function filterList($col) {
-		$fnum = 0;
+		$this->fnum = 0;
 		foreach ($this->model->getFields() as $field) {
 			if ($field->inList()) {
 				$this->filterListField($col, $field);
