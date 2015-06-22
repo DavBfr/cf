@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013-2014 David PHAM-VAN
+ * Copyright (C) 2013-2015 David PHAM-VAN
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,6 +31,15 @@ abstract class Model {
 		foreach ($fields as $name => $prop) {
 			$this->fields[$name] = new ModelField($this->table, $name, $prop);
 		}
+	}
+
+
+	public static function getModel($name) {
+		$md = ucfirst($name)."Model";
+		if (class_exists($md) && is_subclass_of($md, "Model"))
+			return new $md;
+
+		return NULL;
 	}
 
 

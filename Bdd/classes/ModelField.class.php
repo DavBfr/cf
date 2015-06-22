@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013-2014 David PHAM-VAN
+ * Copyright (C) 2013-2015 David PHAM-VAN
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -245,6 +245,38 @@ class ModelField {
 			default:
 				throw new Exception("Unknown field type '".$this->getType()."'!");
 		}
+	}
+
+
+	public function format($value) {
+		if ($value === null)
+			return $value;
+
+		switch($this->getType()) {
+			case self::TYPE_INT:
+			case self::TYPE_BOOL:
+				$value = intval($value);
+				break;
+			case self::TYPE_DATE:
+				if ($value instanceof DateTime)
+					$value = $value->format("Y-m-d");
+				elseif (is_int($value) || $value == strval(intval($value)))
+					$value = date("Y-m-d", intval($value));
+				break;
+			case self::TYPE_TIME:
+				if ($value instanceof DateTime)
+					$value = $value->format("h:i:s");
+				elseif (is_int($value) || $value == strval(intval($value)))
+					$value = date("h:i:s", intval($value));
+				break;
+			case self::TYPE_DATETIME:
+				if ($value instanceof DateTime)
+					$value = $value->format("Y-m-d h:i:s");
+				elseif (is_int($value) || $value == strval(intval($value)))
+					$value = date("Y-m-d h:i:s", intval($value));
+				break;
+		}
+		return $value;
 	}
 
 }

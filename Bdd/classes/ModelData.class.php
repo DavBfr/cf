@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013-2014 David PHAM-VAN
+ * Copyright (C) 2013-2015 David PHAM-VAN
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -172,35 +172,7 @@ class ModelData implements Iterator {
 		if (!is_a($field, "ModelField"))
 			$field = $this->model->getField($field);
 		
-		if ($value !== null) {
-			switch($field->getType()) {
-				case ModelField::TYPE_INT:
-					$value = intval($value);
-				case ModelField::TYPE_BOOL:
-					$value = intval($value);
-					break;
-				case ModelField::TYPE_DATE:
-					if ($value instanceof DateTime)
-						$value = $value->format("Y-m-d");
-					elseif (is_int($value))
-						$value = date("Y-m-d", intval($value));
-					break;
-				case ModelField::TYPE_TIME:
-				if ($value instanceof DateTime)
-						$value = $value->format("h:i:s");
-					elseif (is_int($value))
-						$value = date("h:i:s", intval($value));
-					break;
-				case ModelField::TYPE_DATETIME:
-				if ($value instanceof DateTime)
-						$value = $value->format("Y-m-d h:i:s");
-					elseif (is_int($value))
-						$value = date("Y-m-d h:i:s", intval($value));
-					break;
-			}
-		}
-		
-		$this->values[$field->getName()] = $value;
+		$this->values[$field->getName()] = $field->format($value);
 	}
 
 

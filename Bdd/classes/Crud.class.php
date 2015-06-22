@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013-2014 David PHAM-VAN
+ * Copyright (C) 2013-2015 David PHAM-VAN
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -112,9 +112,11 @@ abstract class Crud extends Rest {
 		$bdd = Bdd::getInstance();
 
 		list($table, $key, $value) = $field->getForeign();
+		$foreignModel = Model::getModel($table);
 		$col = Collection::Query($table)
 		->SelectAs($bdd->quoteIdent($key), $bdd->quoteIdent('key'))
 		->SelectAs($bdd->quoteIdent($value), $bdd->quoteIdent('val'))
+		->orderBy($bdd->quoteIdent($value))
 		->limit($this->options["limit"]);
 		
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
@@ -125,7 +127,10 @@ abstract class Crud extends Rest {
 
 		$list = [];
 		foreach ($col->getValues(isset($_GET["p"])?intval($_GET["p"]):0) as $row) {
-			$list[] = array("key"=>$row['key'], "value"=>$row['val']);
+			if ($foreignModel)
+				$list[] = array("key"=>$foreignModel->getField($key)->format($row['key']), "value"=>$foreignModel->getField($value)->format($row['val']));
+			else
+				$list[] = array("key"=>$row['key'], "value"=>$row['val']);
 		}
 
 		Output::success(array("list"=>$list));
