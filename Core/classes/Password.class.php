@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013-2014 David PHAM-VAN
+ * Copyright (C) 2013-2015 David PHAM-VAN
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -280,36 +280,26 @@ class Password {
 	}
 
 
-	function my_pwqcheck($newpass, $oldpass = '', $user = '')
-	{
-		global $use_pwqcheck, $pwqcheck_args;
-
-		if ($use_pwqcheck)
-			return pwqcheck($newpass, $oldpass, $user, '', $pwqcheck_args);
-		
+	protected function pwqcheckLite($newpass, $oldpass = '', $user = '', $aux = '', $minlen = 7) {
 		/* Some really trivial and obviously-insufficient password strength checks -
 		* we ought to use the pwqcheck(1) program instead. */
-		$check = '';
 		
-		if (strlen($newpass) < 7)
-			$check = 'way too short';
+		if (strlen($newpass) < $minlen)
+			return 'The new password is way too short';
 		else if (stristr($oldpass, $newpass) || (strlen($oldpass) >= 4 && stristr($newpass, $oldpass)))
-			$check = 'is based on the old one';
+			return 'The new password is based on the old one';
 		else if (stristr($user, $newpass) || (strlen($user) >= 4 && stristr($newpass, $user)))
-			$check = 'is based on the username';
+			return 'The new password is based on the username';
 		
-		if ($check)
-			return "Bad password ($check)";
-		
-		return 'OK';
+		return true;
 	}
 
 
-	public function strengthCheck($newpass, $oldpass = '', $user = '', $aux = '', $args = '') {
+	protected function pwqcheck($newpass, $oldpass = '', $user = '', $aux = '', $args = '') {
 		$descriptorspec = array(
 			0 => array('pipe', 'r'),
-			1 => array('pipe', 'w'));
-		// Leave stderr (fd 2) pointing to where it is, likely to error_log
+			1 => array('pipe', 'w'),
+			2 => array('pipe', 'w'));
 		
 		// Replace characters that would violate the protocol
 		$newpass = strtr($newpass, "\n", '.');
@@ -318,17 +308,21 @@ class Password {
 		
 		// Trigger a "too short" rather than "is the same" message in this special case
 		if (!$newpass && !$oldpass)
-		$oldpass = '.';
+			$oldpass = '.';
 		
 		if ($args)
-		$args = ' ' . $args;
+			$args = ' ' . $args;
 		if (!$user)
-		$args = ' -2' . $args; // passwdqc 1.2.0+
+			$args = ' -2' . $args; // passwdqc 1.2.0+
 		
-		$command = 'exec '; // No need to keep the shell process around on Unix
+		$command = ''; // No need to keep the shell process around on Unix
 		$command .= 'pwqcheck' . $args;
-		if (!($process = @proc_open($command, $descriptorspec, $pipes)))
+		if (($process = @proc_open($command, $descriptorspec, $pipes)) === false)
 			return false;
+			
+		if (!is_resource($process)) {
+			return false;
+		}
 		
 		$err = 0;
 		fwrite($pipes[0], "$newpass\n$oldpass\n") || $err = 1;
@@ -339,6 +333,9 @@ class Password {
 		($output = stream_get_contents($pipes[1])) || $err = 1;
 		fclose($pipes[1]);
 		
+		($error = stream_get_contents($pipes[2])) || $err = 1;
+		fclose($pipes[2]);
+		
 		$status = proc_close($process);
 		
 		// There must be a linefeed character at the end. Remove it.
@@ -346,11 +343,31 @@ class Password {
 			$output = substr($output, 0, -1);
 		else
 			$err = 1;
+			
 		
-		if ($err === 0 && ($status === 0 || $output !== 'OK'))
-			$retval = $output;
+		if ($err !== 0)
+			return false;
 		
-		return $retval;
+		if ($status !== 0 || $output !== 'OK')
+			return $output;
+
+		return true;
+	}
+
+
+	public function strengthCheck($newpass, $oldpass = '', $user = '', $aux = '', $minlen = 7) {
+		$n0 = $minlen;
+		$n1 = intval(ceil($minlen * 4 / 5));
+		$n2 = intval(ceil($minlen * 3 / 4));
+		$n3 = intval(ceil($minlen * 2 / 3));
+		$n4 = intval(ceil($minlen * 1 / 2));
+		$args = "max=72 min=$n0,$n1,$n2,$n3,$n4";
+		
+		$ret = $this->pwqcheck($newpass, $oldpass, $user, $aux, $args);
+		if ($ret === false)
+			return $this->pwqcheckLite($newpass, $oldpass, $user, $aux, $minlen);
+		
+		return $ret;
 	}
 
 }
