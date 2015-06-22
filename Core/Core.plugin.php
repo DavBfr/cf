@@ -63,6 +63,11 @@ class CorePlugin extends Plugins {
 				"favicon" => $conf->get("favicon", NULL),
 		));
 
+		foreach(Plugins::dispatchAll("index", $tpt) as $index) {
+			if ($index !== null)
+				$tpt->output($index);
+		}
+
 		return $tpt;
 	}
 
