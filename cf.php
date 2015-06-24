@@ -247,7 +247,7 @@ function configure($key, $value) {
 }
 
 define("URL_SEPARATOR", "/");
-configure("CF_VERSION", "1.0");
+configure("CF_VERSION", "1.1");
 if (defined("ROOT_DIR")) {
 	configure("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 } else {
@@ -274,7 +274,7 @@ configure("DEFAULT_TIMEZONE", "Europe/Paris");
 configure("DEBUG", false);
 configure("IS_CLI", defined("STDIN"));
 
-if (FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
+if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	if (USE_STS) {
 		header('Strict-Transport-Security: max-age=500');
 	} else {
