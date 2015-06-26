@@ -42,7 +42,7 @@ configure("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");
 configure("LANG_DEFAULT", "en_US");
 configure("LANG_AUTOLOAD", true);
 configure("LANG_AUTODETECT", true);
-configure("CF_URL", "http://cf.nfet.net");
+configure("CF_URL", "https://github.com/DavBfr/cf");
 
 class CorePlugin extends Plugins {
 
