@@ -126,7 +126,7 @@ class Config implements arrayaccess {
 
 
 	public function offsetGet($offset) {
-		return $this->get($key);
+		return $this->get($offset);
 	}
 
 }
