@@ -1,4 +1,5 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation" data-ng-controller="RouteController">
+<div class="container-fluid">
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
 			<span class="sr-only"><?php $this->tr("core.toggle_navigation") ?></span>
@@ -20,4 +21,5 @@
 			</li>
 		</ul>
 	</div>
+</div>
 </nav>
