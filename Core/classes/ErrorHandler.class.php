@@ -31,12 +31,15 @@ class ErrorHandler {
 				417 => "Expectation failed",
 	);
 
+
 	protected function __construct() {
 		error_reporting(E_ALL ^ (E_NOTICE|E_WARNING));
-		ini_set("display_errors", 0);
-		set_error_handler(array($this, "error_handler"));
-		set_exception_handler(array($this, "exception_handler"));
-		register_shutdown_function(array($this, "check_for_fatal"));
+		ini_set("display_errors", DEBUG?1:0);
+		ini_set("track_errors", 1);
+		ini_set("html_errors", 1);
+		set_error_handler(array($this, "errorHandler"));
+		set_exception_handler(array($this, "exceptionHandler"));
+		register_shutdown_function(array($this, "checkForFatal"));
 	}
 
 
@@ -118,7 +121,8 @@ class ErrorHandler {
 
 	public function send_error($code, $message = NULL, $body = NULL, $backtrace=1) {
 		if ($this->inerror) {
-			die("Already processing error (send_error) $code $message $body");
+			Logger::critical("Already processing error (send_error) $code $message $body");
+			return;
 		}
 
 		$this->inerror = true;
@@ -135,9 +139,9 @@ class ErrorHandler {
 			$body = $message;
 
 		if ($code >= 500) {
-			Logger::Error("[$code] $message: $body");
+			Logger::critical("[$code] $message: $body");
 		} else {
-			Logger::Info("[$code] $message: $body");
+			Logger::info("[$code] $message: $body");
 		}
 
 		if ($this->raise_exception)
@@ -160,8 +164,8 @@ class ErrorHandler {
 
 	public function errorHandler($errno, $errstr, $errfile, $errline) {
 		if ($this->inerror) {
-			echo("Already processing error (error_handler) $errno, $errstr, $errfile, $errline");
-			die();
+			Logger::critical("Already processing error (error_handler) $errno, $errstr, $errfile, $errline");
+			return;
 		}
 
 		if (!(error_reporting() & $errno)) {
@@ -198,7 +202,6 @@ class ErrorHandler {
 		if ($e && error_reporting() & $e["type"]) {
 			$this->addBacktrace($e["file"], $e["line"]);
 			$this->send_error(500, NULL, $e["type"] . " " . $e["message"], false);
-
 		}
 	}
 

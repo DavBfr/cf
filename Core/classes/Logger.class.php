@@ -16,6 +16,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+ 
+ configure("BROWSER_LOG", DEBUG);
 
 class Logger {
 
@@ -33,15 +35,29 @@ class Logger {
 		self::CRITICAL=>"CRITICAL"
 	);
 
+	private static $clevels = array(
+		self::DEBUG=>"info",
+		self::INFO=>"info",
+		self::WARNING=>"warn",
+		self::ERROR=>"error",
+		self::CRITICAL=>"error"
+	);
+
 	private static $instance = NULL;
 	private $level;
 	private $stderr;
 	private $log;
+	private $clog;
 
 	private function __construct($level) {
 		$this->level = $level;
 		$this->stderr = fopen('php://stderr', 'w');
 		$this->log = array();
+		$this->clog = array(
+			'version' => CF_VERSION,
+			'columns' => array('log', 'backtrace', 'type'),
+			'rows' => array(),
+			'request_uri' => @$_SERVER['REQUEST_URI']);
 	}
 
 
@@ -74,6 +90,27 @@ class Logger {
 	}
 
 
+	protected function logToChrome($data, $level) {
+		// https://craig.is/writing/chrome-logger
+		$backtrace = debug_backtrace(false);
+		$level = 2;
+
+		$backtrace_message = 'unknown';
+		if (isset($backtrace[$level]['file']) && isset($backtrace[$level]['line'])) {
+				$backtrace_message = $backtrace[$level]['file'] . ' ' . $backtrace[$level]['line'];
+		}
+
+		$row = array(
+			array($data),
+			$backtrace_message,
+			self::$clevels[$level]
+		);
+		$this->clog['rows'][] = $row;
+
+		header("X-ChromeLogger-Data: ".base64_encode(utf8_encode(json_encode($this->clog))));
+	}
+
+
 	public function log($data, $level) {
 		if ($level >= $this->level || DEBUG) {
 			$raddr = array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : '-';
@@ -88,6 +125,9 @@ class Logger {
 					$output[] = json_encode($item);
 				}
 				$data = implode(" ", $output);
+			}
+			if (BROWSER_LOG && !IS_CLI) {
+				$this->logToChrome($data, $level);
 			}
 			$data = "[CF] [" . @date('M j H:i:s') . "] [" . $raddr . "] [" . self::$levels[$level] . "] " . $data;
 			fwrite($this->stderr, $data . "\n");
