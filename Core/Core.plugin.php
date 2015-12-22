@@ -45,12 +45,41 @@ configure("LANG_AUTODETECT", true);
 configure("CF_URL", "https://github.com/DavBfr/cf");
 
 class CorePlugin extends Plugins {
+	const config = "config/config.json";
 
 	public static function bootstrap() {
 		ErrorHandler::Init("ErrorHandler");
 		$conf = Config::getInstance();
-		foreach($conf->get("plugins", Array()) as $plugin) {
-			Plugins::add($plugin);
+		
+		$memcache = new MemCache();
+		if (array_key_exists("JCONFIG_FILE", $memcache)) {
+			$conf->setData($memcache["JCONFIG_FILE"]);
+			Logger::debug("Config loaded from cache");
+			foreach($conf->get("plugins", Array()) as $plugin) {
+				Plugins::add($plugin);
+			}
+		} else {
+			$cache = Cache::Priv(self::config, ".php");
+			if ($cache->check() || DEBUG) {
+				if (file_exists(CONFIG_DIR."/config.json")) {
+					$conf->append(CONFIG_DIR."/config.json");
+				}
+				$confsave = $conf->getData();
+				foreach($conf->get("plugins", Array()) as $plugin) {
+					Plugins::add($plugin);
+				}
+				foreach (array_reverse(Plugins::findAll(self::config)) as $filename) {
+					$conf->append($filename);
+				}
+				$conf->merge($confsave);
+				ArrayWriter::toFile($conf->getData(), $cache->getFilename());
+			} else  {
+				$conf->setData(ArrayWriter::fromFile($cache->getFilename()));
+				foreach($conf->get("plugins", Array()) as $plugin) {
+					Plugins::add($plugin);
+				}
+			}
+			$memcache["JCONFIG_FILE"] = $conf->getData();
 		}
 
 		if (array_key_exists("PATH_INFO", $_SERVER) && $_SERVER["PATH_INFO"]) {

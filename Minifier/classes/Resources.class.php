@@ -126,7 +126,7 @@ class Resources extends AbstractResources {
 	public function getScripts() {
 		
 		$res = $this->getResourcesByExt(".js");
-		$output = Cache::Pub("app.min.js");
+		$output = Cache::Pub($this->tag.".js");
 		if (! MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
@@ -145,7 +145,7 @@ class Resources extends AbstractResources {
 
 	public function getStylesheets() {
 		$res = $this->getResourcesByExt(".css");
-		$output = Cache::Pub("app.min.css");
+		$output = Cache::Pub($this->tag.".css");
 		if (! MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);

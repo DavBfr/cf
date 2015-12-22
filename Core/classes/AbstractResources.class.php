@@ -24,10 +24,12 @@ abstract class AbstractResources {
 	private $resources;
 	private $added;
 
+	protected $tag;
 
-	public function __construct() {
+	public function __construct($tag = "app.min") {
 		$this->resources = array();
 		$this->added = array();
+		$this->tag = $tag;
 	}
 
 

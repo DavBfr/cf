@@ -20,7 +20,12 @@
 class ArrayWriter {
 
 	public static function toFile($array, $filename) {
-		file_put_contents($filename, "<?php\nreturn " . $this->toString($array) . ";");
+		file_put_contents($filename, "<?php\nreturn " . self::toString($array) . ";");
+	}
+
+
+	public static function fromFile($filename) {
+		return include $filename;
 	}
 
 

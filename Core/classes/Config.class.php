@@ -18,8 +18,6 @@
  **/
 
 class Config implements arrayaccess {
-	const config = "config/config.json";
-	
 	private static $instance = NULL;
 	private $data;
 
@@ -32,22 +30,6 @@ class Config implements arrayaccess {
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
-			$memcache = new MemCache();
-			if (array_key_exists("JCONFIG_FILE", $memcache)) {
-				self::$instance->data = $memcache["JCONFIG_FILE"];
-				Logger::debug("Config loaded from cache");
-			} else {
-				$cache = Cache::Priv(self::config);
-				if ($cache->check() || DEBUG) {
-					foreach (array_reverse(Plugins::findAll(self::config)) as $filename) {
-						self::$instance->append($filename);
-					}
-					$cache->setArray(self::$instance->data);
-				} else  {
-					self::$instance->data = $cache->getArray();
-				}
-				$memcache["JCONFIG_FILE"] = self::$instance->data;
-			}
 		}
 
 		return self::$instance;
@@ -78,12 +60,45 @@ class Config implements arrayaccess {
 	}
 
 
-	public function append($filename) {
+	public function setData($array) {
+		$this->data = $array;
+	}
+
+
+	public function getData() {
+		return $this->data;
+	}
+
+
+	public function append($filename, $reverse = false) {
 		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
 		}
-		$this->data = array_merge($this->data, $data);
+		$this->merge($data, $reverse);
+		Logger::debug("Config $filename loaded");
+	}
+
+
+	public function merge($data, $reverse = false) {
+		if ($reverse) {
+			$this->data = self::array_merge($data, $this->data);
+		} else {
+			$this->data = self::array_merge($this->data, $data);
+		}
+	}
+	
+	
+	private static function array_merge(&$array1, &$array2) {
+		$merged = $array1;
+		foreach ($array2 as $key => &$value) {
+			if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+				$merged[$key] = self::array_merge($merged[$key], $value);
+			} else {
+				$merged[$key] = $value;
+			}
+		}
+	return $merged;
 	}
 
 

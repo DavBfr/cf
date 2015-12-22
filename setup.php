@@ -27,6 +27,9 @@ if (!IS_CLI)
 	die("Not running from CLI");
 
 $conf = Config::getInstance();
+if (file_exists(CONFIG_DIR."/config.json")) {
+	$conf->append(CONFIG_DIR."/config.json");
+}
 foreach($conf->get("plugins", Array()) as $plugin) {
 	Plugins::add($plugin);
 }
