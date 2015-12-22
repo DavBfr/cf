@@ -247,7 +247,7 @@ function configure($key, $value) {
 }
 
 define("URL_SEPARATOR", "/");
-configure("CF_VERSION", "1.1");
+configure("CF_VERSION", "1.2");
 if (defined("ROOT_DIR")) {
 	configure("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 } else {

@@ -138,7 +138,6 @@ class Cli {
 	public static function configuration() {
 		global $configured_options;
 
-		
 		if (isset($configured_options)) {
 			foreach($configured_options as $key) {
 				$val = constant($key);
