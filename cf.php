@@ -52,24 +52,30 @@ class Plugins {
 		if (array_key_exists($name, self::$plugins))
 			return;
 
+		if ($class_name == NULL)
+			$class_name = $name;
+		$class_fullname = $class_name . "Plugin";
+
+		if (class_exists($class_fullname)) {
+			$reflector = new ReflectionClass($class_fullname);
+			$dir = dirname($reflector->getFileName());
+			unset($reflector);
+		}
+
 		if ($dir === NULL) {
 			$dir = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
-		    if (! is_dir($dir))
+			if (! is_dir($dir))
 				$dir = CF_PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
 		}
 
 		if (! is_dir($dir))
 			throw new Exception("Plugin $name not found");
 
-		if ($class_name == NULL)
-			$class_name = $name;
-
 		$class_file = $dir . DIRECTORY_SEPARATOR . $class_name . '.plugin.php';
 
 		if (file_exists($class_file)) {
 			require_once($class_file);
-			$class_name .= "Plugin";
-			$plugin = new $class_name($dir, $name);
+			$plugin = new $class_fullname($dir, $name);
 		} else {
 			$plugin = new self($dir, $name);
 		}

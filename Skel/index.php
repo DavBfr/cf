@@ -1,7 +1,11 @@
 <?php
 
 include_once(dirname(__file__) . "/config/paths.php");
-require(CF_DIR . "/cf.php");
+
+if (file_exists(dirname(__file__) . "/vendor/autoload.php"))
+	include_once(dirname(__file__) . "/vendor/autoload.php");
+else
+	require_once(CF_DIR . "/cf.php");
 
 $tpt = CorePlugin::bootstrap();
 $tpt->output("index.php");

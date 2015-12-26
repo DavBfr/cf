@@ -1,4 +1,11 @@
 #!/usr/bin/env php
 <?php
-include_once(dirname(__file__) . "/config/paths.php");
+if (file_exists(dirname(__file__) . "/config/paths.php"))
+	include_once(dirname(__file__) . "/config/paths.php");
+else
+	define("ROOT_DIR", dirname(__file__));
+
+if (file_exists(dirname(__file__) . "/vendor/autoload.php"))
+	include_once(dirname(__file__) . "/vendor/autoload.php");
+
 include(CF_DIR . "/setup.php");

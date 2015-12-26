@@ -1,0 +1,45 @@
+{
+	"description": "CoreFramework Project",
+	"type": "project",
+	"homepage": "@CF_URL@",
+	"license": "MIT",
+	"authors": [{
+		"name": "David PHAM-VAN",
+		"email": "dev.nfet.net@gmail.com",
+		"homepage": "https://github.com/DavBfr/cf",
+		"role": "Developer"
+	}],
+	"require": {
+		"davbfr/cf": "@CF_VERSION@"
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"php vendor/bin/setup.php install"
+		],
+		"post-update-cmd": [
+			"php vendor/bin/setup.php update"
+		]
+	},
+	"config": {
+		"preferred-install": "dist"
+	},
+	"repositories": [{
+		"type": "path",
+		"url": "@CF_DIR@"
+	}, {
+		"type": "vcs",
+		"url": "https://github.com/DavBfr/cf"
+	}],
+	"minimum-stability": "dev",
+	"archive": {
+		"exclude": [
+			"/data/cache",
+			"/data/db.sqlite",
+			"/www/cache",
+			"www/fonts",
+			"www/app/crud",
+			"/config/paths.php",
+			"/model/base"
+		]
+	}
+}

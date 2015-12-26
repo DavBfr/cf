@@ -1,0 +1,20 @@
+{
+	"name": "davbfr/cf",
+	"description": "CoreFramework",
+	"keywords": ["framework", "cf", "php"],
+	"homepage": "https://github.com/DavBfr/cf",
+	"license": "LGPL-2.1",
+	"require": {
+		"php": ">=5.2.0"
+	},
+	"authors": [{
+		"name": "David PHAM-VAN",
+		"email": "dev.nfet.net@gmail.com",
+		"homepage": "https://github.com/DavBfr/cf",
+		"role": "Developer"
+	}],
+	"autoload": {
+		"files": ["cf.php"]
+	},
+	"bin": ["setup.php"]
+}
