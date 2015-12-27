@@ -18,14 +18,29 @@
  **/
 
 class Cli {
+	const ansiraz = "\e[0m";
+	const ansierr = "\e[0;31m";
+	const ansiinfo = "\e[1;32m";
+	const ansidebug = "\e[1;34m";
+	const ansilog = "\e[0;36m";
+	const ansiwarn = "\e[1;35m";
+	const ansilerr = "\e[1;31m";
+	const ansicrit = "\e[0;35m";
+	
 	private $args;
 	private $commands;
+	private static $has_colors;
 
 	public function __construct($argv) {
 		while (ob_get_level())
 			ob_end_clean();
 
+		self::$has_colors = posix_isatty(STDOUT);
 		$this->args = $this->parseArguments($argv);
+		$logger = Logger::getInstance();
+		if (array_key_exists("v", $this->args))
+			$logger->setLevel(Logger::DEBUG);
+
 		$this->commands = array();
 		$this->addCommand("help", array($this, "printHelp"), "Help messages");
 	}
@@ -52,16 +67,27 @@ class Cli {
 		if (isset($this->commands[$command])) {
 			return call_user_func($this->commands[$command][0], $params);
 		}
-		self::pln("Unknown command $command");
+		self::perr("Unknown command $command");
 		$this->printHelp($params);
 	}
 
 
+	private function printHelpOption($name, $desc) {
+		self::pcolor(self::ansicrit, "  $name");
+		self::pcolorln(self::ansilog, " : $desc");
+	}
+
+
 	public function printHelp($args) {
-		self::pln("Help " . $args["input"][0]);
+		self::pcolorln(self::ansiinfo, "Help " . basename($args["input"][0]) . " <command> [options]");
+		self::pln();
+		self::pcolorln(self::ansiinfo, "Commands:");
 		foreach ($this->commands as $name => $value) {
-			self::pln("  $name : " . $value[1]);
+			$this->printHelpOption($name, $value[1]);
 		}
+		self::pln();
+		self::pcolorln(self::ansiinfo, "Options:");
+		$this->printHelpOption("-v", "verbose output");
 	}
 
 
@@ -95,43 +121,76 @@ class Cli {
 
 
 	public static function pr($s="") {
-		print($s);
-		flush();
+		fwrite(STDOUT, $s);
+		fflush(STDOUT);
 	}
 
 
 	public static function pln($s="") {
-		self::pr($s . "\n");
+		self::pr($s . PHP_EOL);
 	}
 
 
-	public static function question() {
-		echo "Are you sure you want to do this?  Type 'yes' to continue: ";
+	public static function pcolor($color, $s) {
+		if (self::$has_colors)
+			self::pr($color . $s . self::ansiraz);
+		else
+			self::pr($s);
+	}
+
+
+	public static function pcolorln($color, $s) {
+		self::pcolor($color, $s . PHP_EOL);
+	}
+
+
+	public static function perr($s="") {
+		self::pcolorln(self::ansierr, $s);
+	}
+
+
+	public static function pfatal($s="") {
+		self::pcolorln(self::ansierr, $s);
+		die(-1);
+	}
+
+
+	public static function pinfo($s="") {
+		self::pcolorln(self::ansiinfo, $s);
+	}
+
+
+	public static function plog($level, $data) {
+		switch ($level) {
+			case Logger::DEBUG:
+				self::pcolorln(self::ansidebug, $data);
+				break;
+			case Logger::INFO:
+				self::pcolorln(self::ansilog, $data);
+				break;
+			case Logger::WARNING:
+				self::pcolorln(self::ansiwarn, $data);
+				break;
+			case Logger::ERROR:
+				self::pcolorln(self::ansilerr, $data);
+				break;
+			case Logger::CRITICAL:
+				self::pcolorln(self::ansicrit, $data);
+				break;
+		}
+	}
+
+
+	public static function question($s="") {
+		self::pinfo($s);
+		self::perr("Type 'yes' to continue: ");
 		$handle = fopen ("php://stdin","r");
 		$line = fgets($handle);
 		if(trim($line) != 'yes'){
-			echo "ABORTING!\n";
-			exit;
+			self::pfatal("ABORTING!");
 		}
-		echo "\n";
-		echo "Thank you, continuing...\n";
-	}
-
-
-	public static function copyTree($src, $dst) {
-		$dir = opendir($src);
-		@mkdir($dst);
-		while(false !== ( $file = readdir($dir)) ) {
-			if (( $file != '.' ) && ( $file != '..' )) {
-				if ( is_dir($src . DIRECTORY_SEPARATOR . $file) ) {
-					self::copyTree($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
-				}
-				else {
-					copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
-				}
-			}
-		}
-		closedir($dir);
+		self::pln();
+		self::pinfo("Thank you, continuing...");
 	}
 
 
@@ -150,13 +209,20 @@ class Cli {
 	}
 
 
+	public static function jconfig() {
+		$conf = Config::getInstance();
+		$data = $conf->getData();
+		self::pln(json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+	}
+
+
 	public static function version() {
 		self::pln(CorePlugin::getBaseline());
 	}
 
 
 	public static function install() {
-		self::pln("Installing the application");
+		self::pinfo("Installing the application");
 		Plugins::dispatchAllReversed("preinstall");
 		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("install");
@@ -166,7 +232,7 @@ class Cli {
 
 
 	public static function update() {
-		self::pln("Updating the application");
+		self::pinfo("Updating the application");
 		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("update");
 		Plugins::dispatchAll("postupdate");
@@ -179,7 +245,7 @@ class Cli {
 
 
 	public static function clean() {
-		self::pln("Clean the application cache");
+		self::pinfo("Clean the application cache");
 		System::rmtree(CACHE_DIR);
 		System::rmtree(WWW_CACHE_DIR);
 	}

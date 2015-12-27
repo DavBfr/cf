@@ -279,8 +279,7 @@ abstract class Crud extends Rest {
 
 	public static function create($args) {
 		if (count($args["input"]) == 2) {
-			Cli::pln("Missing model name to create");
-			die();
+			Cli::pfatal("Missing model name to create");
 		}
 		
 		$create_tpt = isset($args["t"]) && $args["t"] ? true : false;
@@ -294,7 +293,7 @@ abstract class Crud extends Rest {
 		foreach(array_slice($args["input"], 2) as $model) {
 			$className = ucfirst($model) . "Rest";
 			$modelClass = ucfirst($model) . "Model";;
-			Cli::pln(" * " . $className);
+			Cli::pinfo(" * " . $className);
 			$filename = $rest . "/" . $className . ".class.php";
 			$tpt = new Template(array(
 				"className" => $className,

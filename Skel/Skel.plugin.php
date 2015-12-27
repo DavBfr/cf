@@ -25,11 +25,11 @@ class SkelPlugin extends Plugins {
 
 	public function skel() {
 		global $configured_options;
-		Cli::pln("Create new CF project");
-		Cli::copyTree($this->getDir(), getcwd());
+		Cli::pinfo("Create new CF project");
+		System::copyTree($this->getDir(), getcwd());
 		unlink(getcwd() . DIRECTORY_SEPARATOR . basename(__file__));
 		foreach(array("composer.json") as $file) {
-			Cli::pln("  Update $file");
+			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
 			foreach($configured_options as $var) {
 				$content = str_replace("@$var@", constant($var), $content);

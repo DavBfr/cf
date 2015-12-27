@@ -87,8 +87,18 @@ class Config implements arrayaccess {
 			$this->data = self::array_merge($this->data, $data);
 		}
 	}
-	
-	
+
+
+	public function loadaskey($key, $filename) {
+		$data = json_decode(file_get_contents($filename), true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
+		}
+		$this->data[$key] = $data;
+		Logger::debug("Config $filename loaded");
+	}
+
+
 	private static function array_merge(&$array1, &$array2) {
 		$merged = $array1;
 		foreach ($array2 as $key => &$value) {

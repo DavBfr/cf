@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
@@ -26,6 +25,9 @@ require_once(dirname(__file__) . DIRECTORY_SEPARATOR . "cf.php");
 if (!IS_CLI)
 	die("Not running from CLI");
 
+$logger = Logger::getInstance();
+$logger->setLevel(Logger::WARNING);
+
 $conf = Config::getInstance();
 if (file_exists(CONFIG_DIR."/config.json")) {
 	$conf->append(CONFIG_DIR."/config.json");
@@ -34,8 +36,10 @@ foreach($conf->get("plugins", Array()) as $plugin) {
 	Plugins::add($plugin);
 }
 Plugins::add("Skel");
-//Plugins::addAll(PLUGINS_DIR);
-//Plugins::addAll(CF_PLUGINS_DIR);
+foreach (array_reverse(Plugins::findAll(CorePlugin::config)) as $filename) {
+	$conf->append($filename);
+}
+Plugins::dispatchAllReversed("config", $conf);
 
 $cli = new Cli($_SERVER['argv']);
 Plugins::dispatchAll("cli", $cli);

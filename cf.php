@@ -278,7 +278,7 @@ configure("FORCE_HTTPS", false);
 configure("USE_STS", false);
 configure("DEFAULT_TIMEZONE", "Europe/Paris");
 configure("DEBUG", false);
-configure("IS_CLI", defined("STDIN"));
+configure("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
 
 if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	if (USE_STS) {

@@ -46,7 +46,7 @@ class BddPlugin extends Plugins {
 
 
 	public function preupdate() {
-		Cli::pln(" * Create base classes");
+		Cli::pinfo(" * Create base classes");
 		Model::createClassesFromConfig(array());
 		$bdd = Bdd::getInstance();
 		
@@ -55,7 +55,7 @@ class BddPlugin extends Plugins {
 			$className = ucfirst($table) . "Model";
 			$model = new $className();
 			if (!$bdd->tableExists($model->getTableName())) {
-				Cli::pln(" * Create table ".$model->getTableName());
+				Cli::pinfo(" * Create table ".$model->getTableName());
 				$model->createTable();
 			}
 		}
@@ -63,7 +63,7 @@ class BddPlugin extends Plugins {
 
 
 	public function install() {
-		Cli::pln(" * Create database structure");
+		Cli::pinfo(" * Create database structure");
 		$bdd = Bdd::getInstance();
 		if (is_dir(BddPlugin::MODEL_DIR)) {
 			if ($dh = opendir(BddPlugin::MODEL_DIR)) {

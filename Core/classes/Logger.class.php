@@ -57,7 +57,7 @@ class Logger {
 			'version' => CF_VERSION,
 			'columns' => array('log', 'backtrace', 'type'),
 			'rows' => array(),
-			'request_uri' => @$_SERVER['REQUEST_URI']);
+			'request_uri' => array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : "unknown");
 	}
 
 
@@ -112,7 +112,7 @@ class Logger {
 
 
 	public function log($data, $level) {
-		if ($level >= $this->level || DEBUG) {
+		if ($level >= $this->level) {
 			$raddr = array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : '-';
 			if (is_array($data)) {
 				$output = array();
@@ -129,8 +129,12 @@ class Logger {
 			if (BROWSER_LOG && !IS_CLI) {
 				$this->logToChrome($data, $level);
 			}
-			$data = "[CF] [" . @date('M j H:i:s') . "] [" . $raddr . "] [" . self::$levels[$level] . "] " . $data;
-			fwrite($this->stderr, $data . "\n");
+			if (IS_CLI) {
+				Cli::plog($level, $data);
+			} else {
+				$data = "[CF] [" . @date('M j H:i:s') . "] [" . $raddr . "] [" . self::$levels[$level] . "] " . $data;
+				fwrite($this->stderr, $data . "\n");
+			}
 			if (DEBUG) {
 				$this->log[] = $data;
 			}

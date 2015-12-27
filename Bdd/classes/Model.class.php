@@ -66,7 +66,7 @@ abstract class Model {
 							if ($drop)
 								Cli::pln($drop . ";");
 							Cli::pln($create . ";");
-							Cli::pln("");
+							Cli::pln();
 						}
 					}
 				}
@@ -104,7 +104,7 @@ abstract class Model {
 		foreach ($config->get("model", array()) as $table => $columns) {
 			$baseClassName = "Base" . ucfirst($table) . "Model";
 			$filename = BddPlugin::BASE_MODEL_DIR . "/" . $baseClassName . ".class.php";
-			Cli::pln("     $baseClassName");
+			Cli::pinfo("   * $baseClassName");
 			$f = fopen($filename, "w");
 			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($bdd->updateTableName($table)) . ";\n");
 			$new_columns = array();
@@ -133,7 +133,7 @@ abstract class Model {
 			if (file_exists($filename))
 				continue;
 
-			Cli::pln($className);
+			Cli::pinfo("   * $className");
 			$f = fopen($filename, "w");
 			fwrite($f, "<?php\n\nclass $className extends $baseClassName {\n\n}\n");
 			fclose($f);

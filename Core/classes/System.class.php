@@ -79,7 +79,7 @@ class System {
 				if (is_dir($file)) {
 					self::rmtree($file);
 				} else {
-					Logger::debug("delete $file");
+					Logger::info("Delete $file");
 					unlink($file);
 				}
 			}

@@ -71,6 +71,7 @@ class CorePlugin extends Plugins {
 				foreach (array_reverse(Plugins::findAll(self::config)) as $filename) {
 					$conf->append($filename);
 				}
+				Plugins::dispatchAllReversed("config", $conf);
 				$conf->merge($confsave);
 				ArrayWriter::toFile($conf->getData(), $cache->getFilename());
 			} else  {
@@ -137,7 +138,7 @@ class CorePlugin extends Plugins {
 	public function preupdate() {
 		global $configured_options;
 
-		Cli::pln(" * Create folders");
+		Cli::pinfo(" * Create folders");
 		foreach ($configured_options as $key) {
 			if (substr($key, -4) == "_DIR") {
 				System::ensureDir(constant($key));
@@ -148,6 +149,7 @@ class CorePlugin extends Plugins {
 
 	public function cli($cli) {
 		$cli->addCommand("core:config", array("Cli", "configuration"), "Get framework configuration");
+		$cli->addCommand("core:jconfig", array("Cli", "jconfig"), "Get framework configuration from merged json files");
 		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");
 		$cli->addCommand("install", array("Cli", "install"), "Install the application");
 		$cli->addCommand("update", array("Cli", "update"), "Update the application");
