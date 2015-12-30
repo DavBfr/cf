@@ -150,6 +150,7 @@ class CorePlugin extends Plugins {
 	public function cli($cli) {
 		$cli->addCommand("core:config", array("Cli", "configuration"), "Get framework configuration");
 		$cli->addCommand("core:jconfig", array("Cli", "jconfig"), "Get framework configuration from merged json files");
+		$cli->addCommand("core:export-conf", array("Cli", "exportconf"), "Export framework configuration");
 		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");
 		$cli->addCommand("install", array("Cli", "install"), "Install the application");
 		$cli->addCommand("update", array("Cli", "update"), "Update the application");

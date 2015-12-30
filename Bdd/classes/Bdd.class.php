@@ -47,5 +47,54 @@ class Bdd {
 	public function __call($name, $arguments) {
 		return call_user_func_array(array($this->helper, $name), $arguments);
 	}
+	
+	
+	public static function export() {
+		$bdd = self::getInstance();
+		Cli::pr("{");
+		$first_model = true;
+		foreach (Model::getModels() as $class) {
+			if (!$first_model)
+				Cli::pln(",");
+			$first_model = false;
+			Cli::pln(json_encode($class) . ":[");
+			$model = new $class();
+			$first_data = true;
+			foreach ($model->simpleSelect() as $data) {
+				if (!$first_data)
+					Cli::pr(",");
+				$first_data = false;
+				Cli::pln(json_encode($data->getValues()));
+			}
+			Cli::pr("]");
+		}
+		Cli::pln("}");
+	}
+
+
+	public function import($data) {
+		foreach($data as $class => $rows) {
+			Logger::warning("Import data for $class");
+			$model = new $class();
+			foreach($rows as $row_data) {
+				$row = $model->newRow();
+				$row->setValues($row_data);
+				$row->save();
+			}
+		}
+	}
+
+
+	public static function cliImport($args) {
+		if (count($args["input"]) == 2) {
+			Cli::pfatal("Missing filename to import");
+		}
+		$bdd = self::getInstance();
+		$filename = $args["input"][2];
+		Cli::pinfo("Import $filename in database");
+		$data = json_decode(file_get_contents($filename));
+		$bdd->import($data);
+	}
+
 
 }

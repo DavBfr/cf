@@ -243,7 +243,7 @@ class PDOHelper extends BddHelper {
 			case ModelField::TYPE_BLOB:
 				return "BLOB";
 			default:
-				throw new Exception("Unable to find column type for " . $this->getName());
+				throw new Exception("Unable to find column type '$type'");
 		}
 	}
 

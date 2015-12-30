@@ -69,11 +69,11 @@ class SqliteHelper extends PDOHelper {
 		if ($res !== false) {
 			foreach($res as $row) {
 				$field = array();
-				if (strpos($row["type"], "INTEGER") !== false) $field["type"] = ModelField::TYPE_INT;
-				elseif (strpos($row["type"], "TEXT") !== false) $field["type"] = ModelField::TYPE_TEXT;
-				elseif (strpos($row["Type"], "DATETIME") !== false) $field["type"] = ModelField::TYPE_DATETIME;
-				elseif (strpos($row["Type"], "TIME") !== false) $field["type"] = ModelField::TYPE_TIME;
-				elseif (strpos($row["type"], "DATE") !== false) $field["type"] = ModelField::TYPE_DATE;
+				if (strpos(strtoupper($row["type"]), "INTEGER") !== false) $field["type"] = ModelField::TYPE_INT;
+				elseif (strpos(strtoupper($row["type"]), "TEXT") !== false) $field["type"] = ModelField::TYPE_TEXT;
+				elseif (strpos(strtoupper($row["Type"]), "DATETIME") !== false) $field["type"] = ModelField::TYPE_DATETIME;
+				elseif (strpos(strtoupper($row["Type"]), "TIME") !== false) $field["type"] = ModelField::TYPE_TIME;
+				elseif (strpos(strtoupper($row["type"]), "DATE") !== false) $field["type"] = ModelField::TYPE_DATE;
 				else $field["type"] = $row["type"];
 
 				$field["null"] = $row["notnull"] == 0;

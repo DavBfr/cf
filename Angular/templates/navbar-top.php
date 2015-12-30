@@ -7,12 +7,12 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="#"><?php $this->out("title") ?></a>
+		<a class="navbar-brand" href="#/"><?php $this->out("title") ?></a>
 	</div>
 
-	<div data-ng-cloak class="collapse navbar-collapse navbar-ex1-collapse">
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
 		<ul class="nav navbar-nav">
-			<li data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
+			<li data-ng-cloak data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">

@@ -52,25 +52,27 @@ abstract class Model {
 	}
 
 
+	public static function getModels() {
+		$list = array();
+		$config = Config::getInstance();
+		foreach ($config->get("model", array()) as $table => $columns) {
+			$list[] = ucfirst($table) . "Model";
+		}
+		return $list;
+	}
+
+
 	public static function export($args) {
 		$bdd = Bdd::getInstance();
-		if (is_dir(BddPlugin::MODEL_DIR)) {
-			if ($dh = opendir(BddPlugin::MODEL_DIR)) {
-				while (($file = readdir($dh)) !== false) {
-					if (substr($file, -15) == "Model.class.php" && substr($file, 0, 4) != "Base") {
-						$class = substr($file, 0, -10);
-						$model = new $class();
-						$drop = $bdd->dropTableQuery($model->getTableName());
-						$create = $bdd->createTableQuery($model->table, $model->fields);
-						if ($create) {
-							if ($drop)
-								Cli::pln($drop . ";");
-							Cli::pln($create . ";");
-							Cli::pln();
-						}
-					}
-				}
-				closedir($dh);
+		foreach (self::getModels() as $class) {
+			$model = new $class();
+			$drop = $bdd->dropTableQuery($model->getTableName());
+			$create = $bdd->createTableQuery($model->table, $model->fields);
+			if ($create) {
+				if ($drop)
+					Cli::pln($drop . ";");
+				Cli::pln($create . ";");
+				Cli::pln();
 			}
 		}
 	}

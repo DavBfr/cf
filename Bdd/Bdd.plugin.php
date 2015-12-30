@@ -86,6 +86,8 @@ class BddPlugin extends Plugins {
 		$cli->addCommand("model:import", array("Model", "import"), "Import database model to json format");
 		$cli->addCommand("model:create:classes", array("Model", "createClassesFromConfig"), "Create php classes from json configuration");
 		$cli->addCommand("crud:create", array("Crud", "create"), "Create php class from json configuration");
+		$cli->addCommand("bdd:export", array("Bdd", "export"), "Export the database to json file");
+		$cli->addCommand("bdd:import", array("Bdd", "cliImport"), "Import the database from json file");
 	}
 
 }

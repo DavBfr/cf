@@ -35,6 +35,10 @@ app.filter('telephone', function () {
   };
 });
 
+app.filter('unsafehtml', function($sce) {
+		return $sce.trustAsHtml;
+});
+
 app.filter('ouinon', function () {
   return function (input) {
       if (parseInt(input)) {

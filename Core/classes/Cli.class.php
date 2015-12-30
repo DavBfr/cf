@@ -27,15 +27,18 @@ class Cli {
 	const ansilerr = "\e[1;31m";
 	const ansicrit = "\e[0;35m";
 	
-	private $args;
-	private $commands;
-	private static $has_colors;
+	protected $args;
+	protected $commands;
+	protected $has_colors;
+	private static $instance = NULL;
 
 	public function __construct($argv) {
+		self::$instance = $this;
+
 		while (ob_get_level())
 			ob_end_clean();
 
-		self::$has_colors = posix_isatty(STDOUT);
+		$this->has_colors = posix_isatty(STDOUT);
 		$this->args = $this->parseArguments($argv);
 		$logger = Logger::getInstance();
 		if (array_key_exists("v", $this->args))
@@ -66,6 +69,19 @@ class Cli {
 	public function handle($command, $params) {
 		if (isset($this->commands[$command])) {
 			return call_user_func($this->commands[$command][0], $params);
+		}
+		$found = NULL;
+		foreach($this->commands as $key => $val) {
+			if (strpos($key, $command) !== false) {
+				if ($found === NULL) {
+					$found = $val;
+				} else {
+					$found = false;
+				}
+			}
+		}
+		if ($found !== NULL && $found !== false) {
+			return call_user_func($found[0], $params);
 		}
 		self::perr("Unknown command $command");
 		$this->printHelp($params);
@@ -120,9 +136,26 @@ class Cli {
 	}
 
 
-	public static function pr($s="") {
+	private static function static_output($color, $s) {
 		fwrite(STDOUT, $s);
 		fflush(STDOUT);
+	}
+	
+
+	public function output($color, $s) {
+		if ($this->has_colors && $color)
+			fwrite(STDOUT, $color . $s . self::ansiraz);
+		else
+			fwrite(STDOUT, $s);
+		fflush(STDOUT);
+	}
+
+
+	public static function pr($s="") {
+		if (self::$instance)
+			self::$instance->output(false, $s);
+		else
+			self::static_output(false, $s);
 	}
 
 
@@ -132,10 +165,10 @@ class Cli {
 
 
 	public static function pcolor($color, $s) {
-		if (self::$has_colors)
-			self::pr($color . $s . self::ansiraz);
+		if (self::$instance)
+			self::$instance->output($color, $s);
 		else
-			self::pr($s);
+			self::static_output($color, $s);
 	}
 
 
@@ -209,10 +242,54 @@ class Cli {
 	}
 
 
+	public static function exportconf() {
+		global $configured_options;
+		
+		$ex = array("CF_VERSION", "INIT_CONFIG_DIR", "CF_DIR", "ROOT_DIR", "CORE_PLUGIN", "CF_URL", "IS_CLI", "DOCUMENT_ROOT", "CF_PLUGINS_DIR", "WWW_PATH");
+		
+		self::pln("<?php");
+		if (isset($configured_options)) {
+			$sopts=$configured_options;
+			asort($sopts);
+			if (substr(WWW_PATH, 0, strlen(ROOT_DIR)) == ROOT_DIR) {
+				$val = "\"" . substr(WWW_PATH, strlen(ROOT_DIR)) . "\"";
+				self::pln("configure(\"WWW_PATH\", $val);");
+			} else {
+				self::pln("configure(\"WWW_PATH\", \"".WWW_PATH."\");");
+			}
+			foreach($sopts as $key) {
+				if (array_search($key, $ex) === false) {
+					$val = constant($key);
+					if (strpos($key, "_DIR") !== false) {
+						if (substr($val, 0, strlen(ROOT_DIR)) == ROOT_DIR) {
+							$val = "ROOT_DIR . \"" . substr($val, strlen(ROOT_DIR)) . "\"";
+						} else if (substr($val, 0, strlen(CF_DIR)) == CF_DIR) {
+							$val = "CF_DIR . \"" . substr($val, strlen(CF_DIR)) . "\"";
+						}
+					} else if (strpos($key, "_PATH") !== false) {
+							if (substr($val, 0, strlen(WWW_PATH)) == WWW_PATH) {
+								$val = "WWW_PATH . \"" . substr($val, strlen(WWW_PATH)) . "\"";
+							}
+					} else if (is_bool($val))
+						$val = $val?"true":"false";
+					else if (is_int($val))
+							$val = $val;
+					else if (is_string($val))
+						$val = "\"$val\"";
+					self::pln("configure(\"$key\", $val);");
+				}
+			}
+		}
+	}
+
+
 	public static function jconfig() {
 		$conf = Config::getInstance();
 		$data = $conf->getData();
-		self::pln(json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+		$p = 0;
+		if (version_compare(PHP_VERSION, '5.4.0') >= 0)
+			$p = JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE;
+		self::pln(json_encode($data, $p));
 	}
 
 
