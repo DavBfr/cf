@@ -5,7 +5,7 @@
 	"homepage": "https://github.com/DavBfr/cf",
 	"license": "LGPL-2.1",
 	"require": {
-		"php": ">=5.2.0"
+		"php": ">=5.3.0"
 	},
 	"authors": [{
 		"name": "David PHAM-VAN",

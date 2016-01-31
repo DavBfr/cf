@@ -175,6 +175,16 @@ class Collection {
 	}
 
 
+	public function orderByDesc() {
+		$args = func_get_args();
+		if (count($args) == 1 && is_array($args[0]))
+			$args = $args[0];
+
+		$this->order = array_merge($this->order, array_map(function ($arg) { return "$arg desc"; }, $args));
+		return $this;
+	}
+
+
 	public function with($params) {
 		$this->params = array_merge($this->params, $params);
 		return $this;
