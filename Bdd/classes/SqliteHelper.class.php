@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -16,6 +16,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+use PDO;
+use PDOException;
 
 class SqliteHelper extends PDOHelper {
 
@@ -83,7 +86,7 @@ class SqliteHelper extends PDOHelper {
 				$fields[$row["name"]] = $field;
 			}
 		}
-		
+
 		return $fields;
 	}
 

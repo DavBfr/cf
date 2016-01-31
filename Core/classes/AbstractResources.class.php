@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -84,22 +84,22 @@ abstract class AbstractResources {
 	public function add($filename) {
 		if (array_key_exists($filename, $this->added))
 			return;
-		
+
 		$this->added[$filename] = true;
 		$this->append(self::find($filename));
 	}
-	
-	
+
+
 	protected function append($filename) {
 		$this->resources[] = $filename;
 	}
 
 
 	public function getResources() {
-		return array_map(array(self, "web"), $this->resources);
+		return array_map(array(AbstractResources, "web"), $this->resources);
 	}
-	
-	
+
+
 	public function getResourcesByExt($ext) {
 		$l = strlen($ext);
 		$res = array();
@@ -113,12 +113,12 @@ abstract class AbstractResources {
 
 
 	public function getScripts() {
-		return array_map(array(self, "web"), $this->getResourcesByExt(".js"));
+		return array_map(array(AbstractResources, "web"), $this->getResourcesByExt(".js"));
 	}
 
 
 	public function getStylesheets() {
-		return array_map(array(self, "web"), $this->getResourcesByExt(".css"));
+		return array_map(array(AbstractResources, "web"), $this->getResourcesByExt(".css"));
 	}
 
 }

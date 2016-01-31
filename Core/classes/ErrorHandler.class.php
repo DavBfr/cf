@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -16,6 +16,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+use Exception;
 
 class ErrorHandler {
 	private static $instance = NULL;
@@ -78,7 +80,7 @@ class ErrorHandler {
 			else
 				$message = "Error #${code}";
 		}
-		
+
 		 if (!DEBUG) {
 			$body = "";
 			$backtrace = array();
@@ -148,7 +150,7 @@ class ErrorHandler {
 			throw new Exception($body);
 
 		header("$protocol $code $message");
-		
+
 		if ($code < 500 && $code != 404)
 			die($body);
 

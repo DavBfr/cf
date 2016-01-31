@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -185,7 +185,7 @@ class Collection {
 		$this->params[$param] = $value;
 		return $this;
 	}
-	
+
 	public function strftime($format, $date) {
 		return $this->bdd->strftime($format, $date);
 	}

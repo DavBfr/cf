@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -74,7 +74,7 @@ class Cache {
 		System::ensureDir(dirname($this->filename_cache));
 		//if (! is_writable($this->filename_cache))
 		//	ErrorHandler::error(500, NULL, $this->filename_cache." is not writable");
-			
+
 		file_put_contents($this->filename_cache, $value);
 	}
 
@@ -91,7 +91,7 @@ class Cache {
 
 	public function setArray($value) {
 		System::ensureDir(dirname($this->filename_cache));
-		
+
 		file_put_contents($this->filename_cache, json_encode($value));
 	}
 

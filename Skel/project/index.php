@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 
 include_once(dirname(__file__) . "/config/paths.php");
 

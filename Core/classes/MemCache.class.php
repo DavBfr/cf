@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -17,7 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-class MemCache implements arrayaccess {
+use Exception;
+
+
+class MemCache implements \arrayaccess {
 
 	private static $data = array();
 
@@ -32,7 +35,7 @@ class MemCache implements arrayaccess {
 
 	public function offsetSet($offset, $value) {
 		if (is_null($offset))
-			throw Exception("MemCache offset cannot be null");
+			throw new Exception("MemCache offset cannot be null");
 
 		self::$data[$offset] = $value;
 		if ($this->apc) {

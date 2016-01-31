@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -33,7 +33,7 @@ class System {
 			$dest = WWW_DIR . "/" . basename($resource);
 		else
 			$dest = WWW_DIR . "/" . $dest;
-		
+
 		Logger::debug("publish $resource => $dest");
 
 		if (is_link($dest))

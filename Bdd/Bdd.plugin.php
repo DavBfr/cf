@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -30,6 +30,7 @@ class BddPlugin extends Plugins {
 		if (parent::autoload($class_name))
 			return true;
 
+		$class_name = $this->removeNamespace($class_name);
 		$plugin = Plugins::find(self::MODEL_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php');
 		if ($plugin !== NULL) {
 			require_once($plugin);
@@ -49,10 +50,10 @@ class BddPlugin extends Plugins {
 		Cli::pinfo(" * Create base classes");
 		Model::createClassesFromConfig(array());
 		$bdd = Bdd::getInstance();
-		
+
 		$config = Config::getInstance();
 		foreach ($config->get("model", array()) as $table => $columns) {
-			$className = ucfirst($table) . "Model";
+			$className = __NAMESPACE__ . "\\" . ucfirst($table) . "Model";
 			$model = new $className();
 			if (!$bdd->tableExists($model->getTableName())) {
 				Cli::pinfo(" * Create table ".$model->getTableName());
@@ -69,7 +70,7 @@ class BddPlugin extends Plugins {
 			if ($dh = opendir(BddPlugin::MODEL_DIR)) {
 				while (($file = readdir($dh)) !== false) {
 					if (substr($file, -15) == "Model.class.php" && substr($file, 0, 4) != "Base") {
-						$class = substr($file, 0, -10);
+						$class = __NAMESPACE__ . "\\" . substr($file, 0, -10);
 						$model = new $class();
 						$bdd->dropTable($model->getTableName());
 						$model->createTable();
@@ -82,12 +83,12 @@ class BddPlugin extends Plugins {
 
 
 	public function cli($cli) {
-		$cli->addCommand("model:export", array("Model", "export"), "Export database model to sql statements");
-		$cli->addCommand("model:import", array("Model", "import"), "Import database model to json format");
-		$cli->addCommand("model:create:classes", array("Model", "createClassesFromConfig"), "Create php classes from json configuration");
-		$cli->addCommand("crud:create", array("Crud", "create"), "Create php class from json configuration");
-		$cli->addCommand("bdd:export", array("Bdd", "export"), "Export the database to json file");
-		$cli->addCommand("bdd:import", array("Bdd", "cliImport"), "Import the database from json file");
+		$cli->addCommand("model:export", array(__NAMESPACE__ . "\\Model", "export"), "Export database model to sql statements");
+		$cli->addCommand("model:import", array(__NAMESPACE__ . "\\Model", "import"), "Import database model to json format");
+		$cli->addCommand("model:create:classes", array(__NAMESPACE__ . "\\Model", "createClassesFromConfig"), "Create php classes from json configuration");
+		$cli->addCommand("crud:create", array(__NAMESPACE__ . "\\Crud", "create"), "Create php class from json configuration");
+		$cli->addCommand("bdd:export", array(__NAMESPACE__ . "\\Bdd", "export"), "Export the database to json file");
+		$cli->addCommand("bdd:import", array(__NAMESPACE__ . "\\Bdd", "cliImport"), "Import the database from json file");
 	}
 
 }

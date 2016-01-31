@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -16,6 +16,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+use DateTime;
+use Exception;
 
 class ModelField {
 	const TYPE_AUTO = "auto";
@@ -52,8 +55,8 @@ class ModelField {
 	public function getName() {
 		return $this->name;
 	}
-	
-	
+
+
 	public function getFullName() {
 		return $this->table . "." . $this->name;
 	}
@@ -169,7 +172,7 @@ class ModelField {
 	public function isEditable() {
 		return $this->props["edit"];
 	}
-	
+
 	public function setEditable($value) {
 		$this->props["edit"] = (boolean)$value;
 	}
@@ -212,8 +215,8 @@ class ModelField {
 	public function isForeign() {
 		return $this->props["foreign"] !== NULL;
 	}
-	
-	
+
+
 	public function getForeignTable() {
 		return "foreign_" . $this->name;
 	}

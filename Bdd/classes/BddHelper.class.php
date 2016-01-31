@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -17,19 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-/**
- * https://github.com/etconsilium/pdo-mongodb/blob/master/pdo/mongodb.php
- * http://php.net/mongo
- * http://blog.mongodb.org/post/24960636131/mongodb-for-the-php-mind-part-1
- * http://www.querymongo.com
- **/
+use Iterator;
 
 abstract class BddHelper {
-	
+
 	protected function getParams() {
 		return array();
 	}
-	
+
 	abstract public function quote($string);
 
 	abstract public function quoteIdent($field);
@@ -61,7 +56,7 @@ abstract class BddHelper {
 	abstract public function getTables();
 
 	abstract public function getTableInfo($name);
-	
+
 	public function strftime($format, $date) {
 		return $date;
 	}

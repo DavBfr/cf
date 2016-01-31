@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -24,7 +24,7 @@ class Output {
 			header("Content-Type: text/json");
 		else
 			header("Content-Type: text/plain");
-		
+
 		$content = ob_get_contents();
 		ob_end_clean();
 		if (DEBUG && is_array($object) && strlen($content) > 0) {
@@ -64,7 +64,7 @@ class Output {
 
 		while (ob_get_length())
 			ob_end_clean();
-		
+
 		print($data);
 		exit();
 	}
@@ -76,5 +76,5 @@ class Output {
 
 		ErrorHandler::error(500, "Debug", "<pre>" . $message . "</pre>", 3);
 	}
-	
+
 }

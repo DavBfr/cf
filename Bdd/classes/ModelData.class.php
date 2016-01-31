@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -16,6 +16,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+use Exception;
+use Iterator;
 
 class ModelData implements Iterator {
 
@@ -146,14 +149,14 @@ class ModelData implements Iterator {
 			return call_user_func(array($this->model, $func), $this, $value);
 		}
 
-		return $this->values[$field];
+		return $value;
 	}
 
 
 	public function getBlob($field) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
-		
+
 		$bdd = Bdd::getInstance();
 		return $bdd->getBlob($this->values[$field]);
 	}
@@ -162,16 +165,16 @@ class ModelData implements Iterator {
 	public function setBlob($field, $value) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
-		
+
 		$bdd = Bdd::getInstance();
 		$this->values[$field] = $bdd->setBlob($this->values[$field], $value);
 	}
 
 
 	private function _set($field, $value) {
-		if (!is_a($field, "ModelField"))
+		if (!is_a($field, __NAMESPACE__ . "\\ModelField"))
 			$field = $this->model->getField($field);
-		
+
 		$this->values[$field->getName()] = $field->format($value);
 	}
 
@@ -227,7 +230,7 @@ class ModelData implements Iterator {
 
 	public function save() {
 		//$this->valid();
-		
+
 		$bdd = Bdd::getInstance();
 		if ($this->isnew) {
 			$values = array();
@@ -269,7 +272,7 @@ class ModelData implements Iterator {
 				$obj = $this->model->getForeign($field);
 			else
 				$obj = new $class();
-			
+
 			$this->foreign[$field] = $obj->getById($this->get($field));
 		}
 

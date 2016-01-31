@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -19,7 +19,7 @@
 
 class Session {
 	const rights_key = "RIGHTS";
-	
+
 	private static $instance = NULL;
 
 
@@ -147,7 +147,7 @@ class Session {
 	public static function isLoggedApi() {
 		if (self::hasSession() && self::hasRight("logged_api"))
 			return true;
-		
+
 		$headers = array_change_key_case(getallheaders(), CASE_LOWER);
 		if (array_key_exists(API_TOKEN_HEADER, $headers)) {
 			$token = $headers[API_TOKEN_HEADER];

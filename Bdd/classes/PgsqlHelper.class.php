@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+use PDO;
+use PDOException;
+
 class PgsqlHelper extends PDOHelper {
 
 	protected function getParams() {
@@ -24,7 +27,7 @@ class PgsqlHelper extends PDOHelper {
 			PDO::ATTR_PERSISTENT => true,
 		);
 	}
-	
+
 	public function quoteIdent($field) {
 		return $field;
 	}
@@ -88,7 +91,7 @@ class PgsqlHelper extends PDOHelper {
 				else $field["type"] = $row["data_type"];
 
 				$field["null"] = $row["is_nullable"] == "YES";
-				
+
 				if (strpos($row["column_default"], "nextval") !== false) {
 					$field["primary"] = true;
 					$field["autoincrement"] = true;
@@ -124,7 +127,7 @@ class PgsqlHelper extends PDOHelper {
 
 		if (count($joint) > 0) {
 			$joints = array();
-		
+
 			foreach($joint as $k=>$v) {
 				$joints[] = "LEFT JOIN ${v[0]} ON ${v[1]}";
 			}
@@ -133,7 +136,7 @@ class PgsqlHelper extends PDOHelper {
 
 		if ($filter) {
 			$value = $this->quote("%".$filter."%");
-			
+
 			$filter = array();
 			foreach ($fields as $field) {
 				$filter[] = $this->quoteIdent($field) . " LIKE " . $value;

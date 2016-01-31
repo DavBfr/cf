@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -26,7 +26,7 @@ class Bdd {
 
 	private function __construct() {
 		$this->driver = substr(DBNAME, 0, strpos(DBNAME, ":"));
-		$helper = ucFirst($this->driver)."Helper";
+		$helper = __NAMESPACE__ . "\\" . ucFirst($this->driver)."Helper";
 		if (class_exists($helper, true)) {
 			$this->helper = new $helper(DBNAME, DBLOGIN, DBPASSWORD);
 		} else {
@@ -47,8 +47,8 @@ class Bdd {
 	public function __call($name, $arguments) {
 		return call_user_func_array(array($this->helper, $name), $arguments);
 	}
-	
-	
+
+
 	public static function export() {
 		$bdd = self::getInstance();
 		Cli::pr("{");
@@ -58,6 +58,7 @@ class Bdd {
 				Cli::pln(",");
 			$first_model = false;
 			Cli::pln(json_encode($class) . ":[");
+			$class = __NAMESPACE__ . "\\$class";
 			$model = new $class();
 			$first_data = true;
 			foreach ($model->simpleSelect() as $data) {
@@ -75,6 +76,7 @@ class Bdd {
 	public function import($data) {
 		foreach($data as $class => $rows) {
 			Logger::warning("Import data for $class");
+			$class = __NAMESPACE__ . "\\$class";
 			$model = new $class();
 			foreach($rows as $row_data) {
 				$row = $model->newRow();

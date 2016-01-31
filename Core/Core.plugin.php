@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -48,9 +48,9 @@ class CorePlugin extends Plugins {
 	const config = "config/config.json";
 
 	public static function bootstrap() {
-		ErrorHandler::Init("ErrorHandler");
+		ErrorHandler::Init(__NAMESPACE__ . "\\ErrorHandler");
 		$conf = Config::getInstance();
-		
+
 		$memcache = new MemCache();
 		if (array_key_exists("JCONFIG_FILE", $memcache)) {
 			$conf->setData($memcache["JCONFIG_FILE"]);
@@ -148,13 +148,13 @@ class CorePlugin extends Plugins {
 
 
 	public function cli($cli) {
-		$cli->addCommand("core:config", array("Cli", "configuration"), "Get framework configuration");
-		$cli->addCommand("core:jconfig", array("Cli", "jconfig"), "Get framework configuration from merged json files");
-		$cli->addCommand("core:export-conf", array("Cli", "exportconf"), "Export framework configuration");
-		$cli->addCommand("core:version", array("Cli", "version"), "Get framework version");
-		$cli->addCommand("install", array("Cli", "install"), "Install the application");
-		$cli->addCommand("update", array("Cli", "update"), "Update the application");
-		$cli->addCommand("clean", array("Cli", "clean"), "Clean the application cache");
+		$cli->addCommand("core:config", array(__NAMESPACE__ . "\\Cli", "configuration"), "Get framework configuration");
+		$cli->addCommand("core:jconfig", array(__NAMESPACE__ . "\\Cli", "jconfig"), "Get framework configuration from merged json files");
+		$cli->addCommand("core:export-conf", array(__NAMESPACE__ . "\\Cli", "exportconf"), "Export framework configuration");
+		$cli->addCommand("core:version", array(__NAMESPACE__ . "\\Cli", "version"), "Get framework version");
+		$cli->addCommand("install", array(__NAMESPACE__ . "\\Cli", "install"), "Install the application");
+		$cli->addCommand("update", array(__NAMESPACE__ . "\\Cli", "update"), "Update the application");
+		$cli->addCommand("clean", array(__NAMESPACE__ . "\\Cli", "clean"), "Clean the application cache");
 	}
 
 }

@@ -1,4 +1,4 @@
-<?php echo "<?php" ?>
+<?php echo "<?php namespace DavBfr\CF;" ?>
 
 //Session::ensureLoggedin();
 

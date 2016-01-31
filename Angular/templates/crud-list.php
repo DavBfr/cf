@@ -46,7 +46,7 @@
 		<tr data-ng-repeat="item in list">
 			<?php foreach($this->get("model") as $field): ?>
 			<?php if($field->inList()): ?>
-			<td <?php if ($this->get("can_view")): ?> data-ng-click="go_detail(item.<?php echo Crud::ID ?>)" <?php endif; ?>>
+			<td <?php if ($this->get("can_view")): ?> data-ng-click="go_detail(item.<?php echo DavBfr\CF\Crud::ID ?>)" <?php endif; ?>>
 			<?php	if (self::findTemplate("field-list-".$field->getTableName().".".$field->getName().".php")):
 					$this->insertNew("field-list-".$field->getTableName().".".$field->getName().".php", array("field"=>$field)); ?>
 			<?php elseif($field->isBool()): ?>
@@ -63,12 +63,12 @@
 			<?php endforeach; ?>
 			<td>
 				<?php if ($this->get("can_delete")): ?>
-				<button data-ng-click="del(item.<?php echo Crud::ID ?>);$event.stopPropagation();" type="button" class="btn btn-danger btn-xs">
+				<button data-ng-click="del(item.<?php echo DavBfr\CF\Crud::ID ?>);$event.stopPropagation();" type="button" class="btn btn-danger btn-xs">
 					<span class="glyphicon glyphicon-remove"></span> <?php $this->tr("core.del") ?>
 				</button>
 				<?php endif ?>
 				<?php if ($this->get("can_view")): ?>
-				<button data-ng-click="go_detail(item.<?php echo Crud::ID ?>)" type="button" class="btn btn-primary btn-xs">
+				<button data-ng-click="go_detail(item.<?php echo DavBfr\CF\Crud::ID ?>)" type="button" class="btn btn-primary btn-xs">
 					<span class="glyphicon glyphicon-info-sign"></span> <?php $this->tr("core.details") ?>
 				</button>
 				<?php endif ?>

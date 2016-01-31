@@ -1,6 +1,6 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2016 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+use Exception;
 
 abstract class Model {
 
@@ -35,8 +37,8 @@ abstract class Model {
 
 
 	public static function getModel($name) {
-		$md = ucfirst($name)."Model";
-		if (class_exists($md) && is_subclass_of($md, "Model"))
+		$md = __NAMESPACE__ . "\\" . ucfirst($name)."Model";
+		if (class_exists($md) && is_subclass_of($md, __NAMESPACE__ . "\\Model"))
 			return new $md;
 
 		return NULL;
@@ -45,10 +47,10 @@ abstract class Model {
 
 	protected function getModelData() {
 		$md = get_class($this)."Data";
-		if (class_exists($md) && is_subclass_of($md, "ModelData"))
+		if (class_exists($md) && is_subclass_of($md, __NAMESPACE__ . "\\ModelData"))
 			return get_class($this)."Data";
 
-		return "ModelData";
+		return __NAMESPACE__ . "\\ModelData";
 	}
 
 
@@ -65,6 +67,7 @@ abstract class Model {
 	public static function export($args) {
 		$bdd = Bdd::getInstance();
 		foreach (self::getModels() as $class) {
+			$class = __NAMESPACE__ . "\\$class";
 			$model = new $class();
 			$drop = $bdd->dropTableQuery($model->getTableName());
 			$create = $bdd->createTableQuery($model->table, $model->fields);
@@ -108,7 +111,7 @@ abstract class Model {
 			$filename = BddPlugin::BASE_MODEL_DIR . "/" . $baseClassName . ".class.php";
 			Cli::pinfo("   * $baseClassName");
 			$f = fopen($filename, "w");
-			fwrite($f, "<?php\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($bdd->updateTableName($table)) . ";\n");
+			fwrite($f, "<?php namespace " . __NAMESPACE__ . ";\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($bdd->updateTableName($table)) . ";\n");
 			$new_columns = array();
 			$new_names = array();
 			foreach($columns as $name => $params) {
@@ -137,7 +140,7 @@ abstract class Model {
 
 			Cli::pinfo("   * $className");
 			$f = fopen($filename, "w");
-			fwrite($f, "<?php\n\nclass $className extends $baseClassName {\n\n}\n");
+			fwrite($f, "<?php namespace " . __NAMESPACE__ . ";\n\nclass $className extends $baseClassName {\n\n}\n");
 			fclose($f);
 		}
 	}
@@ -205,7 +208,7 @@ abstract class Model {
 		$data = $this->getById($id);
 		if ($data->isEmpty())
 			return;
-		
+
 		foreach($this->fields as $name => $field) {
 			if ($field->isBlob()) {
 				$data->setBlob($name, null);
@@ -235,7 +238,7 @@ abstract class Model {
 			list($table, $key, $value) = $this->fields[$field]->getForeign();
 			return new $table;
 		}
-		
+
 		return NULL;
 	}
 

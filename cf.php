@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -16,6 +16,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+use Exception;
+
 
 class Plugins {
 	const CLASS_DIR = "classes";
@@ -54,7 +57,7 @@ class Plugins {
 
 		if ($class_name == NULL)
 			$class_name = $name;
-		$class_fullname = $class_name . "Plugin";
+		$class_fullname = __NAMESPACE__ . "\\" . $class_name . "Plugin";
 
 		if (class_exists($class_fullname)) {
 			$reflector = new ReflectionClass($class_fullname);
@@ -210,7 +213,16 @@ class Plugins {
 	}
 
 
+	protected function removeNamespace($class_name) {
+		$pos = strrpos($class_name, "\\");
+		if ($pos === false)
+			return $class_name;
+		return substr($class_name, $pos + 1);
+	}
+
+
 	protected function autoload($class_name) {
+		$class_name = $this->removeNamespace($class_name);
 		$class_file = $this->dir . DIRECTORY_SEPARATOR . self::CLASS_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php';
 		if (is_readable($class_file)) {
 			require_once($class_file);
@@ -231,7 +243,7 @@ class Plugins {
 
 	public static function registerAutoload() {
 		if (!self::$autoload_registered) {
-			spl_autoload_register("Plugins::spl_autoload");
+			spl_autoload_register(__NAMESPACE__ . "\\Plugins::spl_autoload");
 			self::$autoload_registered = true;
 		}
 	}
@@ -253,7 +265,7 @@ function configure($key, $value) {
 }
 
 define("URL_SEPARATOR", "/");
-configure("CF_VERSION", "1.2");
+configure("CF_VERSION", "2.0");
 if (defined("ROOT_DIR")) {
 	configure("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 } else {

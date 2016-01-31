@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -20,21 +20,21 @@
 class TemplateRes extends Template {
 	public function __construct($params=Array()) {
 		$conf = Config::getInstance();
-		
+
 		$resources = new Resources();
-		
+
 		Plugins::dispatchAll("resources", $resources);
-		
+
 		foreach($conf->get("scripts", Array()) as $script) {
 			$resources->add($script);
 		}
 		foreach(Plugins::findAll("www/app") as $dir) {
 			$resources->addDir($dir);
 		}
-		
+
 		$params["scripts"] = $resources->getScripts();
 		$params["stylesheets"] = $resources->getStylesheets();
-		
+
 		parent::__construct($params);
 	}
 }

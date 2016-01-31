@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -23,6 +23,12 @@
  * http://blog.mongodb.org/post/24960636131/mongodb-for-the-php-mind-part-1
  * http://www.querymongo.com
  **/
+
+
+use MongoClient;
+use MongoID;
+use Exception;
+
 
 class MongodbHelper extends BddHelper {
 	protected $mongo;
@@ -143,12 +149,12 @@ class MongodbHelper extends BddHelper {
 		return false;
 	}
 
-	
+
 	private function createQuery($where, $filter, $filter_fields, $group, $params) {
 		$query = array();
 		if ($filter) {
 			$value = "/".$filter."/";
-			
+
 			$filter = array();
 			foreach ($fields as $field) {
 				$filter[] = $this->quoteIdent($field) . " LIKE " . $value;
@@ -160,7 +166,7 @@ class MongodbHelper extends BddHelper {
 			$query['$or'] = $o;'function() { for (var key in this) { if (this[key] == "'.$filter.'") return true;} return false; }
 			';
 		}
-		
+
 		foreach ($where as $w) {
 			$clause = preg_split("/([!=><]+|IS)/", $w, 3, PREG_SPLIT_DELIM_CAPTURE);
 			$field = NULL;
@@ -180,11 +186,11 @@ class MongodbHelper extends BddHelper {
 			}
 			if ($value[0] == ":")
 				$value = $params[substr($value, 1)];
-				
+
 			if ($field == "_id") {
 				$value = new MongoID($value);
 			}
-			
+
 			switch($clause[1]) {
 				case "="; $query[$field] = $value; break;
 				case "!="; $query[$field] = array('$ne' => $value); break;
@@ -251,7 +257,7 @@ class MongodbHelper extends BddHelper {
 		$file = $gridFS->get($id);
 		if ($file)
 			return $file->getBytes();
-		
+
 		return null;
 	}
 
@@ -264,10 +270,10 @@ class MongodbHelper extends BddHelper {
 			$gridFS->delete($id);
 			$metadata['_id'] = $id;
 		}
-		
+
 		if ($value === null)
 			return null;
-		
+
 		return $gridFS->storeBytes($value, $metadata);
 	}
 

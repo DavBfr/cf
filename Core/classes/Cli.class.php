@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -26,7 +26,7 @@ class Cli {
 	const ansiwarn = "\e[1;35m";
 	const ansilerr = "\e[1;31m";
 	const ansicrit = "\e[0;35m";
-	
+
 	protected $args;
 	protected $commands;
 	protected $has_colors;
@@ -140,7 +140,7 @@ class Cli {
 		fwrite(STDOUT, $s);
 		fflush(STDOUT);
 	}
-	
+
 
 	public function output($color, $s) {
 		if ($this->has_colors && $color)
@@ -235,7 +235,7 @@ class Cli {
 				$val = constant($key);
 				if (is_bool($val))
 					$val = $val?"true":"false";
-				
+
 				self::pln($key.' = '.$val);
 			}
 		}
@@ -244,10 +244,10 @@ class Cli {
 
 	public static function exportconf() {
 		global $configured_options;
-		
+
 		$ex = array("CF_VERSION", "INIT_CONFIG_DIR", "CF_DIR", "ROOT_DIR", "CORE_PLUGIN", "CF_URL", "IS_CLI", "DOCUMENT_ROOT", "CF_PLUGINS_DIR", "WWW_PATH");
-		
-		self::pln("<?php");
+
+		self::pln("<?php namespace DavBfr\CF;");
 		if (isset($configured_options)) {
 			$sopts=$configured_options;
 			asort($sopts);

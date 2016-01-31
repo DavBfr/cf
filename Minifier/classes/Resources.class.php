@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -24,7 +24,7 @@ class Resources extends AbstractResources {
 			$script = Cache::Pub($filename, ".css");
 			if ($script->check()) {
 				Logger::info("Compile less file $filename");
-				$less = new lessc();
+				$less = new \lessc();
 				$less->compileFile($filename, $script->getFilename());
 			}
 			$filename = $script->getFilename();
@@ -85,7 +85,7 @@ class Resources extends AbstractResources {
 						$datamin = file_get_contents($filename);
 					}
 				} else {
-					$datamin = JSMin::minify(file_get_contents($filename));
+					$datamin = \JSMin::minify(file_get_contents($filename));
 				}
 				$min->setContents($datamin);
 				return $datamin;
@@ -110,8 +110,8 @@ class Resources extends AbstractResources {
 						$datamin = file_get_contents($filename);
 					}
 				} else {
-					$less = new lessc();
-					$less->setFormatter(new lessc_formatter_compressed());
+					$less = new \lessc();
+					$less->setFormatter(new \lessc_formatter_compressed());
 					$datamin = $less->compileFile($filename);
 				}
 				$min->setContents($datamin);
@@ -124,14 +124,14 @@ class Resources extends AbstractResources {
 
 
 	public function getScripts() {
-		
+
 		$res = $this->getResourcesByExt(".js");
 		$output = Cache::Pub($this->tag.".js");
 		if (! MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}
-		
+
 		if ($output->check()) {
 			$out = $output->openWrite();
 			foreach($res as $item) {
@@ -150,7 +150,7 @@ class Resources extends AbstractResources {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}
-		
+
 		if ($output->check()) {
 			$out = $output->openWrite();
 			foreach($res as $item) {

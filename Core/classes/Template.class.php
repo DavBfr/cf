@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -94,7 +94,7 @@ class Template {
 	public function output($filename, $contentType="text/html", $encoding="utf-8") {
 		while (ob_get_length())
 			ob_end_clean();
-		
+
 		header("Content-Type: ${contentType};charset=${encoding}");
 		echo $this->parse($filename);
 		die();
@@ -203,17 +203,17 @@ class Template {
 				$options[strtolower($key)] = constant($key);
 			}
 		}
-		
+
 		if (Session::Has(Session::rights_key)) {
 			$options["rights"] = Session::Get(Session::rights_key);
 		} else {
 			$options["rights"] = Array();
 		}
-		
+
 		foreach (Plugins::dispatchAll("cf_options") as $opt) {
 			$options = array_merge($options, $opt);
 		}
-		
+
 		print(json_encode($options));
 	}
 

@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -24,7 +24,7 @@ abstract class Rest {
 	private $routes = array();
 	private $complex_routes = array();
 	private $jsonpost_data = Null;
-	
+
 	protected $path = Null;
 	protected $method = Null;
 	protected $mp = Null;
@@ -83,7 +83,7 @@ abstract class Rest {
 	public function handleRequest($method, $path) {
 		if ($path == "")
 			$path = "/";
-		
+
 		$this->method = $method;
 		$this->path = $path;
 		$this->mp = $method."@".$path;
@@ -99,7 +99,7 @@ abstract class Rest {
 			foreach($this->complex_routes as $cPath=>$route) {
 				list($m, $p, $v, $c) = $route;
 				if ($m == $method) {
-					
+
 					if (preg_match($p, $path, $matches) != false) {
 						$pa = array();
 						foreach($v as $i => $k) {
@@ -145,14 +145,14 @@ abstract class Rest {
 		}
 
 		$request = str_replace(".", "_", $request);
-		
+
 		$request_file = Plugins::find(self::REQUEST_DIR . DIRECTORY_SEPARATOR . ucwords($request) . "Rest.class.php");
 		if ($request_file === NULL) {
 			ErrorHandler::error(404, NULL, ucwords($request) . "Rest.class.php");
 		}
-		
+
 		require_once($request_file);
-		$class_name = ucwords($request)."Rest";
+		$class_name = __NAMESPACE__ . "\\" . ucwords($request)."Rest";
 		$instance = new $class_name();
 		$instance->handleRequest($method, $next_path);
 		exit(0);

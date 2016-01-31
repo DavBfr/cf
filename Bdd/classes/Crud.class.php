@@ -1,4 +1,4 @@
-<?php
+<?php namespace DavBfr\CF;
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -16,6 +16,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
+
+use Exception;
 
 abstract class Crud extends Rest {
 	const ID = "CRUD_ID_FIELD";
@@ -100,7 +102,7 @@ abstract class Crud extends Rest {
 			}
 		}
 	}
-	
+
 	protected function filterForeign($col, $field) {
 	}
 
@@ -118,11 +120,11 @@ abstract class Crud extends Rest {
 		->SelectAs($bdd->quoteIdent($value), $bdd->quoteIdent('val'))
 		->orderBy($bdd->quoteIdent($value))
 		->limit($this->options["limit"]);
-		
+
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
 			$col->filter($_GET["q"]);
 		}
-		
+
 		$this->filterForeign($col, $field);
 
 		$list = [];
@@ -140,18 +142,18 @@ abstract class Crud extends Rest {
 	protected function list_values($row) {
 		return $row;
 	}
-	
+
 
 	protected function get_list($r) {
 		$col = Collection::Query($this->model->getTableName())
 			->SelectAs($this->model->getField($this->model->getPrimaryField())->getFullName(), self::ID)
 			->limit($this->options["limit"]);
 		$this->filterList($col);
-		
+
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
 			$col->filter($_GET["q"]);
 		}
-		
+
 		$list = array();
 		foreach($col->getValues(isset($_GET["p"])?intval($_GET["p"]):0) as $row) {
 			$list[] = $this->list_values($row);
@@ -209,18 +211,18 @@ abstract class Crud extends Rest {
 				$values[$name] = $item->get($name);
 			}
 		}
-		
+
 		$foreigns = $this->getForeigns($item);
-		
+
 		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$values));
 	}
 
 
 	protected function get_new($r) {
 		$item = $this->model->newRow();
-		
+
 		$foreigns = $this->getForeigns($item);
-		
+
 		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$item->getValues()));
 	}
 
@@ -281,9 +283,9 @@ abstract class Crud extends Rest {
 		if (count($args["input"]) == 2) {
 			Cli::pfatal("Missing model name to create");
 		}
-		
+
 		$create_tpt = isset($args["t"]) && $args["t"] ? true : false;
-		
+
 		$config = Config::getInstance();
 		$rest = Plugins::get(Plugins::APP_NAME)->getDir() . DIRECTORY_SEPARATOR . self::REQUEST_DIR;
 		System::ensureDir($rest);
@@ -306,7 +308,7 @@ abstract class Crud extends Rest {
 				fwrite($f, $tpt->parse("crud-rest-skel.php"));
 				fclose($f);
 			}
-			
+
 			$filename = $ctrl . "/" . $className . ".js";
 			if (!file_exists($filename)) {
 				$f = fopen($filename, "w");
@@ -324,14 +326,14 @@ abstract class Crud extends Rest {
 				}
 				$options = self::defaultOptions();
 				$tpt = new Template(array_merge($options, array("model" => $fields)));
-				
+
 				$filename = $templates . "/" . $model . "-crud-list.php";
 				if (!file_exists($filename)) {
 					$f = fopen($filename, "w");
 					fwrite($f, $tpt->parse($options["list_partial"]));
 					fclose($f);
 				}
-				
+
 				$filename = $templates . "/" . $model . "-crud-detail.php";
 				if (!file_exists($filename)) {
 					$f = fopen($filename, "w");

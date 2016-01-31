@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<?php echo Lang::getLangHtml() ?>" data-ng-app="app">
+<html lang="<?php echo DavBfr\CF\Lang::getLangHtml() ?>" data-ng-app="app">
 <head>
 	<title><?php $this->out("title", "st", "CF " . CF_VERSION) ?></title>
 	<?php if ($this->has("description")): ?>
