@@ -4,25 +4,36 @@
 	</IfModule>
 
 	RewriteEngine on
-	#RewriteCond %{REQUEST_FILENAME} !-f
-	#RewriteCond %{REQUEST_FILENAME} !-d
-	#RewriteRule .* - [S=2]
-
 	RewriteRule ^r/(.*) index.php/$1 [L]
-
 </IfModule>
 
-ErrorDocument 400 index.php/error/400
-ErrorDocument 401 index.php/error/401
-ErrorDocument 403 index.php/error/403
-ErrorDocument 404 index.php/error/404
-ErrorDocument 500 index.php/error/500
+ErrorDocument 400 /index.php/error/400
+ErrorDocument 401 /index.php/error/401
+ErrorDocument 403 /index.php/error/403
+ErrorDocument 404 /index.php/error/404
+ErrorDocument 500 /index.php/error/500
 
-#<IfModule mod_expires.c>
-#	ExpiresActive On
-#	ExpiresDefault "access plus 1 week"
-#</IfModule>
+#FileETag None
 
-#<IfModule mod_headers.c>
-#	Header set Cache-Control max-age=86400,public
-#</IfModule>
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresDefault "access plus 1 week"
+
+	<IfModule mod_headers.c>
+		Header append Cache-Control "public"
+	</IfModule>
+
+	<FilesMatch "\.php$">
+		ExpiresActive Off
+		<IfModule mod_headers.c>
+			Header set Cache-Control "private, no-cache, no-store, proxy-revalidate, no-transform"
+			Header set Pragma "no-cache"
+		</IfModule>
+	</FilesMatch>
+</IfModule>
+
+<IfModule mod_headers.c>
+	Header set X-Content-Type-Options: "nosniff"
+	Header set X-XSS-Protection: "1; mode=block"
+	Header set X-Frame-Options: "sameorigin"
+</IfModule>

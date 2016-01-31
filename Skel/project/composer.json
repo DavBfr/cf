@@ -1,17 +1,22 @@
 {
+	"name": "davbfr/skel",
+	"version": "1.0",
 	"description": "CoreFramework Project",
 	"type": "project",
 	"homepage": "@CF_URL@",
 	"license": "MIT",
 	"authors": [{
-		"name": "David PHAM-VAN",
-		"email": "dev.nfet.net@gmail.com",
-		"homepage": "https://github.com/DavBfr/cf",
+		"name": "@CF_AUTHOR@",
+		"email": "@CF_EMAIL@",
+		"homepage": "@CF_URL@",
 		"role": "Developer"
 	}],
 	"require": {
 		"davbfr/cf": "@CF_VERSION@"
 	},
+	"require-dev": {
+    "phpunit/phpunit": "5.0.*"
+  },
 	"scripts": {
 		"post-install-cmd": [
 			"php vendor/bin/setup.php install"
@@ -23,23 +28,8 @@
 	"config": {
 		"preferred-install": "dist"
 	},
-	"repositories": [{
-		"type": "path",
-		"url": "@CF_DIR@"
-	}, {
-		"type": "vcs",
-		"url": "https://github.com/DavBfr/cf"
-	}],
 	"minimum-stability": "dev",
 	"archive": {
-		"exclude": [
-			"/data/cache",
-			"/data/db.sqlite",
-			"/www/cache",
-			"www/fonts",
-			"www/app/crud",
-			"/config/paths.php",
-			"/model/base"
-		]
+		"exclude": [@EXCLUDES@]
 	}
 }

@@ -1,0 +1,10 @@
+composer.lock
+config/paths.php
+config/config.local.php
+model/base
+data/cache
+data/db.sqlite
+vendor
+www/cache
+www/fonts
+www/app/crud

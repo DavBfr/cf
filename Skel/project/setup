@@ -8,4 +8,7 @@ else
 if (file_exists(dirname(__file__) . "/vendor/autoload.php"))
 	include_once(dirname(__file__) . "/vendor/autoload.php");
 
+if (!defined("CF_DIR"))
+	die("Site not configured.\n");
+
 include(CF_DIR . "/setup.php");

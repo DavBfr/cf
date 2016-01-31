@@ -43,6 +43,8 @@ configure("LANG_DEFAULT", "en_US");
 configure("LANG_AUTOLOAD", true);
 configure("LANG_AUTODETECT", true);
 configure("CF_URL", "https://github.com/DavBfr/cf");
+configure("CF_AUTHOR", "David PHAM-VAN");
+configure("CF_EMAIL", "dev.nfet.net@gmail.com");
 
 class CorePlugin extends Plugins {
 	const config = "config/config.json";

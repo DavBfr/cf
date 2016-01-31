@@ -27,13 +27,14 @@ class SkelPlugin extends Plugins {
 		global $configured_options;
 		Cli::pinfo("Create new CF project");
 		System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "project", getcwd());
-		unlink(getcwd() . DIRECTORY_SEPARATOR . basename(__file__));
 		foreach(array("composer.json") as $file) {
 			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
 			foreach($configured_options as $var) {
 				$content = str_replace("@$var@", constant($var), $content);
 			}
+			$gitignore = trim(file_get_contents($this->getDir() . DIRECTORY_SEPARATOR . "project" . DIRECTORY_SEPARATOR . ".gitignore"));
+			$content = str_replace("@EXCLUDES@", "\"" . implode(explode("\n", $gitignore), "\", \"") . "\"", $content);
 			file_put_contents(getcwd() . DIRECTORY_SEPARATOR . $file, $content);
 		}
 		chmod(getcwd() . DIRECTORY_SEPARATOR . "setup", 0755);
@@ -44,7 +45,6 @@ class SkelPlugin extends Plugins {
 			Plugins::add($plugin);
 		}
 		Cli::install();
-		Crud::create(array("input"=>array("", "", "user")));
 	}
 
 }
