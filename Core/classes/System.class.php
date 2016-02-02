@@ -40,8 +40,36 @@ class System {
 			unlink($dest);
 
 		if (! file_exists($dest)) {
-			symlink($resource, $dest);
+			self::symlink($resource, $dest);
 		}
+	}
+
+
+	public static function symlink($src, $dst) {
+		if (@symlink($src, $dst) === false) {
+			if (is_dir($src))
+				self::copyTree($src, $dst);
+			else
+				copy($src, $dst);
+		}
+	}
+
+
+	public static function copyTree($src, $dst) {
+		$dir = opendir($src);
+		@mkdir($dst);
+		while(false !== ( $file = readdir($dir)) ) {
+			if (( $file != '.' ) && ( $file != '..' )) {
+				if ( is_dir($src . DIRECTORY_SEPARATOR . $file) ) {
+					self::copyTree($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
+				}
+				else {
+					copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
+					Logger::info("Copy $src/$file to $dst");
+				}
+			}
+		}
+		closedir($dir);
 	}
 
 

@@ -128,7 +128,7 @@ class Cache {
 
 	public function symlink() {
 		if (!file_exists($this->filename_cache)) {
-			symlink($this->filename, $this->filename_cache);
+			System::symlink($this->filename, $this->filename_cache);
 		}
 	}
 
