@@ -24,6 +24,8 @@ foreach($this->get("model") as $field) {
 	if($field->isEditable()) {
 		if (self::findTemplate("field-".$field->getTableName().".".$field->getName().".php"))
 			$this->insertNew("field-".$field->getTableName().".".$field->getName().".php", array("field"=>$field));
+		elseif($field->getEditor() !== NULL && self::findTemplate("field-".$field->getEditor().".php"))
+			$this->insertNew("field-".$field->getEditor().".php", array("field"=>$field));
 		elseif($field->isAutoincrement())
 			$this->insertNew("field-auto.php", array("field"=>$field));
 		elseif ($field->isSelect())
@@ -43,7 +45,7 @@ foreach($this->get("model") as $field) {
 	}
 }
 ?>
-	
+
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
 			<button type="submit" data-loading-text="<?php $this->tr("core.saving") ?> ..." class="btn btn-primary" data-ng-disabled="form.$invalid" data-ng-click="save(id, item)"><?php $this->tr("core.submit") ?></button>
@@ -52,5 +54,5 @@ foreach($this->get("model") as $field) {
 			<?php if ($this->has("buttons_detail")) $this->out("buttons_detail"); ?>
 		</div>
 	</div>
-	
+
 </form>

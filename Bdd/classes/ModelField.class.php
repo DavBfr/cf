@@ -85,12 +85,18 @@ class ModelField {
 			"list"=>false,
 			"primary"=>false,
 			"autoincrement"=>false,
+			"editor"=>NULL
 		);
 	}
 
 
 	public function __toString() {
 		return $this->getCaption();
+	}
+
+
+	public function getEditor() {
+		return $this->props["editor"];
 	}
 
 
