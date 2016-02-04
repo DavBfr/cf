@@ -165,13 +165,13 @@ abstract class Crud extends Rest {
 
 	protected function get_list_partial($r) {
 		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
-		$tpt->output($this->options["list_partial"]);
+		$tpt->outputCached($this->options["list_partial"]);
 	}
 
 
 	protected function get_detail_partial($r) {
 		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
-		$tpt->output($this->options["detail_partial"]);
+		$tpt->outputCached($this->options["detail_partial"]);
 	}
 
 

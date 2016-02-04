@@ -11,4 +11,4 @@ else
 
 $tpt = CorePlugin::bootstrap();
 configure("CF_TEMPLATE", "index.php");
-$tpt->output(CF_TEMPLATE);
+$tpt->outputCached(CF_TEMPLATE);

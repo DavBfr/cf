@@ -101,6 +101,27 @@ class Template {
 	}
 
 
+	public function outputCached($filename, $contentType="text/html", $encoding="utf-8") {
+		if (DEBUG)
+			$this->output($filename, $contentType, $encoding);
+
+		while (ob_get_length())
+			ob_end_clean();
+
+		header("Content-Type: ${contentType};charset=${encoding}");
+
+		$cache = Cache::Priv(sha1(json_encode(array($filename, $this->params))), ".html");
+		if ($cache->exists()) {
+			die($cache->getContents());
+		}
+
+		$content = $this->parse($filename);
+
+		$cache->setContents($content);
+		die($content);
+	}
+
+
 	public function media($filename) {
 		$file = Resources::find($filename);
 		if ($file !== NULL) {
