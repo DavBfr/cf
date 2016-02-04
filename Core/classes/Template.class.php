@@ -96,8 +96,8 @@ class Template {
 			ob_end_clean();
 
 		header("Content-Type: ${contentType};charset=${encoding}");
-		echo $this->parse($filename);
-		die();
+		print($this->parse($filename));
+		Output::finish();
 	}
 
 
@@ -110,15 +110,21 @@ class Template {
 
 		header("Content-Type: ${contentType};charset=${encoding}");
 
-		$cache = Cache::Priv(sha1(json_encode(array($filename, $this->params))), ".html");
+		$cache = Cache::Priv(sha1(json_encode(array(
+			$filename,
+			Lang::getLang(),
+			$this->params
+		))), ".html");
 		if ($cache->exists()) {
-			die($cache->getContents());
+			print($cache->getContents());
+			Output::finish();
 		}
 
 		$content = $this->parse($filename);
 
 		$cache->setContents($content);
-		die($content);
+		print($content);
+		Output::finish();
 	}
 
 

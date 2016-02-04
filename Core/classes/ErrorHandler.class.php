@@ -112,7 +112,8 @@ class ErrorHandler {
 			}
 		}
 		$body .= "\n---\n" . $baseline . "\n";
-		die($body);
+		print($body);
+		Output::finish($code);
 	}
 
 
@@ -151,10 +152,12 @@ class ErrorHandler {
 
 		header("$protocol $code $message");
 
-		if ($code < 500 && $code != 404)
-			die($body);
+		if ($code < 500 && $code != 404) {
+			print($body);
+			Output::finish($code);
+		}
 
-		IS_CLI && die();
+		IS_CLI && Output::finish($code);;
 
 		if ($backtrace !== false) {
 			$this->debugBacktrace($backtrace);

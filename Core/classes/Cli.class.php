@@ -184,7 +184,7 @@ class Cli {
 
 	public static function pfatal($s="") {
 		self::pcolorln(self::ansierr, $s);
-		die(-1);
+		Output::finish(-1);
 	}
 
 

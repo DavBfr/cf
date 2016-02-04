@@ -265,6 +265,7 @@ function configure($key, $value) {
 }
 
 define("URL_SEPARATOR", "/");
+define("START_TIME", microtime(true));
 configure("CF_VERSION", "2.0");
 if (defined("ROOT_DIR")) {
 	configure("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
@@ -298,7 +299,7 @@ if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	} else {
 		header('Status-Code: 301');
 		header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
-		die();
+		Output::finish(301);
 	}
 }
 

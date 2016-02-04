@@ -155,7 +155,7 @@ abstract class Rest {
 		$class_name = __NAMESPACE__ . "\\" . ucwords($request)."Rest";
 		$instance = new $class_name();
 		$instance->handleRequest($method, $next_path);
-		exit(0);
+		ErrorHandler::error(204);
 	}
 
 }

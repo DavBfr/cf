@@ -44,4 +44,4 @@ Plugins::dispatchAllReversed("config", $conf);
 $cli = new Cli($_SERVER['argv']);
 Plugins::dispatchAll("cli", $cli);
 $cli->handle($cli->getCommand(), $cli->getArguments());
-die();
+Output::finish();

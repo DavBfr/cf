@@ -19,6 +19,15 @@
 
 class Output {
 
+
+	public static function finish($code = 0) {
+		if ($code == 0) {
+			Logger::debug("Response time: ".(microtime(true) - START_TIME));
+		}
+		exit($code);
+	}
+
+
 	public static function json($object) {
 		if (JSON_HEADER)
 			header("Content-Type: text/json");
@@ -30,7 +39,8 @@ class Output {
 		if (DEBUG && is_array($object) && strlen($content) > 0) {
 			$object["__debug__"] = $content;
 		}
-		die(json_encode($object));
+		print(json_encode($object));
+		Output::finish();
 	}
 
 
@@ -49,7 +59,7 @@ class Output {
 		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 		header("$protocol 302 Redirect");
 		header("Location: $url");
-		die();
+		Output::finish();
 	}
 
 
@@ -66,7 +76,7 @@ class Output {
 			ob_end_clean();
 
 		print($data);
-		exit();
+		Output::finish();
 	}
 
 
