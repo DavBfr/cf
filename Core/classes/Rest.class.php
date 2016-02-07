@@ -1,6 +1,6 @@
 <?php namespace DavBfr\CF;
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2016 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -76,7 +76,7 @@ abstract class Rest {
 
 
 	protected function processNotFound($method) {
-		ErrorHandler::error(404, NULL, $method);
+		ErrorHandler::error(404, NULL, get_class($this) . "::" . $method);
 	}
 
 

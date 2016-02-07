@@ -74,7 +74,7 @@ abstract class AbstractResources {
 				}
 				closedir($dh);
 				foreach ($dirs as $dir) {
-					$this->addDir($dir, $path . URL_SEPARATOR . basename($dir));
+					$this->addDir($dir);
 				}
 			}
 		}
