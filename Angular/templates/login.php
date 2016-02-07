@@ -14,5 +14,4 @@
 			<button class="btn btn-primary" data-ng-click="login(username, password)"><?php $this->tr("core.submit") ?></button>
 		</form>
 	</div>
-<?php $this->insert("navbar-bottom.php"); ?>
 <?php $this->insert("footer.php"); ?>
