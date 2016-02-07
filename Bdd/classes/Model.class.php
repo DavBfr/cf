@@ -115,6 +115,8 @@ abstract class Model {
 			$new_columns = array();
 			$new_names = array();
 			foreach($columns as $name => $params) {
+				if (substr($name, 0, 2) == "__" && substr($name, strlen($name)-2) == "__")
+					continue;
 				list($_name, $params) = $bdd->updateModelField($name, $params);
 				$new_columns[$_name] = $params;
 				$new_names[$_name] = $name;
@@ -137,6 +139,10 @@ abstract class Model {
 			$filename = BddPlugin::MODEL_DIR . "/" . $className . ".class.php";
 			if (file_exists($filename))
 				continue;
+
+			if (array_key_exists("__baseClassName__", $columns)) {
+				$baseClassName = $columns["__baseClassName__"];
+			}
 
 			Cli::pinfo("   * $className");
 			$f = fopen($filename, "w");
