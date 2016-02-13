@@ -281,6 +281,13 @@ if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
 	require_once(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
 }
 
+configure("MINIMUM_PHP_VERSION", "5.3.0");
+if (version_compare(MINIMUM_PHP_VERSION, PHP_VERSION, '>'))
+	die("PHP " . MINIMUM_PHP_VERSION . " required." . PHP_EOL);
+
+if (!defined("ROOT_DIR"))
+	die("ROOT_DIR not defined." . PHP_EOL);
+
 configure("CF_DIR", dirname(__file__));
 configure("CF_PLUGINS_DIR", CF_DIR);
 configure("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins");

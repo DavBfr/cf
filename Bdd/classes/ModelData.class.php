@@ -124,7 +124,11 @@ class ModelData implements Iterator {
 
 
 	public function getValues() {
-		return $this->values;
+		$values = array();
+		foreach($this->values as $key=>$val) {
+			$values[$key] = $this->get($key);
+		}
+		return $values;
 	}
 
 
@@ -138,9 +142,19 @@ class ModelData implements Iterator {
 	}
 
 
+	private function _get($field) {
+		if (!is_a($field, __NAMESPACE__ . "\\ModelField"))
+			$field = $this->model->getField($field);
+
+		return $field->formatOut($this->values[$field->getName()]);
+	}
+
+
 	public function get($field) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
+
+		$value = $this->_get($field);
 
 		$func = "get".ucfirst($field)."Field";
 		if (is_callable(array($this, $func))) {

@@ -54,6 +54,11 @@ abstract class Model {
 	}
 
 
+	public function modelData() {
+		return $this->modelData;
+	}
+
+
 	public static function getModels() {
 		$list = array();
 		$config = Config::getInstance();
@@ -194,13 +199,11 @@ abstract class Model {
 
 	public function simpleSelect($where=array(), $params=array()) {
 		$bdd = Bdd::getInstance();
-		$this->simpleselect = Collection::Query()
+		return Collection::Model($this)
 			->select(array_map(array($bdd, "quoteIdent"), array_keys($this->fields)))
-			->from($bdd->quoteIdent($this->table))
 			->where($where)
 			->with($params)
-			->getValues();
-		return new $this->modelData($this, $this->simpleselect);
+			->modelData();
 	}
 
 

@@ -203,7 +203,7 @@ class PDOHelper extends BddHelper {
 
 	public function getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
 		$sql = $this->getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
-		return new PDOStatementHelper($this->query($sql, $params));
+		return new PDOStatementHelper($this, $this->query($sql, $params));
 	}
 
 
@@ -256,9 +256,39 @@ class PDOHelper extends BddHelper {
 
 class PDOStatementHelper extends BddCursorHelper {
 	protected $current = null;
+	protected $datatype;
+	protected $pdo;
+
+
+	public function __construct($pdo, $cursor) {
+		$this->pdo = $pdo;
+		parent::__construct($cursor);
+		foreach(range(0, $cursor->columnCount() - 1) as $i) {
+			$meta = $cursor->getColumnMeta($i);
+			$this->datatype[$meta["name"]] = $this->convertType($meta);
+		}
+	}
+
+
+	protected function convertType($meta) {
+		switch ($meta["native_type"]) {
+			case "integer":
+				return ModelField::TYPE_INT;
+		}
+		return ModelField::TYPE_TEXT;
+	}
+
 
 	public function current() {
-		return $this->current;
+		if (!is_array($this->current))
+			return $this->current;
+		
+		$row = array();
+		foreach($this->current as $key => $val) {
+			$row[$key] = $this->pdo->formatOut($this->datatype[$key], $val);
+		}
+		return $row;
+
 	}
 
 

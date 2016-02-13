@@ -90,4 +90,24 @@ class SqliteHelper extends PDOHelper {
 		return $fields;
 	}
 
+
+	public function getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
+		$sql = $this->getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
+		return new SqliteStatementHelper($this, $this->query($sql, $params));
+	}
+
+
+}
+
+
+class SqliteStatementHelper extends PDOStatementHelper {
+	protected function convertType($meta) {
+		switch ($meta["sqlite:decl_type"]) {
+			case "INTEGER":
+				return ModelField::TYPE_INT;
+			case "DATETIME":
+				return ModelField::TYPE_DATETIME;
+		}
+		return parent::convertType($meta);
+	}
 }

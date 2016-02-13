@@ -30,6 +30,7 @@ class Collection {
 	private $params;
 	private $limit;
 	private $distinct;
+	private $model;
 
 
 	protected function __construct($bdd) {
@@ -49,6 +50,7 @@ class Collection {
 		$this->params = array();
 		$this->limit = NULL;
 		$this->distinct = false;
+		$this->model = NULL;
 	}
 
 
@@ -56,6 +58,14 @@ class Collection {
 		$c = new self($bdd);
 		if ($from !== NULL)
 		  $c->from($from);
+		return $c;
+	}
+
+
+	public static function Model($model, $bdd=NULL) {
+		$c = new self($bdd);
+		$c->model = $model;
+		$c->from($c->bdd->quoteIdent($model->getTableName()));
 		return $c;
 	}
 
@@ -222,6 +232,12 @@ class Collection {
 	public function getCount() {
 		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->group, $this->params, $this->distinct);
+	}
+
+
+	public function modelData($pos = 0) {
+		$md = $this->model->modelData();
+		return new $md($this->model, $this->getValues($pos));
 	}
 
 }

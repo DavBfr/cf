@@ -130,7 +130,7 @@ abstract class Crud extends Rest {
 		$list = [];
 		foreach ($col->getValues(isset($_GET["p"])?intval($_GET["p"]):0) as $row) {
 			if ($foreignModel)
-				$list[] = array("key"=>$foreignModel->getField($key)->format($row['key']), "value"=>$foreignModel->getField($value)->format($row['val']));
+				$list[] = array("key"=>$foreignModel->getField($key)->formatOut($row['key']), "value"=>$foreignModel->getField($value)->formatOut($row['val']));
 			else
 				$list[] = array("key"=>$row['key'], "value"=>$row['val']);
 		}
@@ -145,7 +145,7 @@ abstract class Crud extends Rest {
 
 
 	protected function get_list($r) {
-		$col = Collection::Query($this->model->getTableName())
+		$col = Collection::Model($this->model)
 			->SelectAs($this->model->getField($this->model->getPrimaryField())->getFullName(), self::ID)
 			->limit($this->options["limit"]);
 		$this->filterList($col);
@@ -176,7 +176,7 @@ abstract class Crud extends Rest {
 
 
 	protected function get_count($r) {
-		$col = Collection::Query($this->model->getTableName());
+		$col = Collection::Model($this->model);
 		$this->filterList($col);
 		if (isset($_GET["q"]) && strlen($_GET["q"])>0) {
 			$col->filter($_GET["q"]);

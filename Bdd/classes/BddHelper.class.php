@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+use DateTime;
 use Iterator;
+use Exception;
 
 abstract class BddHelper {
 
@@ -88,6 +90,63 @@ abstract class BddHelper {
 		return new Collection($this);
 	}
 
+
+	public function formatIn($type, $value) {
+		if ($value === null)
+			return $value;
+
+		switch($type) {
+			case ModelField::TYPE_INT:
+			case ModelField::TYPE_BOOL:
+				$value = intval($value);
+				break;
+			case ModelField::TYPE_DATE:
+				if ($value instanceof DateTime)
+					$value = $value->format("Y-m-d");
+				elseif (is_int($value) || $value == strval(intval($value)))
+					$value = date("Y-m-d", intval($value));
+				break;
+			case ModelField::TYPE_TIME:
+				if ($value instanceof DateTime)
+					$value = $value->format("h:i:s");
+				elseif (is_int($value) || $value == strval(intval($value)))
+					$value = date("h:i:s", intval($value));
+				break;
+			case ModelField::TYPE_DATETIME:
+				if ($value instanceof DateTime)
+					$value = $value->format("Y-m-d h:i:s");
+				elseif (is_int($value) || $value == strval(intval($value)))
+					$value = date("Y-m-d h:i:s", intval($value));
+				break;
+		}
+		return $value;
+	}
+
+
+	public function formatOut($type, $value) {
+		if ($value === null)
+			return $value;
+
+		switch($type) {
+			case ModelField::TYPE_INT:
+				return intval($value);
+			case ModelField::TYPE_BOOL:
+				return intval($value) != 0;
+			case ModelField::TYPE_DATETIME:
+				if ($value instanceof DateTime)
+					return $value->getTimestamp();
+				try {
+					$value = new DateTime($value);
+					return $value->getTimestamp();
+				} catch (Exception $e) {
+					Logger::Error("Date {$value} invalid: ".$e->getMessage());
+					return $value;
+				}
+		}
+		return $value;
+	}
+
+
 }
 
 
@@ -123,10 +182,5 @@ abstract class BddCursorHelper implements Iterator {
 	public function valid() {
 		return $this->cursor->valid();
 	}
-
-}
-
-
-class BddBlobHelper {
 
 }
