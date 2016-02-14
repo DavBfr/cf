@@ -46,7 +46,7 @@ class System {
 
 
 	public static function symlink($src, $dst) {
-		if (@symlink($src, $dst) === false) {
+		if (substr($src, 0, 7) == "phar://" || @symlink($src, $dst) === false) {
 			if (is_dir($src))
 				self::copyTree($src, $dst);
 			else

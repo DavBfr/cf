@@ -299,6 +299,7 @@ configure("USE_STS", false);
 configure("DEFAULT_TIMEZONE", "Europe/Paris");
 configure("DEBUG", false);
 configure("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
+configure("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
 
 if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	if (USE_STS) {

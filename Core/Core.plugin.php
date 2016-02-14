@@ -150,6 +150,9 @@ class CorePlugin extends Plugins {
 
 
 	public function cli($cli) {
+		if (!IS_PHAR && !ini_get("phar.readonly")) {
+			$cli->addCommand("core:phar", array(__NAMESPACE__ . "\\Cli", "phar"), "Build cf.phar archive");
+		}
 		$cli->addCommand("core:config", array(__NAMESPACE__ . "\\Cli", "configuration"), "Get framework configuration");
 		$cli->addCommand("core:jconfig", array(__NAMESPACE__ . "\\Cli", "jconfig"), "Get framework configuration from merged json files");
 		$cli->addCommand("core:export-conf", array(__NAMESPACE__ . "\\Cli", "exportconf"), "Export framework configuration");

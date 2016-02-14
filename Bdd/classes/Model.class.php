@@ -105,10 +105,10 @@ abstract class Model {
 		$bdd = Bdd::getInstance();
 		$config = Config::getInstance();
 		if (! is_dir(BddPlugin::MODEL_DIR)) {
-			mkdir(BddPlugin::MODEL_DIR, 0744, true);
+			@mkdir(BddPlugin::MODEL_DIR, 0744, true);
 		}
 		if (! is_dir(BddPlugin::BASE_MODEL_DIR)) {
-			mkdir(BddPlugin::BASE_MODEL_DIR, 0744, true);
+			@mkdir(BddPlugin::BASE_MODEL_DIR, 0744, true);
 		}
 
 		foreach ($config->get("model", array()) as $table => $columns) {

@@ -17,6 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+use Phar;
+use FilesystemIterator;
+use BadMethodCallException;
+
 class Cli {
 	const ansiraz = "\e[0m";
 	const ansierr = "\e[0;31m";
@@ -89,7 +93,7 @@ class Cli {
 
 
 	private function printHelpOption($name, $desc) {
-		self::pcolor(self::ansicrit, "  $name");
+		self::pcolor(self::ansicrit, "	$name");
 		self::pcolorln(self::ansilog, " : $desc");
 	}
 
@@ -326,5 +330,53 @@ class Cli {
 		System::rmtree(CACHE_DIR);
 		System::rmtree(WWW_CACHE_DIR);
 	}
+
+
+	private static function addToPhar($phar, $dir) {
+		$subdirs = array();
+		if ($dh = opendir($dir)) {
+			while (($file = readdir($dh)) !== false) {
+				if ($file[0] != ".") {
+					$filename = $dir . "/" . $file;
+					if (is_dir($filename)) {
+						$subdirs[] = $filename;
+					} else {
+						$relfilename = substr($filename, strlen(CF_DIR)+1);
+						Cli::pcolorln(self::ansiwarn, "Add $relfilename");
+						$phar->addFile($filename, $relfilename);
+					}
+				}
+			}
+			closedir($dh);
+		}
+
+		foreach($subdirs as $filename) {
+			self::addToPhar($phar, $filename);
+		}
+	}
+
+
+	public static function phar() {
+		/* Build with:
+			php --define phar.readonly=0 cf/setup.php core:phar
+		*/
+		$pharname = "cf-".CF_VERSION.".phar";
+		$pharfile = ROOT_DIR . DIRECTORY_SEPARATOR . $pharname;
+		if (file_exists($pharfile))
+			unlink($pharfile);
+		$phar = new Phar(
+			$pharfile,
+			FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_FILENAME,
+			$pharname
+		);
+		$phar->startBuffering();
+		$phar->setSignatureAlgorithm(Phar::SHA256);
+		self::addToPhar($phar, CF_DIR);
+		$phar->setStub($phar->createDefaultStub("setup.php"));
+		$phar->compressFiles(Phar::GZ);
+		$phar->stopBuffering();
+		Cli::pinfo("Phar archive " . ROOT_DIR . DIRECTORY_SEPARATOR . $pharname . " has been saved.");
+	}
+
 
 }
