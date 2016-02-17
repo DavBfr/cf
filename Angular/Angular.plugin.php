@@ -19,6 +19,12 @@
 
 class AngularPlugin extends Plugins {
 
+	public function update() {
+		Cli::pinfo(" * install Angular");
+		System::publish($this->getDir() . "/www/vendor/angular/i18n");
+	}
+
+
 	public function resources($res) {
 		$res->add("jquery/jquery.js");
 		$res->add("angular/angular.js");
