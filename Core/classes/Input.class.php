@@ -43,4 +43,26 @@ class Input {
 		}
 	}
 
+
+	public static function has($name) {
+		return isset($_GET[$name]);
+	}
+
+
+	public static function get($name, $default = NULL) {
+		return self::protect($_GET[$name]);
+	}
+
+
+	public static function protect($data){
+		if (is_array($data)) {
+			return array_map(self::protect, $data);
+		}
+
+		$data = trim($data);
+		$data = htmlentities($data, ENT_QUOTES, "UTF-8");
+		$data = preg_replace('/\\x00/', '', preg_replace('/\\\0/', '', $data));
+		return $data;
+	}
+
 }
