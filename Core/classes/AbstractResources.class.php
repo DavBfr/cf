@@ -86,11 +86,11 @@ abstract class AbstractResources {
 			return;
 
 		$this->added[$filename] = true;
-		$this->append(self::find($filename));
+		$this->append(self::find($filename), $filename);
 	}
 
 
-	protected function append($filename) {
+	protected function append($filename, $origfilename = NULL) {
 		$this->resources[] = $filename;
 	}
 

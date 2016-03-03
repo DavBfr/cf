@@ -17,19 +17,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+use JShrink\Minifier;
+
 class Resources extends AbstractResources {
 
-	protected function append($filename) {
+	protected function append($filename, $origfilename = NULL) {
 		if (substr($filename, -5) == ".less") {
 			$script = Cache::Pub($filename, ".css");
 			if ($script->check()) {
 				Logger::info("Compile less file $filename");
-				$less = new \lessc();
+				$less = new Less();
+				$less->setOriginalDir(dirname($origfilename));
 				$less->compileFile($filename, $script->getFilename());
 			}
 			$filename = $script->getFilename();
 		}
-		parent::append($filename);
+		parent::append($filename, $origfilename);
 	}
 
 
@@ -85,7 +88,7 @@ class Resources extends AbstractResources {
 						$datamin = file_get_contents($filename);
 					}
 				} else {
-					$datamin = \JSMin::minify(file_get_contents($filename));
+					$datamin = Minifier::minify(file_get_contents($filename));
 				}
 				$min->setContents($datamin);
 				return $datamin;
@@ -110,8 +113,8 @@ class Resources extends AbstractResources {
 						$datamin = file_get_contents($filename);
 					}
 				} else {
-					$less = new \lessc();
-					$less->setFormatter(new \lessc_formatter_compressed());
+					$less = new Less();
+					$less->enableMinify();
 					$datamin = $less->compileFile($filename);
 				}
 				$min->setContents($datamin);
