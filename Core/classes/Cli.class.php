@@ -336,7 +336,7 @@ class Cli {
 		$subdirs = array();
 		if ($dh = opendir($dir)) {
 			while (($file = readdir($dh)) !== false) {
-				if ($file[0] != ".") {
+				if ($file[0] != "." && $file != "tests") {
 					$filename = $dir . "/" . $file;
 					if (is_dir($filename)) {
 						$subdirs[] = $filename;

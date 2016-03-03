@@ -62,7 +62,6 @@ class Logger {
 
 
 	public function __destruct() {
-		fclose($this->stderr);
 	}
 
 

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+use PHPUnit_Framework_TestSuite;
+
 configure("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www");
 
 configure("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
@@ -160,6 +162,9 @@ class CorePlugin extends Plugins {
 		$cli->addCommand("install", array(__NAMESPACE__ . "\\Cli", "install"), "Install the application");
 		$cli->addCommand("update", array(__NAMESPACE__ . "\\Cli", "update"), "Update the application");
 		$cli->addCommand("clean", array(__NAMESPACE__ . "\\Cli", "clean"), "Clean the application cache");
+		if (class_exists("PHPUnit_Framework_TestSuite", true)) {
+			$cli->addCommand("test", array(__NAMESPACE__ . "\\UnitTest", "runtests"), "Run unit testing");
+		}
 	}
 
 }

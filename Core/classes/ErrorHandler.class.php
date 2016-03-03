@@ -45,6 +45,12 @@ class ErrorHandler {
 	}
 
 
+	public static function unregister() {
+		restore_error_handler();
+		restore_exception_handler();
+	}
+
+
 	public static function Init($className) {
 		if (is_null(self::$instance)) {
 			self::$instance = new $className();

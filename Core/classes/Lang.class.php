@@ -183,5 +183,5 @@ class Lang {
 }
 
 Lang::setLang(LANG_DEFAULT);
-if (LANG_AUTODETECT)
+if (LANG_AUTODETECT && !IS_CLI)
 	Lang::setLang(Lang::detect()[0]);
