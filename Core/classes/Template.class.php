@@ -59,7 +59,7 @@ class Template {
 		foreach ($filenames as $filename) {
 			$template = self::findTemplate($filename);
 			if ($template !== false)
-			break;
+				break;
 		}
 		if ($template === false)
 			ErrorHandler::error(404, NULL, implode(", ", $filenames));
@@ -85,8 +85,9 @@ class Template {
 	}
 
 
-	public function insertNew($filenames, $params = NULL) {
-		$tpt = new Template(array_merge($this->params, $params));
+	public function insertNew($filenames, $params = NULL, $class = "Template") {
+		$nsclass = __NAMESPACE__ . "\\" . $class;
+		$tpt = new $nsclass(array_merge($this->params, $params));
 		echo $tpt->parse($filenames);
 	}
 
@@ -128,12 +129,12 @@ class Template {
 	}
 
 
-	public function media($filename) {
+	public function media($filename, $default = NULL) {
 		$file = Resources::find($filename);
 		if ($file !== NULL) {
 			return Resources::web($file);
 		}
-		return NULL;
+		return $default;
 	}
 
 
