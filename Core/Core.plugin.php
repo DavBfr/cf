@@ -65,8 +65,14 @@ class CorePlugin extends Plugins {
 		} else {
 			$cache = Cache::Priv(self::config, ".php");
 			if ($cache->check() || DEBUG) {
+				if (file_exists(ROOT_DIR."/composer.json")) {
+					$conf->append(ROOT_DIR."/composer.json", false, "composer");
+				}
 				if (file_exists(CONFIG_DIR."/config.json")) {
 					$conf->append(CONFIG_DIR."/config.json");
+				}
+				if (file_exists(CONFIG_DIR."/config.local.json")) {
+					$conf->append(CONFIG_DIR."/config.local.json");
 				}
 				$confsave = $conf->getData();
 				foreach($conf->get("plugins", Array()) as $plugin) {

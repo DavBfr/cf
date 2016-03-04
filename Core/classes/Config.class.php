@@ -70,10 +70,13 @@ class Config implements \arrayaccess {
 	}
 
 
-	public function append($filename, $reverse = false) {
+	public function append($filename, $reverse = false, $subkey = NULL) {
 		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
+		}
+		if ($subkey !== NULL) {
+			$data = array($subkey => $data);
 		}
 		$this->merge($data, $reverse);
 		Logger::debug("Config $filename loaded");
@@ -136,8 +139,13 @@ class Config implements \arrayaccess {
 	}
 
 
+	public function set($key, $val) {
+		$this->data[$key] = $val;
+	}
+
+
 	public function offsetSet($offset, $value) {
-		$this->data[$offset] = $value;
+		$this->set($offset, $value);
 	}
 
 
@@ -147,6 +155,7 @@ class Config implements \arrayaccess {
 
 
 	public function offsetUnset($offset) {
+		$this->set($offset, NULL);
 	}
 
 
