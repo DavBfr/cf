@@ -33,6 +33,7 @@ configure("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER)?WWW_PATH."
 configure("MEMCACHE_PREFIX", "CF");
 configure("MEMCACHE_LIFETIME", 10800);
 configure("MEMCACHE_ENABLED", false);
+configure("CACHE_ENABLED", !DEBUG);
 configure("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
 configure("SESSION_NAME", "CF");
 configure("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"));
@@ -50,9 +51,8 @@ configure("CF_EMAIL", "dev.nfet.net@gmail.com");
 
 class CorePlugin extends Plugins {
 	const config = "config/config.json";
-
-	public static function bootstrap() {
-		ErrorHandler::Init(__NAMESPACE__ . "\\ErrorHandler");
+	
+	public static function loadConfig() {
 		$conf = Config::getInstance();
 
 		$memcache = new MemCache();
@@ -64,7 +64,7 @@ class CorePlugin extends Plugins {
 			}
 		} else {
 			$cache = Cache::Priv(self::config, ".php");
-			if ($cache->check() || DEBUG) {
+			if ($cache->check()) {
 				if (file_exists(ROOT_DIR."/composer.json")) {
 					$conf->append(ROOT_DIR."/composer.json", false, "composer");
 				}
@@ -92,11 +92,19 @@ class CorePlugin extends Plugins {
 			}
 			$memcache["JCONFIG_FILE"] = $conf->getData();
 		}
+	}
+
+
+	public static function bootstrap() {
+		ErrorHandler::Init(__NAMESPACE__ . "\\ErrorHandler");
+		
+		self::loadConfig();
 
 		if (array_key_exists("PATH_INFO", $_SERVER) && $_SERVER["PATH_INFO"]) {
 			Rest::handle();
 		}
 
+		$conf = Config::getInstance();
 		$tpt = new TemplateRes(array(
 				"title" => $conf->get("title", "CF " . CF_VERSION),
 				"description" => $conf->get("description", NULL),

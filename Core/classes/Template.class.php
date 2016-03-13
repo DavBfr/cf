@@ -103,9 +103,6 @@ class Template {
 
 
 	public function outputCached($filename, $contentType="text/html", $encoding="utf-8") {
-		if (DEBUG)
-			$this->output($filename, $contentType, $encoding);
-
 		while (ob_get_length())
 			ob_end_clean();
 

@@ -18,8 +18,8 @@
  **/
 
 class Cache {
-	private $filename;
-	private $filename_cache;
+	private $filename; // Original file name
+	private $filename_cache; // Cached file name created from $filename
 
 
 	public function __construct($filename, $filename_cache) {
@@ -61,7 +61,10 @@ class Cache {
 
 
 	public function isWritable() {
-		return true;
+		if (is_file($this->filename_cache) && is_writable($this->filename_cache))
+			return true;
+		
+		return is_writable(dirname($this->filename_cache));
 	}
 
 
@@ -72,9 +75,12 @@ class Cache {
 
 	public function setContents($value) {
 		System::ensureDir(dirname($this->filename_cache));
-		//if (! is_writable($this->filename_cache))
-		//	ErrorHandler::error(500, NULL, $this->filename_cache." is not writable");
+		if (! $this->isWritable()) {
+			Logger::Error($this->filename_cache." is not writable");
+			return;
+		}
 
+		Logger::Debug("Write cache $this->filename_cache");
 		file_put_contents($this->filename_cache, $value);
 	}
 
@@ -98,6 +104,7 @@ class Cache {
 
 	public function openWrite() {
 		System::ensureDir(dirname($this->filename_cache));
+		Logger::Debug("Write cache $this->filename_cache");
 		return fopen($this->filename_cache, "w");
 	}
 
@@ -119,15 +126,16 @@ class Cache {
 	* Return true if the cache file is to be (re)created
 	**/
 	public function check() {
-		if (!is_file($this->filename) && is_file($this->filename_cache))
+		$exists = $this->exists();
+		if (!is_file($this->filename) && $exists)
 			return false;
 
-		return (!is_file($this->filename_cache) || filemtime($this->filename) > filemtime($this->filename_cache));
+		return (!$exists || filemtime($this->filename) > filemtime($this->filename_cache));
 	}
 
 
 	public function exists() {
-		return is_file($this->filename_cache);
+		return CACHE_ENABLED && is_file($this->filename_cache);
 	}
 
 
