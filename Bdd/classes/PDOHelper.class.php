@@ -256,17 +256,13 @@ class PDOHelper extends BddHelper {
 
 class PDOStatementHelper extends BddCursorHelper {
 	protected $current = null;
-	protected $datatype;
+	protected $datatype = null;
 	protected $pdo;
 
 
 	public function __construct($pdo, $cursor) {
 		$this->pdo = $pdo;
 		parent::__construct($cursor);
-		foreach(range(0, $cursor->columnCount() - 1) as $i) {
-			$meta = $cursor->getColumnMeta($i);
-			$this->datatype[$meta["name"]] = $this->convertType($meta);
-		}
 	}
 
 
@@ -282,7 +278,14 @@ class PDOStatementHelper extends BddCursorHelper {
 	public function current() {
 		if (!is_array($this->current))
 			return $this->current;
-		
+
+		if ($this->datatype === null) {
+			foreach(range(0, $this->cursor->columnCount() - 1) as $i) {
+				$meta = $this->cursor->getColumnMeta($i);
+				$this->datatype[$meta["name"]] = $this->convertType($meta);
+			}
+		}
+
 		$row = array();
 		foreach($this->current as $key => $val) {
 			$row[$key] = $this->pdo->formatOut($this->datatype[$key], $val);
