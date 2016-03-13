@@ -14,7 +14,8 @@
 		"role": "Developer"
 	}],
 	"autoload": {
-		"files": ["cf.php"]
+		"files": ["cf.php"],
+		"exclude-from-classmap": ["**"]
 	},
 	"bin": ["setup.php"]
 }
