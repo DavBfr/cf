@@ -73,7 +73,7 @@ class Config implements \arrayaccess {
 	public function append($filename, $reverse = false, $subkey = NULL) {
 		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
+			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
 		}
 		if ($subkey !== NULL) {
 			$data = array($subkey => $data);
@@ -95,7 +95,7 @@ class Config implements \arrayaccess {
 	public function loadaskey($key, $filename) {
 		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
+			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
 		}
 		$this->data[$key] = $data;
 		Logger::debug("Config $filename loaded");

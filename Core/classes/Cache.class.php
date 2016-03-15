@@ -88,7 +88,7 @@ class Cache {
 	public function getArray() {
 		$data = json_decode(file_get_contents($this->filename_cache), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg()); break;
+			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
 		}
 
 		return $data;
