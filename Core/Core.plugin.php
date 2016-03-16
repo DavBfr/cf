@@ -50,7 +50,7 @@ configure("CF_AUTHOR", "David PHAM-VAN");
 configure("CF_EMAIL", "dev.nfet.net@gmail.com");
 
 class CorePlugin extends Plugins {
-	const config = "config/config.json";
+	const config = "config";
 	
 	public static function loadConfig() {
 		$conf = Config::getInstance();
@@ -74,12 +74,29 @@ class CorePlugin extends Plugins {
 				if (file_exists(CONFIG_DIR."/config.local.json")) {
 					$conf->append(CONFIG_DIR."/config.local.json");
 				}
+				foreach(glob(CONFIG_DIR."/*.json") as $file) {
+					$bn = basename($file);
+					if (substr($bn, 0, 7) != "config.") {
+						$conf->append($file, false, substr($bn, 0, strlen($bn) - 5));
+					}
+				}
+				if (DEBUG && file_exists(CONFIG_DIR."/config.debug.json")) {
+					$conf->append(CONFIG_DIR."/config.debug.json");
+				}
 				$confsave = $conf->getData();
 				foreach($conf->get("plugins", Array()) as $plugin) {
 					Plugins::add($plugin);
 				}
-				foreach (array_reverse(Plugins::findAll(self::config)) as $filename) {
-					$conf->append($filename);
+				foreach (array_reverse(Plugins::findAll(self::config)) as $dirname) {
+					if (file_exists($dirname."/config.json")) {
+						$conf->append($dirname."/config.json");
+					}
+					foreach(glob($dirname."/*.json") as $file) {
+						$bn = basename($file);
+						if (substr($bn, 0, 7) != "config.") {
+							$conf->append($file, false, substr($bn, 0, strlen($bn) - 5));
+						}
+					}
 				}
 				Plugins::dispatchAllReversed("config", $conf);
 				$conf->merge($confsave);

@@ -85,14 +85,14 @@ class Config implements \arrayaccess {
 
 	public function merge($data, $reverse = false) {
 		if ($reverse) {
-			$this->data = self::array_merge($data, $this->data);
+			$this->data = self::arrayMerge($data, $this->data);
 		} else {
-			$this->data = self::array_merge($this->data, $data);
+			$this->data = self::arrayMerge($this->data, $data);
 		}
 	}
 
 
-	public function loadaskey($key, $filename) {
+	public function loadAsKey($key, $filename) {
 		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
@@ -102,11 +102,11 @@ class Config implements \arrayaccess {
 	}
 
 
-	private static function array_merge(&$array1, &$array2) {
+	private static function arrayMerge(&$array1, &$array2) {
 		$merged = $array1;
 		foreach ($array2 as $key => &$value) {
 			if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
-				$merged[$key] = self::array_merge($merged[$key], $value);
+				$merged[$key] = self::arrayMerge($merged[$key], $value);
 			} else {
 				$merged[$key] = $value;
 			}

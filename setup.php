@@ -28,18 +28,8 @@ if (!IS_CLI)
 $logger = Logger::getInstance();
 $logger->setLevel(Logger::WARNING);
 
-$conf = Config::getInstance();
-if (file_exists(CONFIG_DIR."/config.json")) {
-	$conf->append(CONFIG_DIR."/config.json");
-}
-foreach($conf->get("plugins", Array()) as $plugin) {
-	Plugins::add($plugin);
-}
 Plugins::add("Skel");
-foreach (array_reverse(Plugins::findAll(CorePlugin::config)) as $filename) {
-	$conf->append($filename);
-}
-Plugins::dispatchAllReversed("config", $conf);
+CorePlugin::loadConfig();
 
 $cli = new Cli($_SERVER['argv']);
 Plugins::dispatchAll("cli", $cli);
