@@ -15,11 +15,13 @@
 			<li data-ng-cloak data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
 		</ul>
 
+		<?php if (\DavbFr\CF\Session::isLogged()): ?>
 		<ul class="nav navbar-nav navbar-right">
 			<li>
 				<a href="javascript:void(0)" data-ng-click="logout()"><?php $this->tr("core.logout") ?></a>
 			</li>
 		</ul>
+	<?php endif; ?>
 	</div>
 </div>
 </nav>
