@@ -1,0 +1,9 @@
+Options -Indexes
+
+<FilesMatch "(\.(json|sqlite|md|less|inc|ini|log|psd|sh|sql|swp)|~)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(README|setup)">
+    Require all denied
+</FilesMatch>
