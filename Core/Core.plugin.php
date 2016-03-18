@@ -19,35 +19,35 @@
 
 use PHPUnit_Framework_TestSuite;
 
-configure("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www");
+Options::set("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www");
 
-configure("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
-configure("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]));
-configure("ALLOW_DOCUMENT_ROOT", true);
+Options::set("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
+Options::set("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]));
+Options::set("ALLOW_DOCUMENT_ROOT", true);
 if (substr(WWW_DIR, 0, strlen(DOCUMENT_ROOT)) == DOCUMENT_ROOT)
-	configure("WWW_PATH", str_replace(DOCUMENT_ROOT, '', WWW_DIR));
+	Options::set("WWW_PATH", str_replace(DOCUMENT_ROOT, '', WWW_DIR));
 else
-	configure("WWW_PATH", "www");
-configure("INDEX_PATH", WWW_PATH . "/index.php");
-configure("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/r" : INDEX_PATH);
-configure("MEMCACHE_PREFIX", "CF");
-configure("MEMCACHE_LIFETIME", 10800);
-configure("MEMCACHE_ENABLED", false);
-configure("CACHE_ENABLED", !DEBUG);
-configure("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
-configure("SESSION_NAME", "CF");
-configure("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"));
-configure("SESSION_REGENERATE", SESSION_TIMEOUT);
-configure("API_TOKEN_HEADER", "cf-token");
-configure("ERROR_TEMPLATE", "error.php");
-configure("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache");
-configure("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");
-configure("LANG_DEFAULT", "en_US");
-configure("LANG_AUTOLOAD", true);
-configure("LANG_AUTODETECT", true);
-configure("CF_URL", "https://github.com/DavBfr/cf");
-configure("CF_AUTHOR", "David PHAM-VAN");
-configure("CF_EMAIL", "dev.nfet.net@gmail.com");
+	Options::set("WWW_PATH", "www");
+Options::set("INDEX_PATH", WWW_PATH . "/index.php");
+Options::set("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/r" : INDEX_PATH);
+Options::set("MEMCACHE_PREFIX", "CF");
+Options::set("MEMCACHE_LIFETIME", 10800);
+Options::set("MEMCACHE_ENABLED", false);
+Options::set("CACHE_ENABLED", !DEBUG);
+Options::set("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
+Options::set("SESSION_NAME", "CF");
+Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"));
+Options::set("SESSION_REGENERATE", SESSION_TIMEOUT);
+Options::set("API_TOKEN_HEADER", "cf-token");
+Options::set("ERROR_TEMPLATE", "error.php");
+Options::set("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache");
+Options::set("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");
+Options::set("LANG_DEFAULT", "en_US");
+Options::set("LANG_AUTOLOAD", true);
+Options::set("LANG_AUTODETECT", true);
+Options::set("CF_URL", "https://github.com/DavBfr/cf");
+Options::set("CF_AUTHOR", "David PHAM-VAN");
+Options::set("CF_EMAIL", "dev.nfet.net@gmail.com");
 
 class CorePlugin extends Plugins {
 	const config = "config";
@@ -143,20 +143,14 @@ class CorePlugin extends Plugins {
 
 
 	public static function info() {
-		global $configured_options;
-
 		$info = '<div class="well"><h1><a href="' . CF_URL . '">CF ' . CF_VERSION . '</a></h1></div>';
-		if (isset($configured_options)) {
-			$info .= '<h2>CF configuration</h2><table class="table table-bordered table-striped table-condensed"><tbody>';
-			foreach($configured_options as $key) {
-				if ($key == 'DBPASSWORD')
-					$val = "****";
-				else
-					$val = constant($key);
-				$info .= '<tr><th>' . $key . '</th><td>' . $val . '</td></tr>';
-			}
-			$info .= '</tbody></table>';
+		$info .= '<h2>CF configuration</h2><table class="table table-bordered table-striped table-condensed"><tbody>';
+		foreach(Options::getAll() as $key => $val) {
+			if ($key == "DBPASSWORD")
+				$val = "****";
+			$info .= '<tr><th>' . $key . '</th><td>' . $val . '</td></tr>';
 		}
+		$info .= '</tbody></table>';
 		$info .= '<h2>Server configuration</h2><table class="table table-bordered table-striped table-condensed"></tbody>';
 		foreach($_SERVER as $key => $val) {
 			if ($key == 'PHP_AUTH_PW')
@@ -171,12 +165,10 @@ class CorePlugin extends Plugins {
 
 
 	public function preupdate() {
-		global $configured_options;
-
 		Cli::pinfo(" * Create folders");
-		foreach ($configured_options as $key) {
+		foreach (Options::getAll() as $key => $val) {
 			if (substr($key, -4) == "_DIR") {
-				System::ensureDir(constant($key));
+				System::ensureDir($val);
 			}
 		}
 	}
@@ -208,10 +200,9 @@ class CorePlugin extends Plugins {
 		if (!IS_PHAR && !ini_get("phar.readonly")) {
 			$cli->addCommand("core:phar", array(__NAMESPACE__ . "\\Cli", "phar"), "Build cf.phar archive");
 		}
-		$cli->addCommand("core:config", array(__NAMESPACE__ . "\\Cli", "configuration"), "Get framework configuration");
-		$cli->addCommand("core:jconfig", array(__NAMESPACE__ . "\\Cli", "jconfig"), "Get framework configuration from merged json files");
-		$cli->addCommand("core:export-conf", array(__NAMESPACE__ . "\\Cli", "exportconf"), "Export framework configuration");
-		$cli->addCommand("core:version", array(__NAMESPACE__ . "\\Cli", "version"), "Get framework version");
+		$cli->addCommand("config", array(__NAMESPACE__ . "\\Cli", "configuration"), "Get framework configuration");
+		$cli->addCommand("jconfig", array(__NAMESPACE__ . "\\Cli", "jconfig"), "Get framework configuration from merged json files");
+		$cli->addCommand("version", array(__NAMESPACE__ . "\\Cli", "version"), "Get framework version");
 		$cli->addCommand("install", array(__NAMESPACE__ . "\\Cli", "install"), "Install the application");
 		$cli->addCommand("update", array(__NAMESPACE__ . "\\Cli", "update"), "Update the application");
 		$cli->addCommand("clean", array(__NAMESPACE__ . "\\Cli", "clean"), "Clean the application cache");

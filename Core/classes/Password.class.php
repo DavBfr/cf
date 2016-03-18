@@ -34,8 +34,8 @@
 
 use Exception;
 
-configure("PASSWORD_ITERATION_COUNT", 8);
-configure("PASSWORD_PORTABLE", false);
+Options::set("PASSWORD_ITERATION_COUNT", 8);
+Options::set("PASSWORD_PORTABLE", false);
 
 
 class Password {

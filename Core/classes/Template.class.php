@@ -211,11 +211,9 @@ class Template {
 
 
 	public function cf_options($keys = null) {
-		global $configured_options;
-
 		if ($keys == null) {
 			$keys = array();
-			foreach ($configured_options as $key) {
+			foreach (Options::getAll() as $key => $val) {
 				if (substr($key, -5) == "_PATH") {
 					$keys[] = $key;
 				}
@@ -223,9 +221,9 @@ class Template {
 		}
 
 		$options = array();
-		foreach ($configured_options as $key) {
+		foreach (Options::getAll() as $key => $val) {
 			if (in_array($key, $keys)) {
-				$options[strtolower($key)] = constant($key);
+				$options[strtolower($key)] = $val;
 			}
 		}
 

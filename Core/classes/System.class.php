@@ -28,7 +28,7 @@ class System {
 
 	public static function ensureDir($name, $mode = 0750) {
 		if (! is_dir($name)) {
-			if (! mkdir($name, $mode, true)) {
+			if (! @mkdir($name, $mode, true)) {
 				ErrorHandler::error(500, null, "Unable to create directory $name");
 			}
 		}

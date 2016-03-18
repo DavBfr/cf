@@ -301,6 +301,9 @@ class Cli {
 
 
 	public static function question($s = "") {
+		if (!IS_CLI)
+			return;
+
 		self::pinfo($s);
 		self::perr("Type 'yes' to continue: ");
 		$handle = fopen ("php://stdin", "r");
@@ -314,59 +317,34 @@ class Cli {
 
 
 	public static function configuration() {
-		global $configured_options;
-
-		self::enableHelp();
-
-		if (isset($configured_options)) {
-			foreach($configured_options as $key) {
-				$val = constant($key);
-				if (is_bool($val))
-					$val = $val ? "true" : "false";
-
-				self::pln($key . ' = ' . $val);
-			}
+		$set = self::addSwitch("set", "Set an option");
+		$global = self::addSwitch("global", "Set the option in global configuration");
+		$get = self::addSwitch("get", "Get an option");
+		if ($set || $get) {
+			$keys = self::getInputs("key", "Key and value to set or search");
 		}
-	}
-
-
-	public static function exportconf() {
-		global $configured_options;
-
 		self::enableHelp();
 
-		$ex = array("CF_VERSION", "INIT_CONFIG_DIR", "CF_DIR", "ROOT_DIR", "CORE_PLUGIN", "CF_URL", "IS_CLI", "DOCUMENT_ROOT", "CF_PLUGINS_DIR", "WWW_PATH");
-
-		self::pln("<?php namespace DavBfr\CF;");
-		if (isset($configured_options)) {
-			$sopts = $configured_options;
-			asort($sopts);
-			if (substr(WWW_PATH, 0, strlen(ROOT_DIR)) == ROOT_DIR) {
-				$val = "\"" . substr(WWW_PATH, strlen(ROOT_DIR)) . "\"";
-				self::pln("configure(\"WWW_PATH\", $val);");
-			} else {
-				self::pln("configure(\"WWW_PATH\", \"" . WWW_PATH . "\");");
-			}
-			foreach($sopts as $key) {
-				if (array_search($key, $ex) === false) {
-					$val = constant($key);
-					if (strpos($key, "_DIR") !== false) {
-						if (substr($val, 0, strlen(ROOT_DIR)) == ROOT_DIR) {
-							$val = "ROOT_DIR . \"" . substr($val, strlen(ROOT_DIR)) . "\"";
-						} elseif (substr($val, 0, strlen(CF_DIR)) == CF_DIR) {
-							$val = "CF_DIR . \"" . substr($val, strlen(CF_DIR)) . "\"";
-						}
-					} elseif (strpos($key, "_PATH") !== false) {
-							if (substr($val, 0, strlen(WWW_PATH)) == WWW_PATH) {
-								$val = "WWW_PATH . \"" . substr($val, strlen(WWW_PATH)) . "\"";
-							}
-					} elseif (is_bool($val))
+		if ($set) {
+			if (count($keys) > 1) {
+				$val = $keys[1];
+			} else
+				$val = null;
+			if (strtolower($val) == "true")
+				$val = true;
+			elseif (strtolower($val) == "false")
+				$val = false;
+			elseif ((string)((int)$val) == $val)
+				$val = (int)$val;
+			Options::updateConf(array(strtoupper($keys[0]) => $val), !$global);
+		} else {
+			$opts = Options::getAll();
+			ksort($opts);
+			foreach($opts as $key => $val) {
+				if (!$get || strtoupper($key) == strtoupper($keys[0])) {
+					if (is_bool($val))
 						$val = $val ? "true" : "false";
-					elseif (is_int($val))
-							$val = $val;
-					elseif (is_string($val))
-						$val = "\"$val\"";
-					self::pln("configure(\"$key\", $val);");
+					self::pln($key . ' = ' . $val);
 				}
 			}
 		}

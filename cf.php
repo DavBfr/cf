@@ -250,56 +250,114 @@ class Plugins {
 
 }
 
+
+class Options {
+	private static $options = array(); // name => [description, modified]
+	private static $import = false;
+
+	public static function set($key, $value, $description = null) {
+		if (!defined($key)) {
+			self::$options[$key] = array($description, self::$import);
+			define($key, $value);
+		} elseif (array_key_exists($key, self::$options) === false) {
+			self::$options[$key] = array($description, self::$import);
+		} else {
+			if ($description != null)
+				self::$options[$key][0] = $description;
+			if (self::$import)
+				self::$options[$key][1] = true;
+		}
+	}
+
+
+	public static function get($key) {
+		return constant($key);
+	}
+
+
+	public static function getAll($filter = false) {
+		$ret = array();
+		foreach(self::$options as $key => $val) {
+			if (!$filter || $val[1])
+				$ret[$key] = constant($key);
+		}
+		return $ret;
+	}
+
+
+	public static function import($filename) {
+		self::$import = true;
+		require_once($filename);
+		self::$import = false;
+	}
+
+
+	public static function updateConf($values, $local = true) {
+		if ($local)
+			$conf = fopen(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php", "w");
+		else
+			$conf = fopen(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php", "w");
+		fwrite($conf, "<?php namespace DavBfr\CF;\n\n");
+		$opts = array_merge(self::getAll(true), $values);
+		ksort($opts);
+		foreach($opts as $key => $val) {
+			if (is_bool($val))
+				$val = $val ? "true" : "false";
+			elseif (is_int($val))
+					$val = $val;
+			elseif (is_string($val))
+				$val = "\"$val\"";
+			if ($val !== null)
+				fwrite($conf, "Options::set(\"$key\", $val);\n");
+		}
+		fclose($conf);
+	}
+
+}
+
+
 ob_start();
 
-$configured_options = array();
-
 function configure($key, $value) {
-	global $configured_options;
-	if (!defined($key)) {
-		$configured_options[] = $key;
-		define($key, $value);
-	} elseif (array_search($key, $configured_options) === false) {
-		$configured_options[] = $key;
-	}
+	Options::set($key, $value);
 }
 
 define("URL_SEPARATOR", "/");
 define("START_TIME", microtime(true));
-configure("CF_VERSION", "2.0");
+Options::set("CF_VERSION", "2.0");
 if (defined("ROOT_DIR")) {
-	configure("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
+	Options::set("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 } else {
-	configure("INIT_CONFIG_DIR", dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "config");
+	Options::set("INIT_CONFIG_DIR", dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "config");
 }
 
 if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php")) {
-	require_once(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php");
+	Options::import(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php");
 }
 
 if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
-	require_once(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
+	Options::import(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
 }
 
-configure("MINIMUM_PHP_VERSION", "5.3.0");
+Options::set("MINIMUM_PHP_VERSION", "5.3.0");
 if (version_compare(MINIMUM_PHP_VERSION, PHP_VERSION, '>'))
 	die("PHP " . MINIMUM_PHP_VERSION . " required." . PHP_EOL);
 
 if (!defined("ROOT_DIR"))
 	die("ROOT_DIR not defined." . PHP_EOL);
 
-configure("CF_DIR", dirname(__file__));
-configure("CF_PLUGINS_DIR", CF_DIR);
-configure("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins");
-configure("ROOT_DIR", dirname(CF_DIR));
-configure("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
-configure("CORE_PLUGIN", "Core");
-configure("FORCE_HTTPS", false);
-configure("USE_STS", false);
-configure("DEFAULT_TIMEZONE", "Europe/Paris");
-configure("DEBUG", false);
-configure("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
-configure("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
+Options::set("CF_DIR", dirname(__file__), "Path to the framework");
+Options::set("CF_PLUGINS_DIR", CF_DIR);
+Options::set("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins");
+Options::set("ROOT_DIR", dirname(CF_DIR));
+Options::set("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
+Options::set("CORE_PLUGIN", "Core");
+Options::set("FORCE_HTTPS", false);
+Options::set("USE_STS", false);
+Options::set("DEFAULT_TIMEZONE", "Europe/Paris");
+Options::set("DEBUG", false);
+Options::set("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
+Options::set("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
 
 if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	if (USE_STS) {

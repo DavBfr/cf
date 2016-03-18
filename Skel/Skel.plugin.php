@@ -26,13 +26,12 @@ class SkelPlugin extends Plugins {
 
 
 	protected function updateFiles() {
-		global $configured_options;
 		Cli::pinfo("Update Files");
 		foreach(array("composer.json", "index.php", "setup") as $file) {
 			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
-			foreach($configured_options as $var) {
-				$content = str_replace("@$var@", constant($var), $content);
+			foreach(Options::getAll() as $key => $val) {
+				$content = str_replace("@$key@", $val, $content);
 			}
 			$content = str_replace("@DATE@", date("r"), $content);
 			$gitignore = trim(file_get_contents($this->getDir() . DIRECTORY_SEPARATOR . "project" . DIRECTORY_SEPARATOR . ".gitignore"));
@@ -44,6 +43,14 @@ class SkelPlugin extends Plugins {
 
 	public function skel() {
 		Cli::enableHelp();
+		$dir = opendir(getcwd());
+		while(false !== ($file = readdir($dir))) {
+			if (($file != '.') && ($file != '..') && ($file != 'data')) {
+				Cli::question("The current folder is not empty, do you want to continue?");
+				break;
+			}
+		}
+		closedir($dir);
 		Cli::pinfo("Create new CF project");
 		System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "project", getcwd());
 		$this->updateFiles();
@@ -55,6 +62,7 @@ class SkelPlugin extends Plugins {
 			Plugins::add($plugin);
 		}
 		Cli::install();
+		Options::updateConf(array("DEBUG" => true));
 	}
 
 

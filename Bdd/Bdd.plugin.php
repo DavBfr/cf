@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-configure("DBNAME", 'sqlite:' . DATA_DIR . '/db.sqlite');
-configure("DBLOGIN", '');
-configure("DBPASSWORD", '');
-configure("CRUD_LIMIT", 30);
+Options::set("DBNAME", 'sqlite:' . DATA_DIR . '/db.sqlite');
+Options::set("DBLOGIN", '');
+Options::set("DBPASSWORD", '');
+Options::set("CRUD_LIMIT", 30);
 
 class BddPlugin extends Plugins {
 	const MODEL_DIR = "model";

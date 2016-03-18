@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
- configure("BROWSER_LOG", DEBUG);
+ Options::set("BROWSER_LOG", DEBUG);
 
 class Logger {
 
