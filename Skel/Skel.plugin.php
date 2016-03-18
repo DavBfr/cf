@@ -24,6 +24,7 @@ class SkelPlugin extends Plugins {
 	}
 
 	public function skel() {
+		Cli::enableHelp();
 		global $configured_options;
 		Cli::pinfo("Create new CF project");
 		System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "project", getcwd());

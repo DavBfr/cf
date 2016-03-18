@@ -69,7 +69,8 @@ abstract class Model {
 	}
 
 
-	public static function export($args) {
+	public static function export() {
+		Cli::enableHelp();
 		$bdd = Bdd::getInstance();
 		foreach (self::getModels() as $class) {
 			$class = __NAMESPACE__ . "\\$class";
@@ -86,7 +87,8 @@ abstract class Model {
 	}
 
 
-	public static function import($args) {
+	public static function import() {
+		Cli::enableHelp();
 		Cli::pr("\"model\": ");
 		$tables = array();
 		$bdd = Bdd::getInstance();
@@ -101,7 +103,8 @@ abstract class Model {
 	}
 
 
-	public static function createClassesFromConfig($args) {
+	public static function createClassesFromConfig() {
+		Cli::enableHelp();
 		$bdd = Bdd::getInstance();
 		$config = Config::getInstance();
 		if (! is_dir(BddPlugin::MODEL_DIR)) {

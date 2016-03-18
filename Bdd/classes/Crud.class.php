@@ -279,12 +279,10 @@ abstract class Crud extends Rest {
 	}
 
 
-	public static function create($args) {
-		if (count($args["input"]) == 2) {
-			Cli::pfatal("Missing model name to create");
-		}
-
-		$create_tpt = isset($args["t"]) && $args["t"] ? true : false;
+	public static function create() {
+		$create_tpt = Cli::addSwitch("t", "Create templates");
+		$models = Cli::getInputs("models", "Model names to create");
+		Cli::enableHelp();
 
 		$config = Config::getInstance();
 		$rest = Plugins::get(Plugins::APP_NAME)->getDir() . DIRECTORY_SEPARATOR . self::REQUEST_DIR;
@@ -292,7 +290,7 @@ abstract class Crud extends Rest {
 		$ctrl = WWW_DIR . "/app/crud";
 		System::ensureDir($ctrl);
 
-		foreach(array_slice($args["input"], 2) as $model) {
+		foreach($models as $model) {
 			$className = ucfirst($model) . "Rest";
 			$modelClass = ucfirst($model) . "Model";;
 			Cli::pinfo(" * " . $className);

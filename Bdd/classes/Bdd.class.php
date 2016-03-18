@@ -50,6 +50,7 @@ class Bdd {
 
 
 	public static function export() {
+		Cli::enableHelp();
 		$bdd = self::getInstance();
 		Cli::pr("{");
 		$first_model = true;
@@ -88,14 +89,14 @@ class Bdd {
 
 
 	public static function cliImport($args) {
-		if (count($args["input"]) == 2) {
-			Cli::pfatal("Missing filename to import");
-		}
+		$files = Cli::getInputs("files", "file names to import");
+		Cli::enableHelp();
 		$bdd = self::getInstance();
-		$filename = $args["input"][2];
-		Cli::pinfo("Import $filename in database");
-		$data = json_decode(file_get_contents($filename));
-		$bdd->import($data);
+		foreach($files as $filename) {
+			Cli::pinfo("Import $filename in database");
+			$data = json_decode(file_get_contents($filename));
+			$bdd->import($data);
+		}
 	}
 
 

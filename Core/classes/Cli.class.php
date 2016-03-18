@@ -33,6 +33,9 @@ class Cli {
 
 	protected $args;
 	protected $commands;
+	protected $options;
+	protected $switches;
+	protected $inputs;
 	protected $has_colors;
 	private static $instance = NULL;
 
@@ -49,6 +52,9 @@ class Cli {
 			$logger->setLevel(Logger::DEBUG);
 
 		$this->commands = array();
+		$this->options = array();
+		$this->switches = array();
+		$this->inputs = array();
 		$this->addCommand("help", array($this, "printHelp"), "Help messages");
 	}
 
@@ -92,7 +98,7 @@ class Cli {
 	}
 
 
-	private function printHelpOption($name, $desc) {
+	private static function printHelpOption($name, $desc) {
 		self::pcolor(self::ansicrit, "	$name");
 		self::pcolorln(self::ansilog, " : $desc");
 	}
@@ -103,11 +109,11 @@ class Cli {
 		self::pln();
 		self::pcolorln(self::ansiinfo, "Commands:");
 		foreach ($this->commands as $name => $value) {
-			$this->printHelpOption($name, $value[1]);
+			self::printHelpOption($name, $value[1]);
 		}
 		self::pln();
 		self::pcolorln(self::ansiinfo, "Options:");
-		$this->printHelpOption("-v", "verbose output");
+		self::printHelpOption("-v", "verbose output");
 	}
 
 
@@ -137,6 +143,81 @@ class Cli {
 			}
 		}
 		return $_ARG;
+	}
+
+
+	public static function addSwitch($name, $help) {
+		if (array_key_exists($name, self::$instance->options) || array_key_exists($name, self::$instance->switches)) {
+			self::pfatal("The command line option $name is already registered");
+		}
+		self::$instance->switches[$name] = $help;
+		if (array_key_exists($name, self::$instance->args)) {
+			return self::$instance->args[$name];
+		}
+		return false;
+	}
+
+
+	public static function addOption($name, $defaultvalue, $help) {
+		if (array_key_exists($name, self::$instance->options) || array_key_exists($name, self::$instance->switches)) {
+			self::pfatal("The command line option $name is already registered");
+		}
+		self::$instance->options[$name] = $help;
+		if (array_key_exists($name, self::$instance->args)) {
+			return self::$instance->args[$name];
+		}
+		return $defaultvalue;
+	}
+	
+	
+	public static function getInputs($name, $help) {
+		self::$instance->inputs[$name] = $help;
+		return array_slice(self::$instance->args["input"], 2);
+	}
+
+
+	public static function enableHelp() {
+		if (!IS_CLI)
+			return;
+
+		$help = self::addSwitch("h", "This help");
+		self::addSwitch("v", "Verbose output");
+		$merged = array_merge(array_keys(self::$instance->switches), array_keys(self::$instance->options));
+		foreach(self::$instance->args as $key => $val) {
+			if ($key != "input" && array_search($key, $merged) === false) {
+				$help = true;
+				self::perr("Command line option -$key=$val doesn't exists");
+				break;
+			}
+		}
+		if (!$help && count(self::$instance->inputs) > 0 && count(self::$instance->args["input"]) == 2) {
+			$help = true;
+			self::perr("Missing command line arguments");
+		}
+		if ($help !== false) {
+			$helpmsg = "Help " . basename(self::$instance->args["input"][0]) . " " . self::$instance->args["input"][1] . " [options]";
+			foreach(self::$instance->inputs as $key => $val) {
+				$helpmsg .= " <$key>";
+			}
+			self::pcolorln(self::ansiinfo, $helpmsg);
+			self::pln();
+			self::pcolorln(self::ansiinfo, "  " . self::$instance->commands[self::$instance->args["input"][1]][1]);
+			foreach(self::$instance->inputs as $key => $val) {
+				self::printHelpOption($key, $val);
+			}
+			self::pln();
+			self::pcolorln(self::ansiinfo, "Options:");
+			foreach(self::$instance->switches as $key=>$val) {
+				self::printHelpOption("-" . $key, $val);
+			}
+			foreach(self::$instance->options as $key=>$val) {
+				self::printHelpOption("-" . $key . "=" . strtoupper($key), $val);
+			}
+			Output::finish();
+		}
+		self::$instance->options = array();
+		self::$instance->switches = array();
+		self::$instance->inputs = array();
 	}
 
 
@@ -233,6 +314,8 @@ class Cli {
 
 	public static function configuration() {
 		global $configured_options;
+		
+		Cli::enableHelp();
 
 		if (isset($configured_options)) {
 			foreach($configured_options as $key) {
@@ -248,6 +331,8 @@ class Cli {
 
 	public static function exportconf() {
 		global $configured_options;
+		
+		Cli::enableHelp();
 
 		$ex = array("CF_VERSION", "INIT_CONFIG_DIR", "CF_DIR", "ROOT_DIR", "CORE_PLUGIN", "CF_URL", "IS_CLI", "DOCUMENT_ROOT", "CF_PLUGINS_DIR", "WWW_PATH");
 
@@ -288,6 +373,7 @@ class Cli {
 
 
 	public static function jconfig() {
+		Cli::enableHelp();
 		$conf = Config::getInstance();
 		$data = $conf->getData();
 		$p = 0;
@@ -298,11 +384,13 @@ class Cli {
 
 
 	public static function version() {
+		Cli::enableHelp();
 		self::pln(CorePlugin::getBaseline());
 	}
 
 
 	public static function install() {
+		Cli::enableHelp();
 		self::pinfo("Installing the application");
 		Plugins::dispatchAllReversed("preinstall");
 		Plugins::dispatchAllReversed("preupdate");
@@ -313,6 +401,7 @@ class Cli {
 
 
 	public static function update() {
+		Cli::enableHelp();
 		self::pinfo("Updating the application");
 		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("update");
@@ -327,6 +416,7 @@ class Cli {
 
 
 	public static function clean() {
+		Cli::enableHelp();
 		self::pinfo("Clean the application cache");
 		System::rmtree(CACHE_DIR);
 		System::rmtree(WWW_CACHE_DIR);
@@ -361,6 +451,7 @@ class Cli {
 		/* Build with:
 			php --define phar.readonly=0 cf/setup.php core:phar
 		*/
+		Cli::enableHelp();
 		$pharname = "cf-".CF_VERSION.".phar";
 		$pharfile = ROOT_DIR . DIRECTORY_SEPARATOR . $pharname;
 		if (file_exists($pharfile))
