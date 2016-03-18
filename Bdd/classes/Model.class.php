@@ -104,7 +104,6 @@ abstract class Model {
 
 
 	public static function createClassesFromConfig() {
-		Cli::enableHelp();
 		$bdd = Bdd::getInstance();
 		$config = Config::getInstance();
 		if (! is_dir(BddPlugin::MODEL_DIR)) {
