@@ -22,4 +22,60 @@ configure("MINIFY_YUI", false);
 
 class MinifierPlugin extends Plugins {
 
+	private static function globRecursive($pattern, $flags = 0) {
+		$files = glob($pattern, $flags);
+
+		foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir){
+			$files = array_merge($files, self::globRecursive($dir.'/'.basename($pattern), $flags));
+		}
+
+		return $files;
+	}
+
+
+	public static function minify_images() {
+		$path = Cli::addOption("path", WWW_PATH, "Path where to find images");
+		$norun = Cli::addSwitch("n", "Do not run the scripts, only print files to process");
+		Cli::enableHelp();
+
+		Cli::pinfo("Minify images");
+		foreach (self::globRecursive($path . "/*.[pP][nN][gG]", GLOB_NOSORT) as $png) {
+			Cli::pinfo(" * $png");
+			$output = "";
+			$return_var = -1;
+			$cmd = "pngcrush -ow -brute -reduce $png";
+			if ($norun) {
+				Logger::Debug("   > $cmd");
+			} else {
+				exec("$cmd 2>& 1", $output, $return_var);
+				if ($return_var != 0) {
+					Cli::perr(implode($output, "\n"));
+				} else {
+					Logger::Debug(implode($output, "\n"));
+				}
+			}
+		}
+		foreach (self::globRecursive($path . "/{*.[jJ][pP][gG], *.[jJ][pP][eE][gG]}", GLOB_BRACE | GLOB_NOSORT) as $jpg) {
+			Cli::pinfo(" * $jpg");
+			$output = "";
+			$return_var = -1;
+			$cmd = "jpegoptim -s -v -v $jpg";
+			if ($norun) {
+				Logger::Debug("   > $cmd");
+			} else {
+				exec("$cmd 2>& 1", $output, $return_var);
+				if ($return_var != 0) {
+					Cli::perr(implode($output, "\n"));
+				} else {
+					Logger::Debug(implode($output, "\n"));
+				}
+			}
+		}
+	}
+
+
+	public function cli($cli) {
+		$cli->addCommand("minify:images", array(__NAMESPACE__ . "\\MinifierPlugin", "minify_images"), "Crush and Optimize Images");
+	}
+
 }
