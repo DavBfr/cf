@@ -9,15 +9,22 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
  **/
 
 class System {
+	private static $relative = false;
+	
+	
+	public static function setRelativePublish($rel) {
+		self::$relative = $rel;
+	}
+
 
 	public static function ensureDir($name, $mode=0750) {
 		if (! is_dir($name)) {
@@ -30,23 +37,56 @@ class System {
 
 	public static function publish($resource, $dest = NULL) {
 		if ($dest === NULL)
-			$dest = WWW_DIR . "/" . basename($resource);
+			$dest = WWW_DIR . DIRECTORY_SEPARATOR . basename($resource);
 		else
-			$dest = WWW_DIR . "/" . $dest;
+			$dest = WWW_DIR . DIRECTORY_SEPARATOR . $dest;
 
+		$resource = self::absPath($resource);
 		Logger::debug("publish $resource => $dest");
 
 		if (is_link($dest))
 			unlink($dest);
 
 		if (! file_exists($dest)) {
-			self::symlink($resource, $dest);
+			self::symlink($resource, $dest, self::$relative);
 		}
 	}
 
 
-	public static function symlink($src, $dst) {
-		if (substr($src, 0, 7) == "phar://" || @symlink($src, $dst) === false) {
+	public static function absPath($path) {
+		$out=array();
+		foreach(explode(DIRECTORY_SEPARATOR, $path) as $i=>$fold){
+				if ($fold=='' || $fold=='.') continue;
+				if ($fold=='..' && $i>0 && end($out)!='..') array_pop($out);
+		else $out[]= $fold;
+		} return ($path{0}==DIRECTORY_SEPARATOR?DIRECTORY_SEPARATOR:'').join(DIRECTORY_SEPARATOR, $out);
+	}
+
+
+	public static function relativePath($from, $to) {
+		$arFrom = explode(DIRECTORY_SEPARATOR, rtrim($from, DIRECTORY_SEPARATOR));
+		$arTo = explode(DIRECTORY_SEPARATOR, rtrim($to, DIRECTORY_SEPARATOR));
+		while(count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0])) {
+			array_shift($arFrom);
+			array_shift($arTo);
+		}
+		$p = array();
+		Logger::Debug(print_r($arFrom, true));
+		if (count($arFrom) > 0)
+			$p = array_fill(0, count($arFrom), '..');
+		$p = array_merge($p, $arTo);
+		return implode(DIRECTORY_SEPARATOR, $p);
+	}
+
+
+	public static function relsymlink($src, $dst) {
+		$rsrc = self::relativePath(dirname(self::absPath($dst)), self::absPath($src));
+		return @symlink($rsrc, $dst);
+	}
+
+
+	public static function symlink($src, $dst, $relative = true) {
+		if (substr($src, 0, 7) == "phar://" || ($relative && self::relsymlink($src, $dst) === false) || (!$relative && @symlink($src, $dst) === false)) {
 			if (is_dir($src))
 				self::copyTree($src, $dst);
 			else

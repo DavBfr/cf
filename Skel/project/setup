@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
+define("ROOT_DIR", dirname(__file__));
+
 if (file_exists(dirname(__file__) . "/config/paths.php"))
 	include_once(dirname(__file__) . "/config/paths.php");
-else
-	define("ROOT_DIR", dirname(__file__));
 
 if (file_exists(dirname(__file__) . "/vendor/autoload.php"))
 	include_once(dirname(__file__) . "/vendor/autoload.php");
