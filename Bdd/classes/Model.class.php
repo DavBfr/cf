@@ -37,18 +37,18 @@ abstract class Model {
 
 
 	public static function getModel($name) {
-		$md = __NAMESPACE__ . "\\" . ucfirst($name)."Model";
+		$md = __NAMESPACE__ . "\\" . ucfirst($name) . "Model";
 		if (class_exists($md) && is_subclass_of($md, __NAMESPACE__ . "\\Model"))
 			return new $md;
 
-		return NULL;
+		return;
 	}
 
 
 	protected function getModelData() {
-		$md = get_class($this)."Data";
+		$md = get_class($this) . "Data";
 		if (class_exists($md) && is_subclass_of($md, __NAMESPACE__ . "\\ModelData"))
-			return get_class($this)."Data";
+			return get_class($this) . "Data";
 
 		return __NAMESPACE__ . "\\ModelData";
 	}
@@ -97,7 +97,7 @@ abstract class Model {
 		}
 		$p = 0;
 		if (version_compare(PHP_VERSION, '5.4.0') >= 0)
-			$p = JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE;
+			$p = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
 		Cli::pln(json_encode($tables, $p));
 	}
@@ -122,7 +122,7 @@ abstract class Model {
 			$new_columns = array();
 			$new_names = array();
 			foreach($columns as $name => $params) {
-				if (substr($name, 0, 2) == "__" && substr($name, strlen($name)-2) == "__")
+				if (substr($name, 0, 2) == "__" && substr($name, strlen($name) - 2) == "__")
 					continue;
 				list($_name, $params) = $bdd->updateModelField($name, $params);
 				$new_columns[$_name] = $params;
@@ -130,7 +130,7 @@ abstract class Model {
 			}
 			$colstr = ArrayWriter::toString($new_columns, 4);
 			foreach($new_columns as $name => $params) {
-				fwrite($f, "\tconst ".strtoupper($new_names[$name])." = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : ModelField::TYPE_AUTO) . "\n");
+				fwrite($f, "\tconst " . strtoupper($new_names[$name]) . " = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : ModelField::TYPE_AUTO) . "\n");
 				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($new_names[$name]), $colstr);
 			}
 
@@ -199,7 +199,7 @@ abstract class Model {
 	}
 
 
-	public function simpleSelect($where=array(), $params=array()) {
+	public function simpleSelect($where = array(), $params = array()) {
 		$bdd = Bdd::getInstance();
 		return Collection::Model($this)
 			->select(array_map(array($bdd, "quoteIdent"), array_keys($this->fields)))
@@ -237,7 +237,7 @@ abstract class Model {
 	public function getBy($field, $value) {
 		$bdd = Bdd::getInstance();
 		if (array_key_exists($field, $this->fields)) {
-			return $this->simpleSelect(array($bdd->quoteIdent($field) . "=:value"), array("value"=>$value));
+			return $this->simpleSelect(array($bdd->quoteIdent($field) . "=:value"), array("value" => $value));
 		}
 
 		throw new Exception("Field $field not found");
@@ -250,7 +250,7 @@ abstract class Model {
 			return new $table;
 		}
 
-		return NULL;
+		return;
 	}
 
 }

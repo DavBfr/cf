@@ -18,8 +18,8 @@
  **/
 
 use DateTime;
-use Iterator;
 use Exception;
+use Iterator;
 
 abstract class BddHelper {
 
@@ -139,7 +139,7 @@ abstract class BddHelper {
 					$value = new DateTime($value);
 					return $value->getTimestamp();
 				} catch (Exception $e) {
-					Logger::Error("Date {$value} invalid: ".$e->getMessage());
+					Logger::Error("Date {$value} invalid: " . $e->getMessage());
 					return $value;
 				}
 		}

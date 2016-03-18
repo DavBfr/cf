@@ -26,17 +26,17 @@ class CacheTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public static function Create($filename, $path, $len = 3, $ext = NULL) {
+	public static function Create($filename, $path, $len = 3, $ext = null) {
 		return new self($filename, self::MakeCacheName($filename, $path, $len, $ext));
 	}
 
 
-	public static function Priv($filename, $ext = NULL) {
+	public static function Priv($filename, $ext = null) {
 		return self::Create($filename, CACHE_DIR, 0, $ext);
 	}
 
 
-	public static function Pub($filename, $ext = NULL) {
+	public static function Pub($filename, $ext = null) {
 		return self::Create($filename, WWW_CACHE_DIR, 0, $ext);
 	}
 
@@ -63,7 +63,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
 	public function getArray() {
 		$data = json_decode(file_get_contents($this->filename_cache), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
+			ErrorHandler::error(500, null, "Error in ${filename} : " . self::jsonLastErrorMsg());
 		}
 
 		return $data;
@@ -103,7 +103,7 @@ class CacheTest extends PHPUnit_Framework_TestCase {
 		if (!is_file($this->filename) && is_file($this->filename_cache))
 			return false;
 
-		return (!is_file($this->filename_cache) || filemtime($this->filename) > filemtime($this->filename_cache));
+		return !is_file($this->filename_cache) || filemtime($this->filename) > filemtime($this->filename_cache);
 	}
 
 

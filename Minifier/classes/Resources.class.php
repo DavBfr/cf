@@ -21,7 +21,7 @@ use JShrink\Minifier;
 
 class Resources extends AbstractResources {
 
-	protected function append($filename, $origfilename = NULL) {
+	protected function append($filename, $origfilename = null) {
 		if (substr($filename, -5) == ".less") {
 			$script = Cache::Pub($filename, ".css");
 			if ($script->check()) {
@@ -38,7 +38,7 @@ class Resources extends AbstractResources {
 
 	private function isMin($filename) {
 		if (($dot = strrpos($filename, ".")) !== false)
-			$type = substr($filename, $dot+1);
+			$type = substr($filename, $dot + 1);
 		else
 			return $filename;
 
@@ -52,7 +52,7 @@ class Resources extends AbstractResources {
 
 	private function min($filename) {
 		if (($dot = strrpos($filename, ".")) !== false)
-			$type = substr($filename, $dot+1);
+			$type = substr($filename, $dot + 1);
 		else
 			return $filename;
 
@@ -129,7 +129,7 @@ class Resources extends AbstractResources {
 	public function getScripts() {
 
 		$res = $this->getResourcesByExt(".js");
-		$output = Cache::Pub($this->tag.".js");
+		$output = Cache::Pub($this->tag . ".js");
 		if (! MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
@@ -138,7 +138,7 @@ class Resources extends AbstractResources {
 		if ($output->check()) {
 			$out = $output->openWrite();
 			foreach($res as $item) {
-				fwrite($out, $this->minifyJavascript($item)."\n");
+				fwrite($out, $this->minifyJavascript($item) . "\n");
 			}
 			fclose($out);
 		}
@@ -148,7 +148,7 @@ class Resources extends AbstractResources {
 
 	public function getStylesheets() {
 		$res = $this->getResourcesByExt(".css");
-		$output = Cache::Pub($this->tag.".css");
+		$output = Cache::Pub($this->tag . ".css");
 		if (! MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
@@ -157,7 +157,7 @@ class Resources extends AbstractResources {
 		if ($output->check()) {
 			$out = $output->openWrite();
 			foreach($res as $item) {
-				fwrite($out, $this->minifyStylesheet($item)."\n");
+				fwrite($out, $this->minifyStylesheet($item) . "\n");
 			}
 			fclose($out);
 		}

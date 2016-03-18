@@ -20,7 +20,7 @@
 class Session {
 	const rights_key = "RIGHTS";
 
-	private static $instance = NULL;
+	private static $instance = null;
 
 
 	protected function __construct() {
@@ -35,7 +35,7 @@ class Session {
 
 		if (!isset($_SESSION['CREATED'])) {
 			$_SESSION['CREATED'] = time();
-		} else if (time() - $_SESSION['CREATED'] > SESSION_REGENERATE) {
+		} elseif (time() - $_SESSION['CREATED'] > SESSION_REGENERATE) {
 			session_regenerate_id(true);
 			$_SESSION['CREATED'] = time();
 		}
@@ -56,7 +56,7 @@ class Session {
 		session_unset();
 		session_destroy();
 		session_write_close();
-		self::$instance = NULL;
+		self::$instance = null;
 
 		if (ini_get("session.use_cookies")) {
 			$params = session_get_cookie_params();

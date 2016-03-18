@@ -17,9 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-use Phar;
 use FilesystemIterator;
-use BadMethodCallException;
+use Phar;
 
 class Cli {
 	const ansiraz = "\e[0m";
@@ -37,7 +36,7 @@ class Cli {
 	protected $switches;
 	protected $inputs;
 	protected $has_colors;
-	private static $instance = NULL;
+	private static $instance = null;
 
 	public function __construct($argv) {
 		self::$instance = $this;
@@ -80,17 +79,17 @@ class Cli {
 		if (isset($this->commands[$command])) {
 			return call_user_func($this->commands[$command][0], $params);
 		}
-		$found = NULL;
+		$found = null;
 		foreach($this->commands as $key => $val) {
 			if (strpos($key, $command) !== false) {
-				if ($found === NULL) {
+				if ($found === null) {
 					$found = $val;
 				} else {
 					$found = false;
 				}
 			}
 		}
-		if ($found !== NULL && $found !== false) {
+		if ($found !== null && $found !== false) {
 			return call_user_func($found[0], $params);
 		}
 		self::perr("Unknown command $command");
@@ -209,10 +208,10 @@ class Cli {
 			}
 			self::pln();
 			self::pcolorln(self::ansiinfo, "Options:");
-			foreach(self::$instance->switches as $key=>$val) {
+			foreach(self::$instance->switches as $key => $val) {
 				self::printHelpOption("-" . $key, $val);
 			}
-			foreach(self::$instance->options as $key=>$val) {
+			foreach(self::$instance->options as $key => $val) {
 				self::printHelpOption("-" . $key . "=" . strtoupper($key), $val);
 			}
 			Output::finish();
@@ -238,7 +237,7 @@ class Cli {
 	}
 
 
-	public static function pr($s="") {
+	public static function pr($s = "") {
 		if (self::$instance)
 			self::$instance->output(false, $s);
 		else
@@ -246,7 +245,7 @@ class Cli {
 	}
 
 
-	public static function pln($s="") {
+	public static function pln($s = "") {
 		self::pr($s . PHP_EOL);
 	}
 
@@ -264,18 +263,18 @@ class Cli {
 	}
 
 
-	public static function perr($s="") {
+	public static function perr($s = "") {
 		self::pcolorln(self::ansierr, $s);
 	}
 
 
-	public static function pfatal($s="") {
+	public static function pfatal($s = "") {
 		self::pcolorln(self::ansierr, $s);
 		Output::finish(-1);
 	}
 
 
-	public static function pinfo($s="") {
+	public static function pinfo($s = "") {
 		self::pcolorln(self::ansiinfo, $s);
 	}
 
@@ -301,10 +300,10 @@ class Cli {
 	}
 
 
-	public static function question($s="") {
+	public static function question($s = "") {
 		self::pinfo($s);
 		self::perr("Type 'yes' to continue: ");
-		$handle = fopen ("php://stdin","r");
+		$handle = fopen ("php://stdin", "r");
 		$line = fgets($handle);
 		if(trim($line) != 'yes'){
 			self::pfatal("ABORTING!");
@@ -316,16 +315,16 @@ class Cli {
 
 	public static function configuration() {
 		global $configured_options;
-		
-		Cli::enableHelp();
+
+		self::enableHelp();
 
 		if (isset($configured_options)) {
 			foreach($configured_options as $key) {
 				$val = constant($key);
 				if (is_bool($val))
-					$val = $val?"true":"false";
+					$val = $val ? "true" : "false";
 
-				self::pln($key.' = '.$val);
+				self::pln($key . ' = ' . $val);
 			}
 		}
 	}
@@ -333,20 +332,20 @@ class Cli {
 
 	public static function exportconf() {
 		global $configured_options;
-		
-		Cli::enableHelp();
+
+		self::enableHelp();
 
 		$ex = array("CF_VERSION", "INIT_CONFIG_DIR", "CF_DIR", "ROOT_DIR", "CORE_PLUGIN", "CF_URL", "IS_CLI", "DOCUMENT_ROOT", "CF_PLUGINS_DIR", "WWW_PATH");
 
 		self::pln("<?php namespace DavBfr\CF;");
 		if (isset($configured_options)) {
-			$sopts=$configured_options;
+			$sopts = $configured_options;
 			asort($sopts);
 			if (substr(WWW_PATH, 0, strlen(ROOT_DIR)) == ROOT_DIR) {
 				$val = "\"" . substr(WWW_PATH, strlen(ROOT_DIR)) . "\"";
 				self::pln("configure(\"WWW_PATH\", $val);");
 			} else {
-				self::pln("configure(\"WWW_PATH\", \"".WWW_PATH."\");");
+				self::pln("configure(\"WWW_PATH\", \"" . WWW_PATH . "\");");
 			}
 			foreach($sopts as $key) {
 				if (array_search($key, $ex) === false) {
@@ -354,18 +353,18 @@ class Cli {
 					if (strpos($key, "_DIR") !== false) {
 						if (substr($val, 0, strlen(ROOT_DIR)) == ROOT_DIR) {
 							$val = "ROOT_DIR . \"" . substr($val, strlen(ROOT_DIR)) . "\"";
-						} else if (substr($val, 0, strlen(CF_DIR)) == CF_DIR) {
+						} elseif (substr($val, 0, strlen(CF_DIR)) == CF_DIR) {
 							$val = "CF_DIR . \"" . substr($val, strlen(CF_DIR)) . "\"";
 						}
-					} else if (strpos($key, "_PATH") !== false) {
+					} elseif (strpos($key, "_PATH") !== false) {
 							if (substr($val, 0, strlen(WWW_PATH)) == WWW_PATH) {
 								$val = "WWW_PATH . \"" . substr($val, strlen(WWW_PATH)) . "\"";
 							}
-					} else if (is_bool($val))
-						$val = $val?"true":"false";
-					else if (is_int($val))
+					} elseif (is_bool($val))
+						$val = $val ? "true" : "false";
+					elseif (is_int($val))
 							$val = $val;
-					else if (is_string($val))
+					elseif (is_string($val))
 						$val = "\"$val\"";
 					self::pln("configure(\"$key\", $val);");
 				}
@@ -375,25 +374,25 @@ class Cli {
 
 
 	public static function jconfig() {
-		Cli::enableHelp();
+		self::enableHelp();
 		$conf = Config::getInstance();
 		$data = $conf->getData();
 		$p = 0;
 		if (version_compare(PHP_VERSION, '5.4.0') >= 0)
-			$p = JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE;
+			$p = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 		self::pln(json_encode($data, $p));
 	}
 
 
 	public static function version() {
-		Cli::enableHelp();
+		self::enableHelp();
 		self::pln(CorePlugin::getBaseline());
 	}
 
 
 	public static function install() {
-		System::setRelativePublish(!Cli::addSwitch("a", "Generate absolute paths"));
-		Cli::enableHelp();
+		System::setRelativePublish(!self::addSwitch("a", "Generate absolute paths"));
+		self::enableHelp();
 		self::pinfo("Installing the application");
 		Plugins::dispatchAllReversed("preinstall");
 		Plugins::dispatchAllReversed("preupdate");
@@ -407,8 +406,8 @@ class Cli {
 
 
 	public static function update() {
-		System::setRelativePublish(!Cli::addSwitch("a", "Generate absolute paths"));
-		Cli::enableHelp();
+		System::setRelativePublish(!self::addSwitch("a", "Generate absolute paths"));
+		self::enableHelp();
 		self::pinfo("Updating the application");
 		Plugins::dispatchAllReversed("preupdate");
 		Plugins::dispatchAllReversed("update");
@@ -418,7 +417,7 @@ class Cli {
 
 
 	public static function clean() {
-		Cli::enableHelp();
+		self::enableHelp();
 		self::pinfo("Clean the application cache");
 		Plugins::dispatchAll("clean");
 	}
@@ -433,8 +432,8 @@ class Cli {
 					if (is_dir($filename)) {
 						$subdirs[] = $filename;
 					} else {
-						$relfilename = substr($filename, strlen(CF_DIR)+1);
-						Cli::pcolorln(self::ansiwarn, "Add $relfilename");
+						$relfilename = substr($filename, strlen(CF_DIR) + 1);
+						self::pcolorln(self::ansiwarn, "Add $relfilename");
 						$phar->addFile($filename, $relfilename);
 					}
 				}
@@ -452,8 +451,8 @@ class Cli {
 		/* Build with:
 			php --define phar.readonly=0 cf/setup.php core:phar
 		*/
-		Cli::enableHelp();
-		$pharname = "cf-".CF_VERSION.".phar";
+		self::enableHelp();
+		$pharname = "cf-" . CF_VERSION . ".phar";
 		$pharfile = ROOT_DIR . DIRECTORY_SEPARATOR . $pharname;
 		if (file_exists($pharfile))
 			unlink($pharfile);
@@ -468,7 +467,7 @@ class Cli {
 		$phar->setStub($phar->createDefaultStub("setup.php"));
 		$phar->compressFiles(Phar::GZ);
 		$phar->stopBuffering();
-		Cli::pinfo("Phar archive " . ROOT_DIR . DIRECTORY_SEPARATOR . $pharname . " has been saved.");
+		self::pinfo("Phar archive " . ROOT_DIR . DIRECTORY_SEPARATOR . $pharname . " has been saved.");
 	}
 
 

@@ -22,7 +22,7 @@ class Output {
 
 	public static function finish($code = 0) {
 		if ($code == 0) {
-			Logger::debug("Response time: ".(microtime(true) - START_TIME));
+			Logger::debug("Response time: " . (microtime(true) - START_TIME));
 		}
 		exit($code);
 	}
@@ -39,19 +39,19 @@ class Output {
 		if (DEBUG && is_array($object) && strlen($content) > 0) {
 			$object["__debug__"] = $content;
 		}
-		print(json_encode($object));
-		Output::finish();
+		echo json_encode($object);
+		self::finish();
 	}
 
 
 	public static function success($object = array()) {
-		self::json(array_merge($object, array("success"=>true)));
+		self::json(array_merge($object, array("success" => true)));
 	}
 
 
 	public static function error($message) {
 		Logger::error($message);
-		self::json(array("error"=>$message, "success"=>false));
+		self::json(array("error" => $message, "success" => false));
 	}
 
 
@@ -59,14 +59,14 @@ class Output {
 		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 		header("$protocol 302 Redirect");
 		header("Location: $url");
-		Output::finish();
+		self::finish();
 	}
 
 
 	public static function file($filename, $data, $type = "application/binary", $inline = false) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $type);
-		header('Content-Disposition: '.($inline?'inline':'attachment').'; filename="'.$filename.'"');
+		header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . $filename . '"');
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -75,8 +75,8 @@ class Output {
 		while (ob_get_length())
 			ob_end_clean();
 
-		print($data);
-		Output::finish();
+		echo $data;
+		self::finish();
 	}
 
 

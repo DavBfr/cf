@@ -18,7 +18,7 @@
  **/
 
 class Bdd {
-	private static $instance = NULL;
+	private static $instance = null;
 
 	private $helper;
 	private $driver;
@@ -26,7 +26,7 @@ class Bdd {
 
 	private function __construct() {
 		$this->driver = substr(DBNAME, 0, strpos(DBNAME, ":"));
-		$helper = __NAMESPACE__ . "\\" . ucFirst($this->driver)."Helper";
+		$helper = __NAMESPACE__ . "\\" . ucFirst($this->driver) . "Helper";
 		if (class_exists($helper, true)) {
 			$this->helper = new $helper(DBNAME, DBLOGIN, DBPASSWORD);
 		} else {

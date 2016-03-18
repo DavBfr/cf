@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+use Exception;
 use PDO;
 use PDOException;
-use Exception;
 
 class PDOHelper extends BddHelper {
 	protected $pdo;
@@ -29,9 +29,9 @@ class PDOHelper extends BddHelper {
 			$this->pdo = new PDO($dsn, $login, $password, $this->getParams());
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
-			ErrorHandler::error(500, NULL, "Unable to connect to Database: " . $e->getMessage());
+			ErrorHandler::error(500, null, "Unable to connect to Database: " . $e->getMessage());
 		} catch (Exeption $e) {
-			ErrorHandler::error(500, NULL, "Unable to connect to Database: " . $e->getMessage());
+			ErrorHandler::error(500, null, "Unable to connect to Database: " . $e->getMessage());
 		}
 	}
 
@@ -42,7 +42,7 @@ class PDOHelper extends BddHelper {
 
 
 	public function quoteIdent($field) {
-		return "`".str_replace("`","``",$field)."`";
+		return "`" . str_replace("`", "``", $field) . "`";
 	}
 
 
@@ -56,12 +56,12 @@ class PDOHelper extends BddHelper {
 
 	public function update($table, $fields, $key) {
 		$s = array();
-		foreach($fields as $k=>$v) {
+		foreach($fields as $k => $v) {
 			if ($key != $k)
 				$s[] = "$k = :$k";
 		}
 		$this->query("UPDATE " .
-			$table . " SET " . implode(", ", $s) ." WHERE $key = :$key", $fields);
+			$table . " SET " . implode(", ", $s) . " WHERE $key = :$key", $fields);
 		return true;
 	}
 
@@ -77,13 +77,13 @@ class PDOHelper extends BddHelper {
 		$reponse = $this->pdo->prepare($sql);
 		if ($reponse === false) {
 			$error = $this->pdo->errorInfo();
-			ErrorHandler::error(500, NULL, "Error in SQL statement ${error[0]} (${error[1]}) ${error[2]} in\n$sql");
+			ErrorHandler::error(500, null, "Error in SQL statement ${error[0]} (${error[1]}) ${error[2]} in\n$sql");
 		}
 		$reponse->setFetchMode(PDO::FETCH_NAMED);
 		$result = $reponse->execute($params);
 		if ($result === false) {
 			$error = $reponse->errorInfo();
-			ErrorHandler::error(500, NULL, "Sql error ${error[0]} (${error[1]}) ${error[2]} in\n$sql");
+			ErrorHandler::error(500, null, "Sql error ${error[0]} (${error[1]}) ${error[2]} in\n$sql");
 		}
 		return $reponse;
 	}
@@ -91,7 +91,7 @@ class PDOHelper extends BddHelper {
 
 	public function tableExists($name) {
 		try {
-			$ret = $this->pdo->query('SELECT 1 FROM '.$name);
+			$ret = $this->pdo->query('SELECT 1 FROM ' . $name);
 			return $ret !== false;
 		} catch (PDOException $e) {
 			return false;
@@ -100,12 +100,12 @@ class PDOHelper extends BddHelper {
 
 
 	protected function buildTableColumns($table_structure) {
-		return Array();
+		return array();
 	}
 
 
 	public function dropTableQuery($name) {
-		return "DROP TABLE IF EXISTS ".$this->quoteIdent($name);
+		return "DROP TABLE IF EXISTS " . $this->quoteIdent($name);
 	}
 
 
@@ -116,10 +116,10 @@ class PDOHelper extends BddHelper {
 
 	public function createTableQuery($name, $table_structure) {
 		$columns = $this->buildTableColumns($table_structure);
-		$query  = "CREATE TABLE IF NOT EXISTS ".$this->quoteIdent($name)." (\n  ";
+		$query  = "CREATE TABLE IF NOT EXISTS " . $this->quoteIdent($name) . " (\n  ";
 		$cols = array();
 		foreach ($columns as $column_name => $column_type) {
-			$cols[] = $this->quoteIdent($column_name).' '.$column_type;
+			$cols[] = $this->quoteIdent($column_name) . ' ' . $column_type;
 		}
 		$query .= implode(",\n  ", $cols);
 		$query .= "\n)";
@@ -133,23 +133,23 @@ class PDOHelper extends BddHelper {
 
 
 	public function getTables() {
-		return NULL;
+		return;
 	}
 
 
 	public function getTableInfo($name) {
-		return NULL;
+		return;
 	}
 
 
 	public function getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
-		$query = "SELECT ".($distinct ? "DISTINCT ":"");
+		$query = "SELECT " . ($distinct ? "DISTINCT " : "");
 
 		if (count($fields) == 0)
 			$query .= "*";
 		else {
 			$_fields = array();
-			foreach($fields as $k=>$v) {
+			foreach($fields as $k => $v) {
 				if (is_int($k))
 					$_fields[] = $v;
 				else
@@ -159,22 +159,22 @@ class PDOHelper extends BddHelper {
 
 		}
 
-		$query .= " FROM ".implode(", ", $tables);
+		$query .= " FROM " . implode(", ", $tables);
 
 		if (count($joint) > 0) {
 			$joints = array();
 
-			foreach($joint as $k=>$v) {
+			foreach($joint as $k => $v) {
 				$joints[] = "LEFT JOIN ${v[0]} ON ${v[1]}";
 			}
-			$query .= " ".implode(" ", $joints);
+			$query .= " " . implode(" ", $joints);
 		}
 
 		if ($filter) {
-			$value = $this->quote("%".$filter."%");
+			$value = $this->quote("%" . $filter . "%");
 
 			$filter = array();
-			if ($filter_fields == NULL) {
+			if ($filter_fields == null) {
 				$filter_fields = $fields;
 			}
 			foreach ($filter_fields as $field) {
@@ -186,16 +186,16 @@ class PDOHelper extends BddHelper {
 		}
 
 		if (count($where) > 0)
-			$query .= " WHERE (".implode(") AND (", $where).")";
+			$query .= " WHERE (" . implode(") AND (", $where) . ")";
 
 		if (count($group) > 0)
-			$query .= " GROUP BY ".implode(", ", $group);
+			$query .= " GROUP BY " . implode(", ", $group);
 
 		if (count($order) > 0)
-			$query .= ' ORDER BY '. implode(", ", $order);
+			$query .= ' ORDER BY ' . implode(", ", $order);
 
 		if ($limit)
-			$query .= ' LIMIT ' . ($pos * $limit) .", " . $limit;
+			$query .= ' LIMIT ' . ($pos * $limit) . ", " . $limit;
 
 		return $query;
 	}
@@ -218,7 +218,7 @@ class PDOHelper extends BddHelper {
 
 
 	public function getQueryCount($tables, $joint, $where, $filter, $filter_fields, $group, $params, $distinct) {
-		$sql = $this->getQueryString(array("COUNT(*)"), $tables, $joint, $where, $filter, $filter_fields, array(), $group, $params, NULL, 0, $distinct);
+		$sql = $this->getQueryString(array("COUNT(*)"), $tables, $joint, $where, $filter, $filter_fields, array(), $group, $params, null, 0, $distinct);
 		$values = $this->query($sql, $params);
 		$count = $values->fetch(PDO::FETCH_NUM);
 		return intVal($count[0]);
@@ -296,7 +296,7 @@ class PDOStatementHelper extends BddCursorHelper {
 
 
 	public function key() {
-		return null;
+		return;
 	}
 
 

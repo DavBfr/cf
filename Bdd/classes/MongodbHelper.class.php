@@ -25,9 +25,9 @@
  **/
 
 
+use Exception;
 use MongoClient;
 use MongoID;
-use Exception;
 
 
 class MongodbHelper extends BddHelper {
@@ -41,7 +41,7 @@ class MongodbHelper extends BddHelper {
 			$dbname = basename($dsn);
 			$this->db = $this->mongo->selectDB($dbname);
 		} catch (Exception $e) {
-			ErrorHandler::error(500, NULL, "Unable to connect to Database: " . $e->getMessage());
+			ErrorHandler::error(500, null, "Unable to connect to Database: " . $e->getMessage());
 		}
 	}
 
@@ -66,7 +66,7 @@ class MongodbHelper extends BddHelper {
 		Logger::Debug("Insert $table", $fields);
 		$collection = $this->db->selectCollection($table);
 		$collection->insert($fields);
-		return ((string)$fields["_id"]);
+		return (string)$fields["_id"];
 	}
 
 
@@ -76,7 +76,7 @@ class MongodbHelper extends BddHelper {
 		if (isset($fields["_id"])) {
 			$fields["_id"] = new MongoID($fields["_id"]);
 		}
-		foreach($fields as $k=>$v) {
+		foreach($fields as $k => $v) {
 			if ($key == $k)  {
 				$criteria[$k] = $v;
 				unset($fields[$k]);
@@ -85,7 +85,7 @@ class MongodbHelper extends BddHelper {
 		$collection = $this->db->selectCollection($table);
 		Logger::Debug("Update criteria", $criteria, "values", $fields, $key);
 		$collection->update($criteria, $fields);
-		return NULL;
+		return;
 	}
 
 
@@ -95,8 +95,8 @@ class MongodbHelper extends BddHelper {
 		if ($key == "_id") {
 			$value = new MongoID($value);
 		}
-		$collection->remove(array($key=>$value));
-		return NULL;
+		$collection->remove(array($key => $value));
+		return;
 	}
 
 
@@ -107,7 +107,7 @@ class MongodbHelper extends BddHelper {
 
 	protected function buildTableColumns($table_structure) {
 		Logger::Debug("buildTableColumns($table_structure)");
-		return Array();
+		return array();
 	}
 
 
@@ -153,7 +153,7 @@ class MongodbHelper extends BddHelper {
 	private function createQuery($where, $filter, $filter_fields, $group, $params) {
 		$query = array();
 		if ($filter) {
-			$value = "/".$filter."/";
+			$value = "/" . $filter . "/";
 
 			$filter = array();
 			foreach ($fields as $field) {
@@ -163,14 +163,14 @@ class MongodbHelper extends BddHelper {
 				$where[] = implode(" OR ", $filter);
 			}
 
-			$query['$or'] = $o;'function() { for (var key in this) { if (this[key] == "'.$filter.'") return true;} return false; }
+			$query['$or'] = $o;'function() { for (var key in this) { if (this[key] == "' . $filter . '") return true;} return false; }
 			';
 		}
 
 		foreach ($where as $w) {
 			$clause = preg_split("/([!=><]+|IS)/", $w, 3, PREG_SPLIT_DELIM_CAPTURE);
-			$field = NULL;
-			$value = NULL;
+			$field = null;
+			$value = null;
 			if (is_scalar($clause[0]) && !is_numeric($clause[0]) && trim($clause[0])[0] != "'" && trim($clause[0])[0] != ":" && strtolower(trim($clause[0])) != "null") {
 				$field = trim($clause[0]);
 			} else {
@@ -181,8 +181,8 @@ class MongodbHelper extends BddHelper {
 			} else {
 				$value = trim($clause[2]);
 			}
-			if ($value[0] == "'" && $value[strlen($value)-1] == "'") {
-				$value = substr($value, 1, strlen($value)-2);
+			if ($value[0] == "'" && $value[strlen($value) - 1] == "'") {
+				$value = substr($value, 1, strlen($value) - 2);
 			}
 			if ($value[0] == ":")
 				$value = $params[substr($value, 1)];
@@ -208,14 +208,14 @@ class MongodbHelper extends BddHelper {
 
 
 	public function getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
-		Logger::debug("getQueryValues " . json_encode(array("fields"=>$fields, "tables"=>$tables, "joint"=>$joint, "where"=>$where, "order"=>$order, "group"=>$group, "params"=>$params, "limit"=>$limit, "pos"=>$pos, "distinct"=>$distinct)));
+		Logger::debug("getQueryValues " . json_encode(array("fields" => $fields, "tables" => $tables, "joint" => $joint, "where" => $where, "order" => $order, "group" => $group, "params" => $params, "limit" => $limit, "pos" => $pos, "distinct" => $distinct)));
 		$collection = $this->db->selectCollection($tables[0]);
 		$_query = $this->createQuery($where, $filter, $filter_fields, $group, $params);
 		$_fields = array();
 		foreach ($fields as $field) {
 			$_fields[$field] = true;
 		}
-		Logger::debug("getQueryValues " . json_encode(array("fields"=>$_fields, "query"=>$_query)));
+		Logger::debug("getQueryValues " . json_encode(array("fields" => $_fields, "query" => $_query)));
 		return new MongodbCursorHelper($collection->find($_query, $_fields), $fields);
 	}
 
@@ -258,7 +258,7 @@ class MongodbHelper extends BddHelper {
 		if ($file)
 			return $file->getBytes();
 
-		return null;
+		return;
 	}
 
 
@@ -272,7 +272,7 @@ class MongodbHelper extends BddHelper {
 		}
 
 		if ($value === null)
-			return null;
+			return;
 
 		return $gridFS->storeBytes($value, $metadata);
 	}

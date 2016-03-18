@@ -24,7 +24,7 @@
 	
 <?php
 	$bt = $this->get("backtrace");
-	if (count($bt)>0) {
+	if (count($bt) > 0) {
 		try {
 			$file = file_get_contents($bt[0][0]);
 			$file = explode("\n", $file);
@@ -33,7 +33,7 @@
 			echo $bt[0][0];
 			echo "<div class=\"alert alert-info code\">";
 			for($line = $start; $line < $end; $line++) {
-				echo "<div".($line == $bt[0][1] - 1 ? " class=\"red\"" : "")."><span>".($line+1)."</span> ".\DavBfr\CF\System::highlightCode($file[$line])."</div>";
+				echo "<div" . ($line == $bt[0][1] - 1 ? " class=\"red\"" : "") . "><span>" . ($line + 1) . "</span> " . \DavBfr\CF\System::highlightCode($file[$line]) . "</div>";
 			}
 			echo "</div>";
 		} catch (Exception $e) {
@@ -41,7 +41,7 @@
 	}
 ?>
 	
-	<?php if ($this->has("backtrace") && count($this->get("backtrace"))>0): ?>
+	<?php if ($this->has("backtrace") && count($this->get("backtrace")) > 0): ?>
 	<div class="well">
 		<h2><?php $this->tr("core.backtrace") ?></h2>
 		<table class="table table-condensed ">
@@ -53,11 +53,11 @@
 				</tr>
 			</thead>
 			<tbody>
-				<?php foreach($this->get("backtrace") as $n=>$bt): ?>
+				<?php foreach($this->get("backtrace") as $n => $bt): ?>
 				<tr>
 					<td><?php echo $n ?></td>
 					<td><?php echo "${bt[0]} (${bt[1]})" ?></td>
-					<td><?php echo (isset($bt[2]) ? $bt[2] . '->' : '').(isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '') ?></td>
+					<td><?php echo (isset($bt[2]) ? $bt[2] . '->' : '') . (isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '') ?></td>
 				</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -65,7 +65,7 @@
 	</div>
 	<?php endif; ?>
 	
-	<?php if ($this->has("log") && count($this->get("log"))>0): ?>
+	<?php if ($this->has("log") && count($this->get("log")) > 0): ?>
 	<div class="well">
 		<h2>Log</h2>
 		<pre><?php foreach($this->get("log") as $line) echo $line . "\n"; ?></pre>

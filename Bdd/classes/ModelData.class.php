@@ -31,7 +31,7 @@ class ModelData implements Iterator {
 	private $foreign;
 
 
-	function __construct($model, $values = NULL) {
+	public function __construct($model, $values = null) {
 		$this->model = $model;
 		$this->foreign = array();
 		$this->isempty = true;
@@ -42,7 +42,7 @@ class ModelData implements Iterator {
 			$values = $this->statement->current();
 		}
 
-		$this->isnew = $values === NULL || $values === false;
+		$this->isnew = $values === null || $values === false;
 		$this->values = array();
 		foreach($this->model->getFields() as $field) {
 			$this->_set($field, $field->getDefault());
@@ -52,7 +52,7 @@ class ModelData implements Iterator {
 		}
 
 		if (! $this->isnew) {
-			foreach($values as $key=>$val) {
+			foreach($values as $key => $val) {
 				$this->_set($key, $val);
 			}
 			$this->isempty = false;
@@ -109,7 +109,7 @@ class ModelData implements Iterator {
 			return $this;
 		}
 		$this->isnew = false;
-		foreach($values as $key=>$val) {
+		foreach($values as $key => $val) {
 			$this->_set($key, $val);
 		}
 		return $this;
@@ -117,7 +117,7 @@ class ModelData implements Iterator {
 
 
 	public function setValues($values) {
-		foreach($values as $key=>$val) {
+		foreach($values as $key => $val) {
 			$this->set($key, $val);
 		}
 	}
@@ -125,7 +125,7 @@ class ModelData implements Iterator {
 
 	public function getValues() {
 		$values = array();
-		foreach($this->values as $key=>$val) {
+		foreach($this->values as $key => $val) {
 			$values[$key] = $this->get($key);
 		}
 		return $values;
@@ -156,7 +156,7 @@ class ModelData implements Iterator {
 
 		$value = $this->_get($field);
 
-		$func = "get".ucfirst($field)."Field";
+		$func = "get" . ucfirst($field) . "Field";
 		if (is_callable(array($this, $func))) {
 			return call_user_func(array($this, $func), $value);
 		} elseif (is_callable(array($this->model, $func))) {
@@ -200,7 +200,7 @@ class ModelData implements Iterator {
 		if (!is_a($field, "ModelField"))
 			$field = $this->model->getField($field);
 
-		$func = "set".ucfirst($field->getName())."Field";
+		$func = "set" . ucfirst($field->getName()) . "Field";
 		if (is_callable(array($this, $func))) {
 			$value = call_user_func(array($this, $func), $value);
 		} elseif (is_callable(array($this->model, $func))) {
@@ -238,7 +238,7 @@ class ModelData implements Iterator {
 				return $this->values[$field->getName()];
 			}
 		}
-		return NULL;
+		return;
 	}
 
 
@@ -280,9 +280,9 @@ class ModelData implements Iterator {
 	}
 
 
-	public function getForeign($field, $class = NULL) {
+	public function getForeign($field, $class = null) {
 		if (! array_key_exists($field, $this->foreign)) {
-			if ($class === NULL)
+			if ($class === null)
 				$obj = $this->model->getForeign($field);
 			else
 				$obj = new $class();

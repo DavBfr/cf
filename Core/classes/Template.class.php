@@ -23,8 +23,8 @@ class Template {
 	private $params;
 
 
-	public function __construct($params=Array()) {
-		$this->params=array_merge($this->get_defaults(), $params);
+	public function __construct($params = array()) {
+		$this->params = array_merge($this->get_defaults(), $params);
 	}
 
 
@@ -41,7 +41,7 @@ class Template {
 	public static function findTemplate($filename) {
 		if ($filename[0] != DIRECTORY_SEPARATOR) {
 			$template_file = Plugins::find(self::TEMPLATES_DIR . DIRECTORY_SEPARATOR . $filename);
-			if ($template_file !== NULL) {
+			if ($template_file !== null) {
 				return $template_file;
 			}
 			return false;
@@ -62,11 +62,11 @@ class Template {
 				break;
 		}
 		if ($template === false)
-			ErrorHandler::error(404, NULL, implode(", ", $filenames));
+			ErrorHandler::error(404, null, implode(", ", $filenames));
 
 		ob_start();
 		include($template);
-		$content=ob_get_contents();
+		$content = ob_get_contents();
 		ob_end_clean();
 		return $content;
 	}
@@ -78,31 +78,31 @@ class Template {
 			if ($optional) {
 				return;
 			}
-			ErrorHandler::error(404, NULL, $filename);
+			ErrorHandler::error(404, null, $filename);
 		}
 
 		include($template);
 	}
 
 
-	public function insertNew($filenames, $params = NULL, $class = "Template") {
+	public function insertNew($filenames, $params = null, $class = "Template") {
 		$nsclass = __NAMESPACE__ . "\\" . $class;
 		$tpt = new $nsclass(array_merge($this->params, $params));
 		echo $tpt->parse($filenames);
 	}
 
 
-	public function output($filename, $contentType="text/html", $encoding="utf-8") {
+	public function output($filename, $contentType = "text/html", $encoding = "utf-8") {
 		while (ob_get_length())
 			ob_end_clean();
 
 		header("Content-Type: ${contentType};charset=${encoding}");
-		print($this->parse($filename));
+		echo $this->parse($filename);
 		Output::finish();
 	}
 
 
-	public function outputCached($filename, $contentType="text/html", $encoding="utf-8") {
+	public function outputCached($filename, $contentType = "text/html", $encoding = "utf-8") {
 		while (ob_get_length())
 			ob_end_clean();
 
@@ -114,21 +114,21 @@ class Template {
 			$this->params
 		))), ".html");
 		if ($cache->exists()) {
-			print($cache->getContents());
+			echo $cache->getContents();
 			Output::finish();
 		}
 
 		$content = $this->parse($filename);
 
 		$cache->setContents($content);
-		print($content);
+		echo $content;
 		Output::finish();
 	}
 
 
-	public function media($filename, $default = NULL) {
+	public function media($filename, $default = null) {
 		$file = Resources::find($filename);
-		if ($file !== NULL) {
+		if ($file !== null) {
 			return Resources::web($file);
 		}
 		return $default;
@@ -138,7 +138,7 @@ class Template {
 	public function all() {
 		$ret = "<ul>\n";
 		foreach ($this->params as $key => $value) {
-			$ret .= "<li><b>$key</b> = ".htmlspecialchars($value)."</li>";
+			$ret .= "<li><b>$key</b> = " . htmlspecialchars($value) . "</li>";
 		}
 		$ret .= "</ul>\n";
 		return $ret;
@@ -180,11 +180,11 @@ class Template {
 	}
 
 
-	public function get($param, $filter='raw', $default = NULL) {
+	public function get($param, $filter = 'raw', $default = null) {
 		if (array_key_exists($param, $this->params)) {
 			$value = $this->params[$param];
 		} else {
-			if ($default === NULL)
+			if ($default === null)
 				$value = $param;
 			else
 				$value = $default;
@@ -193,27 +193,27 @@ class Template {
 	}
 
 
-	public function config($key, $filter='raw', $default = NULL) {
+	public function config($key, $filter = 'raw', $default = null) {
 		$config = Config::getInstance();
 		$value = $config->get($key, $key, $default);
 		return $this->filter($value, $filter);
 	}
 
 
-	public function out($param, $filtre='raw', $default = NULL) {
-		print($this->get($param, $filtre, $default));
+	public function out($param, $filtre = 'raw', $default = null) {
+		echo $this->get($param, $filtre, $default);
 	}
 
 
 	public function tr($param) {
-		print($this->get($param, 'tr'));
+		echo $this->get($param, 'tr');
 	}
 
 
-	public function cf_options($keys = NULL) {
+	public function cf_options($keys = null) {
 		global $configured_options;
 
-		if ($keys == NULL) {
+		if ($keys == null) {
 			$keys = array();
 			foreach ($configured_options as $key) {
 				if (substr($key, -5) == "_PATH") {
@@ -232,14 +232,14 @@ class Template {
 		if (Session::Has(Session::rights_key)) {
 			$options["rights"] = Session::Get(Session::rights_key);
 		} else {
-			$options["rights"] = Array();
+			$options["rights"] = array();
 		}
 
 		foreach (Plugins::dispatchAll("cf_options") as $opt) {
 			$options = array_merge($options, $opt);
 		}
 
-		print(json_encode($options));
+		echo json_encode($options);
 	}
 
 }

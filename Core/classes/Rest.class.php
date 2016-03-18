@@ -23,11 +23,11 @@ abstract class Rest {
 
 	private $routes = array();
 	private $complex_routes = array();
-	private $jsonpost_data = Null;
+	private $jsonpost_data = null;
 
-	protected $path = Null;
-	protected $method = Null;
-	protected $mp = Null;
+	protected $path = null;
+	protected $method = null;
+	protected $mp = null;
 
 
 	public function __construct() {
@@ -48,18 +48,18 @@ abstract class Rest {
 				}
 			}
 			$rPath = "#^" . implode("/", $aPath) . "$#";
-			$this->complex_routes[$method."@".$path] = array($method, $rPath, $vars, $callback);
+			$this->complex_routes[$method . "@" . $path] = array($method, $rPath, $vars, $callback);
 		} else {
-			$this->routes[$method."@".$path] = $callback;
+			$this->routes[$method . "@" . $path] = $callback;
 		}
 	}
 
 
-	protected abstract function getRoutes();
+	abstract protected function getRoutes();
 
 
 	protected function jsonpost() {
-		if ($this->jsonpost_data === Null) {
+		if ($this->jsonpost_data === null) {
 			$this->jsonpost_data = Input::decodeJsonPost();
 		}
 		return $this->jsonpost_data;
@@ -76,7 +76,7 @@ abstract class Rest {
 
 
 	protected function processNotFound($method) {
-		ErrorHandler::error(404, NULL, get_class($this) . "::" . $method);
+		ErrorHandler::error(404, null, get_class($this) . "::" . $method);
 	}
 
 
@@ -86,7 +86,7 @@ abstract class Rest {
 
 		$this->method = $method;
 		$this->path = $path;
-		$this->mp = $method."@".$path;
+		$this->mp = $method . "@" . $path;
 
 		if (isset($this->routes[$this->mp])) {
 			if (!$this->preCheck($this->mp)) {
@@ -96,14 +96,14 @@ abstract class Rest {
 			call_user_func(array($this, $this->routes[$this->mp]), array());
 			ErrorHandler::error(204);
 		} else {
-			foreach($this->complex_routes as $cPath=>$route) {
+			foreach($this->complex_routes as $cPath => $route) {
 				list($m, $p, $v, $c) = $route;
 				if ($m == $method) {
 
 					if (preg_match($p, $path, $matches) != false) {
 						$pa = array();
 						foreach($v as $i => $k) {
-							$pa[$k] = $matches[$i+1];
+							$pa[$k] = $matches[$i + 1];
 						}
 						$this->mp = $cPath;
 						if (!$this->preCheck($this->mp)) {
@@ -120,12 +120,12 @@ abstract class Rest {
 	}
 
 
-	public static function handle($method = NULL, $path = NULL) {
-		if ($path == NULL) {
+	public static function handle($method = null, $path = null) {
+		if ($path == null) {
 			$path = @$_SERVER["PATH_INFO"];
 		}
 
-		if ($method == NULL) {
+		if ($method == null) {
 			$method = $_SERVER["REQUEST_METHOD"];
 		}
 
@@ -147,12 +147,12 @@ abstract class Rest {
 		$request = str_replace(".", "_", $request);
 
 		$request_file = Plugins::find(self::REQUEST_DIR . DIRECTORY_SEPARATOR . ucwords($request) . "Rest.class.php");
-		if ($request_file === NULL) {
-			ErrorHandler::error(404, NULL, ucwords($request) . "Rest.class.php");
+		if ($request_file === null) {
+			ErrorHandler::error(404, null, ucwords($request) . "Rest.class.php");
 		}
 
 		require_once($request_file);
-		$class_name = __NAMESPACE__ . "\\" . ucwords($request)."Rest";
+		$class_name = __NAMESPACE__ . "\\" . ucwords($request) . "Rest";
 		$instance = new $class_name();
 		$instance->handleRequest($method, $next_path);
 		ErrorHandler::error(204);

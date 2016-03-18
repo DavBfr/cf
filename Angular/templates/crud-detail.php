@@ -22,26 +22,26 @@
 <?php
 foreach($this->get("model") as $field) {
 	if($field->isEditable()) {
-		if (self::findTemplate("field-".$field->getTableName().".".$field->getName().".php"))
-			$this->insertNew("field-".$field->getTableName().".".$field->getName().".php", array("field"=>$field));
-		elseif($field->getEditor() !== NULL && self::findTemplate("field-".$field->getEditor().".php"))
-			$this->insertNew("field-".$field->getEditor().".php", array("field"=>$field));
+		if (self::findTemplate("field-" . $field->getTableName() . "." . $field->getName() . ".php"))
+			$this->insertNew("field-" . $field->getTableName() . "." . $field->getName() . ".php", array("field" => $field));
+		elseif($field->getEditor() !== null && self::findTemplate("field-" . $field->getEditor() . ".php"))
+			$this->insertNew("field-" . $field->getEditor() . ".php", array("field" => $field));
 		elseif($field->isAutoincrement())
-			$this->insertNew("field-auto.php", array("field"=>$field));
+			$this->insertNew("field-auto.php", array("field" => $field));
 		elseif ($field->isSelect())
-			$this->insertNew("field-select.php", array("field"=>$field));
+			$this->insertNew("field-select.php", array("field" => $field));
 		elseif($field->isBool())
-			$this->insertNew("field-bool.php", array("field"=>$field));
+			$this->insertNew("field-bool.php", array("field" => $field));
 		elseif($field->isInt())
-			$this->insertNew("field-int.php", array("field"=>$field));
+			$this->insertNew("field-int.php", array("field" => $field));
 		elseif($field->isDate())
-			$this->insertNew("field-date.php", array("field"=>$field));
+			$this->insertNew("field-date.php", array("field" => $field));
 		elseif($field->isEmail())
-			$this->insertNew("field-email.php", array("field"=>$field));
+			$this->insertNew("field-email.php", array("field" => $field));
 		elseif($field->isPassword())
-			$this->insertNew("field-passwd.php", array("field"=>$field));
+			$this->insertNew("field-passwd.php", array("field" => $field));
 		else
-			$this->insertNew("field-text.php", array("field"=>$field));
+			$this->insertNew("field-text.php", array("field" => $field));
 	}
 }
 ?>

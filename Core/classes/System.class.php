@@ -19,24 +19,24 @@
 
 class System {
 	private static $relative = false;
-	
-	
+
+
 	public static function setRelativePublish($rel) {
 		self::$relative = $rel;
 	}
 
 
-	public static function ensureDir($name, $mode=0750) {
+	public static function ensureDir($name, $mode = 0750) {
 		if (! is_dir($name)) {
 			if (! mkdir($name, $mode, true)) {
-				ErrorHandler::error(500, NULL, "Unable to create directory $name");
+				ErrorHandler::error(500, null, "Unable to create directory $name");
 			}
 		}
 	}
 
 
-	public static function publish($resource, $dest = NULL) {
-		if ($dest === NULL)
+	public static function publish($resource, $dest = null) {
+		if ($dest === null)
 			$dest = WWW_DIR . DIRECTORY_SEPARATOR . basename($resource);
 		else
 			$dest = WWW_DIR . DIRECTORY_SEPARATOR . $dest;
@@ -54,12 +54,12 @@ class System {
 
 
 	public static function absPath($path) {
-		$out=array();
-		foreach(explode(DIRECTORY_SEPARATOR, $path) as $i=>$fold){
-				if ($fold=='' || $fold=='.') continue;
-				if ($fold=='..' && $i>0 && end($out)!='..') array_pop($out);
-		else $out[]= $fold;
-		} return ($path{0}==DIRECTORY_SEPARATOR?DIRECTORY_SEPARATOR:'').join(DIRECTORY_SEPARATOR, $out);
+		$out = array();
+		foreach(explode(DIRECTORY_SEPARATOR, $path) as $i => $fold) {
+				if ($fold == '' || $fold == '.') continue;
+				if ($fold == '..' && $i > 0 && end($out) != '..') array_pop($out);
+		else $out[] = $fold;
+		} return ($path{0} == DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '') . join(DIRECTORY_SEPARATOR, $out);
 	}
 
 
@@ -98,9 +98,9 @@ class System {
 	public static function copyTree($src, $dst) {
 		$dir = opendir($src);
 		@mkdir($dst);
-		while(false !== ( $file = readdir($dir)) ) {
-			if (( $file != '.' ) && ( $file != '..' )) {
-				if ( is_dir($src . DIRECTORY_SEPARATOR . $file) ) {
+		while(false !== ($file = readdir($dir))) {
+			if (($file != '.') && ($file != '..')) {
+				if (is_dir($src . DIRECTORY_SEPARATOR . $file)) {
 					self::copyTree($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
 				}
 				else {
@@ -138,7 +138,7 @@ class System {
 	}
 
 
-	function highlightCode($text) {
+	public function highlightCode($text) {
     $text = highlight_string("<?php " . $text, true);
 		$text = trim($text);
     $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", "", $text, 1);

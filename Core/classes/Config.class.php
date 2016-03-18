@@ -18,7 +18,7 @@
  **/
 
 class Config implements \arrayaccess {
-	private static $instance = NULL;
+	private static $instance = null;
 	private $data;
 
 
@@ -70,12 +70,12 @@ class Config implements \arrayaccess {
 	}
 
 
-	public function append($filename, $reverse = false, $subkey = NULL) {
+	public function append($filename, $reverse = false, $subkey = null) {
 		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
+			ErrorHandler::error(500, null, "Error in ${filename} : " . self::jsonLastErrorMsg());
 		}
-		if ($subkey !== NULL) {
+		if ($subkey !== null) {
 			$data = array($subkey => $data);
 		}
 		$this->merge($data, $reverse);
@@ -95,7 +95,7 @@ class Config implements \arrayaccess {
 	public function loadAsKey($key, $filename) {
 		$data = json_decode(file_get_contents($filename), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
+			ErrorHandler::error(500, null, "Error in ${filename} : " . self::jsonLastErrorMsg());
 		}
 		$this->data[$key] = $data;
 		Logger::debug("Config $filename loaded");
@@ -125,7 +125,7 @@ class Config implements \arrayaccess {
 	}
 
 
-	public function get($key, $default=NULL) {
+	public function get($key, $default = null) {
 		$value = $this->data;
 		foreach(explode(".", $key) as $item) {
 			if (is_array($value) && array_key_exists($item, $value)) {
@@ -150,12 +150,12 @@ class Config implements \arrayaccess {
 
 
 	public function offsetExists($offset) {
-		return $this->get($key) !== NULL;
+		return $this->get($key) !== null;
 	}
 
 
 	public function offsetUnset($offset) {
-		$this->set($offset, NULL);
+		$this->set($offset, null);
 	}
 
 

@@ -28,8 +28,8 @@ class Cache {
 	}
 
 
-	public static function MakeCacheName($filename, $path, $len, $ext = NULL) {
-		if ($ext === NULL) {
+	public static function MakeCacheName($filename, $path, $len, $ext = null) {
+		if ($ext === null) {
 			if (($dot = strrpos($filename, ".")) !== false)
 				$ext = substr($filename, $dot);
 			else
@@ -45,17 +45,17 @@ class Cache {
 	}
 
 
-	public static function Create($filename, $path, $len = 3, $ext = NULL) {
+	public static function Create($filename, $path, $len = 3, $ext = null) {
 		return new self($filename, self::MakeCacheName($filename, $path, $len, $ext));
 	}
 
 
-	public static function Priv($filename, $ext = NULL) {
+	public static function Priv($filename, $ext = null) {
 		return self::Create($filename, CACHE_DIR, 0, $ext);
 	}
 
 
-	public static function Pub($filename, $ext = NULL) {
+	public static function Pub($filename, $ext = null) {
 		return self::Create($filename, WWW_CACHE_DIR, 0, $ext);
 	}
 
@@ -63,7 +63,7 @@ class Cache {
 	public function isWritable() {
 		if (is_file($this->filename_cache) && is_writable($this->filename_cache))
 			return true;
-		
+
 		return is_writable(dirname($this->filename_cache));
 	}
 
@@ -76,7 +76,7 @@ class Cache {
 	public function setContents($value) {
 		System::ensureDir(dirname($this->filename_cache));
 		if (! $this->isWritable()) {
-			Logger::Error($this->filename_cache." is not writable");
+			Logger::Error($this->filename_cache . " is not writable");
 			return;
 		}
 
@@ -88,7 +88,7 @@ class Cache {
 	public function getArray() {
 		$data = json_decode(file_get_contents($this->filename_cache), true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, NULL, "Error in ${filename} : " . self::jsonLastErrorMsg());
+			ErrorHandler::error(500, null, "Error in ${filename} : " . self::jsonLastErrorMsg());
 		}
 
 		return $data;
@@ -130,7 +130,7 @@ class Cache {
 		if (!is_file($this->filename) && $exists)
 			return false;
 
-		return (!$exists || filemtime($this->filename) > filemtime($this->filename_cache));
+		return !$exists || filemtime($this->filename) > filemtime($this->filename_cache);
 	}
 
 

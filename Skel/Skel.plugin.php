@@ -51,7 +51,7 @@ class SkelPlugin extends Plugins {
 		System::ensureDir(DATA_DIR);
 		$conf = Config::getInstance();
 		$conf->load(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
-		foreach($conf->get("plugins", Array()) as $plugin) {
+		foreach($conf->get("plugins", array()) as $plugin) {
 			Plugins::add($plugin);
 		}
 		Cli::install();

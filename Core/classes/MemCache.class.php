@@ -65,6 +65,6 @@ class MemCache implements \arrayaccess {
 			return self::$data[$offset];
 		if ($this->apc)
 			return apc_fetch(MEMCACHE_PREFIX . $offset);
-		return null;
+		return;
 	}
 }

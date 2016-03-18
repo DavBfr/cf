@@ -21,7 +21,7 @@ use lessc;
 use lessc_formatter_compressed;
 
 class Less extends lessc {
-  private $origdir = NULL;
+  private $origdir = null;
 
 
   public function setOriginalDir($dir) {
@@ -31,23 +31,23 @@ class Less extends lessc {
 
 	protected function findImport($url) {
     if ($this->origdir) {
-      $partial = $this->origdir.'/'.$url;
+      $partial = $this->origdir . '/' . $url;
       if ($res = AbstractResources::find($partial)) {
         return $res;
       }
-      if ($res = AbstractResources::find($partial.'.less')) {
+      if ($res = AbstractResources::find($partial . '.less')) {
         return $res;
       }
     }
 
 		foreach ((array)$this->importDir as $dir) {
-			$full = $dir.(substr($dir, -1) != '/' ? '/' : '').$url;
-			if ($this->fileExists($file = $full.'.less') || $this->fileExists($file = $full)) {
+			$full = $dir . (substr($dir, -1) != '/' ? '/' : '') . $url;
+			if ($this->fileExists($file = $full . '.less') || $this->fileExists($file = $full)) {
 				return $file;
 			}
 		}
 
-		return null;
+		return;
 	}
 
 

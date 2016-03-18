@@ -18,7 +18,6 @@
  **/
 
 use PDO;
-use PDOException;
 
 class PgsqlHelper extends PDOHelper {
 
@@ -46,7 +45,7 @@ class PgsqlHelper extends PDOHelper {
 
 
 	protected function buildTableColumns($table_structure) {
-		$columns = Array();
+		$columns = array();
 		foreach ($table_structure as $column) {
 			if ($column->isAutoincrement()) {
 				$ctype = "SERIAL";
@@ -107,13 +106,13 @@ class PgsqlHelper extends PDOHelper {
 
 
 	public function getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
-		$query = "SELECT ".($distinct ? "DISTINCT ":"");
+		$query = "SELECT " . ($distinct ? "DISTINCT " : "");
 
 		if (count($fields) == 0)
 			$query .= "*";
 		else {
 			$_fields = array();
-			foreach($fields as $k=>$v) {
+			foreach($fields as $k => $v) {
 				if (is_int($k))
 					$_fields[] = $v;
 				else
@@ -123,19 +122,19 @@ class PgsqlHelper extends PDOHelper {
 
 		}
 
-		$query .= " FROM ".implode(", ", $tables);
+		$query .= " FROM " . implode(", ", $tables);
 
 		if (count($joint) > 0) {
 			$joints = array();
 
-			foreach($joint as $k=>$v) {
+			foreach($joint as $k => $v) {
 				$joints[] = "LEFT JOIN ${v[0]} ON ${v[1]}";
 			}
-			$query .= " ".implode(" ", $joint);
+			$query .= " " . implode(" ", $joint);
 		}
 
 		if ($filter) {
-			$value = $this->quote("%".$filter."%");
+			$value = $this->quote("%" . $filter . "%");
 
 			$filter = array();
 			foreach ($fields as $field) {
@@ -147,16 +146,16 @@ class PgsqlHelper extends PDOHelper {
 		}
 
 		if (count($where) > 0)
-			$query .= " WHERE (".implode(") AND (", $where).")";
+			$query .= " WHERE (" . implode(") AND (", $where) . ")";
 
 		if (count($group) > 0)
-			$query .= " GROUP BY ".implode(", ", $group);
+			$query .= " GROUP BY " . implode(", ", $group);
 
 		if (count($order) > 0)
-			$query .= ' ORDER BY '. implode(", ", $order);
+			$query .= ' ORDER BY ' . implode(", ", $order);
 
 		if ($limit)
-			$query .= ' OFFSET ' . ($pos * $limit) ." LIMIT " . $limit;
+			$query .= ' OFFSET ' . ($pos * $limit) . " LIMIT " . $limit;
 
 		return $query;
 	}

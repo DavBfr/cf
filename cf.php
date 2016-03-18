@@ -28,7 +28,7 @@ class Plugins {
 	const PLUGIN = 1;
 	const CORE = 2;
 
-	private static $instance = NULL;
+	private static $instance = null;
 	private static $plugins = array();
 	private static $plugins_list = array();
 	private static $core_list = array();
@@ -51,11 +51,11 @@ class Plugins {
 	}
 
 
-	public static function add($name, $position = self::PLUGIN, $dir = NULL, $class_name = NULL) {
+	public static function add($name, $position = self::PLUGIN, $dir = null, $class_name = null) {
 		if (array_key_exists($name, self::$plugins))
 			return;
 
-		if ($class_name == NULL)
+		if ($class_name == null)
 			$class_name = $name;
 		$class_fullname = __NAMESPACE__ . "\\" . $class_name . "Plugin";
 
@@ -65,7 +65,7 @@ class Plugins {
 			unset($reflector);
 		}
 
-		if ($dir === NULL) {
+		if ($dir === null) {
 			$dir = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
 			if (! is_dir($dir))
 				$dir = CF_PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
@@ -129,20 +129,20 @@ class Plugins {
 	public static function find($filename) {
 		if (class_exists("MemCache", true)) {
 			$memcached = new MemCache();
-			if ($memcached->offsetExists("plugin.".$filename))
-				return $memcached["plugin.".$filename];
+			if ($memcached->offsetExists("plugin." . $filename))
+				return $memcached["plugin." . $filename];
 		} else {
-			$memcached = Array();
+			$memcached = array();
 		}
 		foreach(self::get_plugins() as $plugin) {
 			$resource = self::get($plugin)->getDir() . DIRECTORY_SEPARATOR . $filename;
 			if (file_exists($resource)) {
-				$memcached["plugin.".$filename] = $resource;
+				$memcached["plugin." . $filename] = $resource;
 				return $resource;
 			}
 		}
-		$memcached["plugin.".$filename] = NULL;
-		return NULL;
+		$memcached["plugin." . $filename] = null;
+		return;
 	}
 
 
@@ -165,12 +165,12 @@ class Plugins {
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				Logger::debug("Dispatch ".$plugin."::".$method_name);
+				Logger::debug("Dispatch " . $plugin . "::" . $method_name);
 				return call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
 
-		return NULL;
+		return;
 	}
 
 
@@ -182,7 +182,7 @@ class Plugins {
 		foreach(self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				Logger::debug("Dispatch ".$plugin."::".$method_name);
+				Logger::debug("Dispatch " . $plugin . "::" . $method_name);
 				$results[] = call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
@@ -199,7 +199,7 @@ class Plugins {
 		foreach(array_reverse(self::get_plugins()) as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
-				Logger::debug("Dispatch ".$plugin."::".$method_name);
+				Logger::debug("Dispatch " . $plugin . "::" . $method_name);
 				$results[] = call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}

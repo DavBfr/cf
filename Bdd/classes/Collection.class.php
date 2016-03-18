@@ -34,7 +34,7 @@ class Collection {
 
 
 	protected function __construct($bdd) {
-		if ($bdd === NULL)
+		if ($bdd === null)
 			$this->bdd = Bdd::getInstance();
 		else
 		$this->bdd = $bdd;
@@ -43,26 +43,26 @@ class Collection {
 		$this->tables = array();
 		$this->joint = array();
 		$this->where = array();
-		$this->filter = NULL;
-		$this->filter_fields = NULL;
+		$this->filter = null;
+		$this->filter_fields = null;
 		$this->order = array();
 		$this->group = array();
 		$this->params = array();
-		$this->limit = NULL;
+		$this->limit = null;
 		$this->distinct = false;
-		$this->model = NULL;
+		$this->model = null;
 	}
 
 
-	public static function Query($from=NULL, $bdd=NULL) {
+	public static function Query($from = null, $bdd = null) {
 		$c = new self($bdd);
-		if ($from !== NULL)
+		if ($from !== null)
 		  $c->from($from);
 		return $c;
 	}
 
 
-	public static function Model($model, $bdd=NULL) {
+	public static function Model($model, $bdd = null) {
 		$c = new self($bdd);
 		$c->model = $model;
 		$c->from($c->bdd->quoteIdent($model->getTableName()));
@@ -146,7 +146,7 @@ class Collection {
 
 		if (is_string($value))
 			$this->where[] = $name . "=" . $bdd->quote($value);
-		elseif ($value === NULL)
+		elseif ($value === null)
 			$this->where[] = $name . " IS NULL";
 		elseif ($value === true)
 			$this->where[] = $name . "=1";
@@ -159,7 +159,7 @@ class Collection {
 	}
 
 
-	public function filter($value, $fields = NULL) {
+	public function filter($value, $fields = null) {
 		$this->filter = $value;
 		$this->filter_fields = $fields;
 	}
@@ -212,25 +212,25 @@ class Collection {
 
 
 	public function getQueryString($pos = 0) {
-		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryString($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValues($pos = 0) {
-		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryValues($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getValuesArray($pos = 0) {
-		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryValuesArray($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
 	public function getCount() {
-		$filter_fields = $this->filter_fields === NULL ? $this->fields : $this->filter_fields;
+		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->group, $this->params, $this->distinct);
 	}
 

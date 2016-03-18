@@ -27,7 +27,7 @@ class Lang {
 
 
 
-	public static function load($filename, $lang = NULL) {
+	public static function load($filename, $lang = null) {
 		if (!is_file($filename))
 			throw new Exception("Can't find translation file \"${filename}\"");
 
@@ -36,12 +36,12 @@ class Lang {
 	}
 
 
-	public static function setWords($words, $lang = NULL, $suffix = NULL) {
+	public static function setWords($words, $lang = null, $suffix = null) {
 		foreach($words as $token => $word) {
 			if (is_array($word)) {
 				self::setWords($word, $lang, $token . ".");
 			} else {
-				self::set($suffix.$token, $word, $lang);
+				self::set($suffix . $token, $word, $lang);
 			}
 		}
 	}
@@ -78,8 +78,8 @@ class Lang {
 	}
 
 
-	public static function get($token, $lang = NULL, $context = NULL) {
-		if ($lang == NULL)
+	public static function get($token, $lang = null, $context = null) {
+		if ($lang == null)
 			$lang = self::$baselang;
 
 		if(self::exists($token)) {
@@ -113,7 +113,7 @@ class Lang {
 	}
 
 
-	public static function getByCount($token, $count, $lang = NULL) {
+	public static function getByCount($token, $count, $lang = null) {
 		return self::getTextByCount(self::get($token, $lang), $count);
 	}
 
@@ -123,15 +123,15 @@ class Lang {
 		if (isset(self::$words[$token][$lang])) {
 			return self::$words[$token][$lang];
 		}
-		return null;
+		return;
 	}
 
 
-	public static function set($token, $value, $lang = NULL) {
+	public static function set($token, $value, $lang = null) {
 		if (is_null($token))
 			throw new Exception("token cannot be null");
 
-		if ($lang == NULL) {
+		if ($lang == null) {
 			$lang = self::$baselang;
 		}
 
@@ -144,7 +144,7 @@ class Lang {
 	}
 
 
-	public static function detect($supported_list = NULL) {
+	public static function detect($supported_list = null) {
 		$languages = array();
 		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
 			$languagesQ = array();

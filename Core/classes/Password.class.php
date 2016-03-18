@@ -40,13 +40,13 @@ configure("PASSWORD_PORTABLE", false);
 
 class Password {
 
-	var $itoa64;
-	var $iteration_count_log2;
-	var $portable_hashes;
-	var $random_state;
+	private $itoa64;
+	private $iteration_count_log2;
+	private $portable_hashes;
+	private $random_state;
 
 
-	function __construct() {
+	public function __construct() {
 		$iteration_count_log2 = PASSWORD_ITERATION_COUNT;
 		$portable_hashes = PASSWORD_PORTABLE;
 
@@ -149,9 +149,9 @@ class Password {
 		# consequently in lower iteration counts and hashes that are
 		# quicker to crack (by non-PHP code).
 		if (PHP_VERSION >= '5') {
-			$hash = md5($salt . $password, TRUE);
+			$hash = md5($salt . $password, true);
 			do {
-				$hash = md5($hash . $password, TRUE);
+				$hash = md5($hash . $password, true);
 			} while (--$count);
 		} else {
 			$hash = pack('H*', md5($salt . $password));
@@ -288,9 +288,9 @@ class Password {
 
 		if (strlen($newpass) < $minlen)
 			return 'The new password is way too short';
-		else if (stristr($oldpass, $newpass) || (strlen($oldpass) >= 4 && stristr($newpass, $oldpass)))
+		elseif (stristr($oldpass, $newpass) || (strlen($oldpass) >= 4 && stristr($newpass, $oldpass)))
 			return 'The new password is based on the old one';
-		else if (stristr($user, $newpass) || (strlen($user) >= 4 && stristr($newpass, $user)))
+		elseif (stristr($user, $newpass) || (strlen($user) >= 4 && stristr($newpass, $user)))
 			return 'The new password is based on the username';
 
 		return true;

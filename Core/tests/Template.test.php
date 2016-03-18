@@ -21,7 +21,7 @@ use PHPUnit_Framework_TestCase;
 
 class TemplateTest extends PHPUnit_Framework_TestCase {
     public function testVariables() {
-        $tpt = new Template(array("myvar"=>"456"));
+        $tpt = new Template(array("myvar" => "456"));
 
         $this->assertEquals($tpt->get("myvar"), "456");
         $tpt->set("myvar", 123);
@@ -46,7 +46,7 @@ class TemplateTest extends PHPUnit_Framework_TestCase {
 
 
     public function testParsing() {
-        $tpt = new Template(array("myvar"=>"456"));
+        $tpt = new Template(array("myvar" => "456"));
         $data = $tpt->parse("test.php");
 
         $this->assertEquals(trim($data), 'test 123 456');

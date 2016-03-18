@@ -34,28 +34,28 @@ abstract class Crud extends Rest {
 	}
 
 
-	protected abstract function getModel();
+	abstract protected function getModel();
 
 
 	private static function defaultOptions() {
 		return array(
-			"list_title"=>Lang::get("core.list"),
-			"detail_title"=>Lang::get("core.form"),
-			"new_title"=>Lang::get("core.new_form"),
-			"can_create"=>true,
-			"can_delete"=>true,
-			"can_view"=>true,
-			"can_filter"=>true,
-			"list_partial"=>"crud-list.php",
-			"detail_partial"=>"crud-detail.php",
+			"list_title" => Lang::get("core.list"),
+			"detail_title" => Lang::get("core.form"),
+			"new_title" => Lang::get("core.new_form"),
+			"can_create" => true,
+			"can_delete" => true,
+			"can_view" => true,
+			"can_filter" => true,
+			"list_partial" => "crud-list.php",
+			"detail_partial" => "crud-detail.php",
 			"limit" => CRUD_LIMIT,
 		);
 	}
 
 	protected function getOptions() {
 		return array(
-			"list_partial"=>array($this->model->getTableName() . "-crud-list.php", "crud-list.php"),
-			"detail_partial"=>array($this->model->getTableName() . "-crud-detail.php", "crud-detail.php"),
+			"list_partial" => array($this->model->getTableName() . "-crud-list.php", "crud-list.php"),
+			"detail_partial" => array($this->model->getTableName() . "-crud-detail.php", "crud-detail.php"),
 		);
 	}
 
@@ -85,7 +85,7 @@ abstract class Crud extends Rest {
 			if (is_array($f) && count($f) == 3) {
 				$fname = $field->getForeignTable();
 				list($t, $k, $v) = $f;
-				$col->leftJoin("$t as {$fname}", "{$fname}.$k = ".$field->getFullName());
+				$col->leftJoin("$t as {$fname}", "{$fname}.$k = " . $field->getFullName());
 				$col->selectAs("{$fname}.$v", $field->getName());
 			} else {
 				$col->selectAs($field->getFullName(), $field->getName());
@@ -121,21 +121,21 @@ abstract class Crud extends Rest {
 		->orderBy($bdd->quoteIdent($value))
 		->limit($this->options["limit"]);
 
-		if (Input::has("q") && strlen(Input::get("q"))>0) {
+		if (Input::has("q") && strlen(Input::get("q")) > 0) {
 			$col->filter(Input::get("q"));
 		}
 
 		$this->filterForeign($col, $field);
 
 		$list = [];
-		foreach ($col->getValues(Input::has("p")?intval(Input::get("p")):0) as $row) {
+		foreach ($col->getValues(Input::has("p") ? intval(Input::get("p")) : 0) as $row) {
 			if ($foreignModel)
-				$list[] = array("key"=>$foreignModel->getField($key)->formatOut($row['key']), "value"=>$foreignModel->getField($value)->formatOut($row['val']));
+				$list[] = array("key" => $foreignModel->getField($key)->formatOut($row['key']), "value" => $foreignModel->getField($value)->formatOut($row['val']));
 			else
-				$list[] = array("key"=>$row['key'], "value"=>$row['val']);
+				$list[] = array("key" => $row['key'], "value" => $row['val']);
 		}
 
-		Output::success(array("list"=>$list));
+		Output::success(array("list" => $list));
 	}
 
 
@@ -150,16 +150,16 @@ abstract class Crud extends Rest {
 			->limit($this->options["limit"]);
 		$this->filterList($col);
 
-		if (Input::has("q") && strlen(Input::get("q"))>0) {
+		if (Input::has("q") && strlen(Input::get("q")) > 0) {
 			$col->filter(Input::get("q"));
 		}
 
 		$list = array();
-		foreach($col->getValues(Input::get("p")?intval(Input::get("p")):0) as $row) {
+		foreach($col->getValues(Input::get("p") ? intval(Input::get("p")) : 0) as $row) {
 			$list[] = $this->list_values($row);
 		}
 
-		Output::success(array("list"=>$list));
+		Output::success(array("list" => $list));
 	}
 
 
@@ -178,14 +178,14 @@ abstract class Crud extends Rest {
 	protected function get_count($r) {
 		$col = Collection::Model($this->model);
 		$this->filterList($col);
-		if (Input::has("q") && strlen(Input::get("q"))>0) {
+		if (Input::has("q") && strlen(Input::get("q")) > 0) {
 			$col->filter(Input::get("q"));
 		}
 		$count = $col->getCount();
 		Output::success(array(
-			'count'=>intVal($count),
-			'limit'=>$this->options["limit"],
-			'pages'=>ceil(intVal($count) / $this->options["limit"])
+			'count' => intVal($count),
+			'limit' => $this->options["limit"],
+			'pages' => ceil(intVal($count) / $this->options["limit"])
 		));
 	}
 
@@ -214,7 +214,7 @@ abstract class Crud extends Rest {
 
 		$foreigns = $this->getForeigns($item);
 
-		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$values));
+		Output::success(array(self::ID => $id, "foreigns" => $foreigns, "data" => $values));
 	}
 
 
@@ -223,7 +223,7 @@ abstract class Crud extends Rest {
 
 		$foreigns = $this->getForeigns($item);
 
-		Output::success(array(self::ID=>$id, "foreigns"=>$foreigns, "data"=>$item->getValues()));
+		Output::success(array(self::ID => $id, "foreigns" => $foreigns, "data" => $item->getValues()));
 	}
 
 
@@ -254,7 +254,7 @@ abstract class Crud extends Rest {
 			$item = $this->model->newRow();
 			$item->setValues($post);
 			$item->save();
-			Output::success(array("id"=>$item->getId()));
+			Output::success(array("id" => $item->getId()));
 		} catch (Exception $e) {
 			Output::error($e->getMessage());
 		}
@@ -272,7 +272,7 @@ abstract class Crud extends Rest {
 			$item = $this->model->getById($id);
 			$item->setValues($post);
 			$item->save();
-			Output::success(array("id"=>$id));
+			Output::success(array("id" => $id));
 		} catch (Exception $e) {
 			Output::error($e->getMessage());
 		}
@@ -292,7 +292,7 @@ abstract class Crud extends Rest {
 
 		foreach($models as $model) {
 			$className = ucfirst($model) . "Rest";
-			$modelClass = ucfirst($model) . "Model";;
+			$modelClass = ucfirst($model) . "Model";
 			Cli::pinfo(" * " . $className);
 			$filename = $rest . "/" . $className . ".class.php";
 			$tpt = new Template(array(

@@ -34,11 +34,11 @@ abstract class AbstractResources {
 
 
 	public static function find($filename) {
-		if (($resource = Plugins::find(self::WWW_DIR . DIRECTORY_SEPARATOR . $filename)) !== NULL)
+		if (($resource = Plugins::find(self::WWW_DIR . DIRECTORY_SEPARATOR . $filename)) !== null)
 			return $resource;
-		if (($resource = Plugins::find(self::VENDOR_DIR . DIRECTORY_SEPARATOR . $filename)) !== NULL)
+		if (($resource = Plugins::find(self::VENDOR_DIR . DIRECTORY_SEPARATOR . $filename)) !== null)
 			return $resource;
-		return NULL;
+		return;
 	}
 
 
@@ -90,7 +90,7 @@ abstract class AbstractResources {
 	}
 
 
-	protected function append($filename, $origfilename = NULL) {
+	protected function append($filename, $origfilename = null) {
 		$this->resources[] = $filename;
 	}
 

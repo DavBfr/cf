@@ -27,17 +27,17 @@ class Input {
 	public static function ensureRequest($array, $mandatory, $optional = array(), $strict = false) {
 		foreach($mandatory as $param) {
 			if (!isset($array[$param])) {
-				ErrorHandler::error(417, NULL, "Missing parameter ${param}");
+				ErrorHandler::error(417, null, "Missing parameter ${param}");
 			}
 			if ($array[$param] == "") {
-				ErrorHandler::error(417, NULL, "Empty parameter ${param}");
+				ErrorHandler::error(417, null, "Empty parameter ${param}");
 			}
 		}
 
 		if ($strict) {
 			foreach($array as $param => $val) {
 				if (!(in_array($param, $mandatory) || in_array($param, $optional))) {
-					ErrorHandler::error(417, NULL, "Parameter overly ${param}");
+					ErrorHandler::error(417, null, "Parameter overly ${param}");
 				}
 			}
 		}
@@ -49,12 +49,12 @@ class Input {
 	}
 
 
-	public static function get($name, $default = NULL) {
+	public static function get($name, $default = null) {
 		return self::protect($_GET[$name]);
 	}
 
 
-	public static function protect($data){
+	public static function protect($data) {
 		if (is_array($data)) {
 			return array_map(self::protect, $data);
 		}

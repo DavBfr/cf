@@ -20,9 +20,9 @@
 use Exception;
 
 class ErrorHandler {
-	private static $instance = NULL;
+	private static $instance = null;
 	private $inerror = false;
-	private $backtrace = Array();
+	private $backtrace = array();
 	private $raise_exception = false;
 
 	public static $messagecode = array(
@@ -35,8 +35,8 @@ class ErrorHandler {
 
 
 	protected function __construct() {
-		error_reporting(E_ALL ^ (E_NOTICE|E_WARNING));
-		ini_set("display_errors", DEBUG?1:0);
+		error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+		ini_set("display_errors", DEBUG ? 1 : 0);
 		ini_set("track_errors", 1);
 		ini_set("html_errors", 1);
 		set_error_handler(array($this, "errorHandler"));
@@ -73,14 +73,14 @@ class ErrorHandler {
 	}
 
 
-	protected function addBacktrace($filename, $lineno, $class = NULL, $function = NULL, $args = NULL) {
+	protected function addBacktrace($filename, $lineno, $class = null, $function = null, $args = null) {
 		$this->backtrace[] = array($filename, $lineno, $class, $function, $args);
 	}
 
 
 	protected function formatErrorBody($code, $message, $body, $backtrace = array(), $log = array()) {
 		$baseline = CorePlugin::getBaseline();
-		if ($message === NULL) {
+		if ($message === null) {
 			if (isset(self::$messagecode[$code]))
 				$message = self::$messagecode[$code];
 			else
@@ -106,29 +106,29 @@ class ErrorHandler {
 		}
 		header("Content-type: text/plain");
 		$body = "$message ($code)\n$body";
-		if (is_array($backtrace) && count($backtrace)>0) {
+		if (is_array($backtrace) && count($backtrace) > 0) {
 			$body .= "\n\nBacktrace:\n";
-			foreach($backtrace as $n=>$bt) {
+			foreach($backtrace as $n => $bt) {
 				$body .=
 				"#$n"
-				." ${bt[0]} (${bt[1]}):\n"
-				.(isset($bt[2]) ? $bt[2] . '->' : '')
-				.(isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '')
-				."\n";
+				. " ${bt[0]} (${bt[1]}):\n"
+				. (isset($bt[2]) ? $bt[2] . '->' : '')
+				. (isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '')
+				. "\n";
 			}
 		}
 		$body .= "\n---\n" . $baseline . "\n";
-		print($body);
+		echo $body;
 		Output::finish($code);
 	}
 
 
-	public static function error($code, $message = NULL, $body = NULL, $backtrace=2) {
+	public static function error($code, $message = null, $body = null, $backtrace = 2) {
 		self::getInstance()->send_error($code, $message, $body, $backtrace);
 	}
 
 
-	public function send_error($code, $message = NULL, $body = NULL, $backtrace=1) {
+	public function send_error($code, $message = null, $body = null, $backtrace = 1) {
 		if ($this->inerror) {
 			Logger::critical("Already processing error (send_error) $code $message $body");
 			return;
@@ -137,14 +137,14 @@ class ErrorHandler {
 		$this->inerror = true;
 		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 
-		if ($message == NULL) {
+		if ($message == null) {
 			if (isset(self::$messagecode[$code]))
 				$message = self::$messagecode[$code];
 			else
 				$message = "Error #${code}";
 		}
 
-		if ($body === NULL)
+		if ($body === null)
 			$body = $message;
 
 		if ($code >= 500) {
@@ -159,11 +159,11 @@ class ErrorHandler {
 		header("$protocol $code $message");
 
 		if ($code < 500 && $code != 404) {
-			print($body);
+			echo $body;
 			Output::finish($code);
 		}
 
-		IS_CLI && Output::finish($code);;
+		IS_CLI && Output::finish($code);
 
 		if ($backtrace !== false) {
 			$this->debugBacktrace($backtrace);
@@ -184,7 +184,7 @@ class ErrorHandler {
 		}
 
 		$this->addBacktrace($errfile, $errline);
-		$this->send_error(500, NULL, "Error $errno $errstr", false);
+		$this->send_error(500, null, "Error $errno $errstr", false);
 	}
 
 
@@ -197,14 +197,14 @@ class ErrorHandler {
 			array_walk($v['args'], function (&$item, $key) {
 				$item = var_export($item, true);
 			});
-			$this->addBacktrace(isset($v['file']) ? $v['file'] : '', isset($v['line']) ? $v['line'] : "", isset($v['class']) ? $v['class'] : NULL, $v['function'], $v['args']);
+			$this->addBacktrace(isset($v['file']) ? $v['file'] : '', isset($v['line']) ? $v['line'] : "", isset($v['class']) ? $v['class'] : null, $v['function'], $v['args']);
 		}
 	}
 
 
 	public function exceptionHandler($e) {
 		$this->addBacktrace($e->getFile(), $e->getLine());
-		$this->send_error(500, NULL, get_class( $e ) . ": " . $e->getMessage(), false);
+		$this->send_error(500, null, get_class($e) . ": " . $e->getMessage(), false);
 	}
 
 
@@ -212,7 +212,7 @@ class ErrorHandler {
 		$e = error_get_last();
 		if ($e && error_reporting() & $e["type"]) {
 			$this->addBacktrace($e["file"], $e["line"]);
-			$this->send_error(500, NULL, $e["type"] . " " . $e["message"], false);
+			$this->send_error(500, null, $e["type"] . " " . $e["message"], false);
 		}
 	}
 

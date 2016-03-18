@@ -40,7 +40,7 @@ class ModelField {
 	protected $props;
 
 
-	function __construct($table, $name, $props = array()) {
+	public function __construct($table, $name, $props = array()) {
 		$this->table = $table;
 		$this->name = $name;
 		$this->props = array_merge($this->getDefaults(), $props);
@@ -74,18 +74,18 @@ class ModelField {
 
 	protected function getDefaults() {
 		return array(
-			"type"=>self::TYPE_INT,
-			"foreign"=>NULL, // (tablename, key, value)
-			"display"=>$this->table.".".$this->name,
-			"name"=>$this->table."_".$this->name,
-			"caption"=>ucwords(str_replace("_", " ", $this->name)),
-			"null"=>false,
-			"edit"=>true,
-			"default"=>NULL,
-			"list"=>false,
-			"primary"=>false,
-			"autoincrement"=>false,
-			"editor"=>NULL
+			"type" => self::TYPE_INT,
+			"foreign" => null, // (tablename, key, value)
+			"display" => $this->table . "." . $this->name,
+			"name" => $this->table . "_" . $this->name,
+			"caption" => ucwords(str_replace("_", " ", $this->name)),
+			"null" => false,
+			"edit" => true,
+			"default" => null,
+			"list" => false,
+			"primary" => false,
+			"autoincrement" => false,
+			"editor" => null
 		);
 	}
 
@@ -219,7 +219,7 @@ class ModelField {
 
 
 	public function isForeign() {
-		return $this->props["foreign"] !== NULL;
+		return $this->props["foreign"] !== null;
 	}
 
 
@@ -229,7 +229,7 @@ class ModelField {
 
 
 	public function valid($value) {
-		if ($this->hasNull() && $value === Null) {
+		if ($this->hasNull() && $value === null) {
 			return true;
 		}
 		switch ($this->getType()) {
@@ -252,7 +252,7 @@ class ModelField {
 			case self::TYPE_BLOB:
 				return true;
 			default:
-				throw new Exception("Unknown field type '".$this->getType()."'!");
+				throw new Exception("Unknown field type '" . $this->getType() . "'!");
 		}
 	}
 

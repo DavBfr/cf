@@ -18,7 +18,6 @@
  **/
 
 use PDO;
-use PDOException;
 
 class SqliteHelper extends PDOHelper {
 
@@ -29,7 +28,7 @@ class SqliteHelper extends PDOHelper {
 
 
 	protected function buildTableColumns($table_structure) {
-		$columns = Array();
+		$columns = array();
 		foreach ($table_structure as $column) {
 			$ctype = $this->getDbType($column->getType());
 			if (!$column->hasNull())
@@ -60,7 +59,7 @@ class SqliteHelper extends PDOHelper {
 
 	public function getTableInfo($name) {
 		$auto = false;
-		$res = $this->query("select count(*) from sqlite_sequence where name=".$this->quote($name));
+		$res = $this->query("select count(*) from sqlite_sequence where name=" . $this->quote($name));
 		if ($res !== false) {
 			$row = $res->fetch(PDO::FETCH_NUM);
 			if ($row[0] == 1)

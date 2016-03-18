@@ -29,16 +29,16 @@ class ArrayWriter {
 	}
 
 
-	public static function toString($array, $indent=2, $indentchar="\t") {
+	public static function toString($array, $indent = 2, $indentchar = "\t") {
 		return var_export($array, true);
 
 		if (!is_array($array)) {
 			return self::quote($array);
 		}
 
-		$strings=array();
+		$strings = array();
 		foreach ($array as $ind => $val) {
-			$strings[] = self::quote($ind) . "=>" . (is_array($val) ? self::toString($val, $indent+1, $indentchar) : self::quote($val));
+			$strings[] = self::quote($ind) . "=>" . (is_array($val) ? self::toString($val, $indent + 1, $indentchar) : self::quote($val));
 		}
 
 		$i = str_repeat($indentchar, $indent);

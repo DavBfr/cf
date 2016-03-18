@@ -47,8 +47,8 @@
 			<?php foreach($this->get("model") as $field): ?>
 			<?php if($field->inList()): ?>
 			<td <?php if ($this->get("can_view")): ?> data-ng-click="go_detail(item.<?php echo DavBfr\CF\Crud::ID ?>)" <?php endif; ?>>
-			<?php	if (self::findTemplate("field-list-".$field->getTableName().".".$field->getName().".php")):
-					$this->insertNew("field-list-".$field->getTableName().".".$field->getName().".php", array("field"=>$field)); ?>
+			<?php	if (self::findTemplate("field-list-" . $field->getTableName() . "." . $field->getName() . ".php")):
+					$this->insertNew("field-list-" . $field->getTableName() . "." . $field->getName() . ".php", array("field" => $field)); ?>
 			<?php elseif($field->isBool()): ?>
 					<span data-ng-show="{{item.<?php echo $field->getName() ?>}}" class="glyphicon glyphicon-ok"></span>
 				<?php elseif($field->isTime()): ?>

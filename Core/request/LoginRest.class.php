@@ -32,7 +32,7 @@ class LoginRest extends Rest {
 
 
 	protected function check($r) {
-		Output::success(array("user"=>null, "api"=>null, "next"=>Session::nextCheck()));
+		Output::success(array("user" => null, "api" => null, "next" => Session::nextCheck()));
 	}
 
 

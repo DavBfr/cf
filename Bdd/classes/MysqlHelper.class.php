@@ -18,7 +18,6 @@
  **/
 
 use PDO;
-use PDOException;
 
 class MysqlHelper extends PDOHelper {
 
@@ -36,7 +35,7 @@ class MysqlHelper extends PDOHelper {
 
 
 	protected function buildTableColumns($table_structure) {
-		$columns = Array();
+		$columns = array();
 		foreach ($table_structure as $column) {
 			$ctype = $this->getDbType($column->getType());
 			if (!$column->hasNull())

@@ -28,22 +28,22 @@ class Logger {
 	const CRITICAL = 5;
 
 	private static $levels = array(
-		self::DEBUG=>"DEBUG",
-		self::INFO=>"INFO",
-		self::WARNING=>"WARNING",
-		self::ERROR=>"ERROR",
-		self::CRITICAL=>"CRITICAL"
+		self::DEBUG => "DEBUG",
+		self::INFO => "INFO",
+		self::WARNING => "WARNING",
+		self::ERROR => "ERROR",
+		self::CRITICAL => "CRITICAL"
 	);
 
 	private static $clevels = array(
-		self::DEBUG=>"info",
-		self::INFO=>"info",
-		self::WARNING=>"warn",
-		self::ERROR=>"error",
-		self::CRITICAL=>"error"
+		self::DEBUG => "info",
+		self::INFO => "info",
+		self::WARNING => "warn",
+		self::ERROR => "error",
+		self::CRITICAL => "error"
 	);
 
-	private static $instance = NULL;
+	private static $instance = null;
 	private $level;
 	private $stderr;
 	private $log;
@@ -106,7 +106,7 @@ class Logger {
 		);
 		$this->clog['rows'][] = $row;
 
-		header("X-ChromeLogger-Data: ".base64_encode(utf8_encode(json_encode($this->clog))));
+		header("X-ChromeLogger-Data: " . base64_encode(utf8_encode(json_encode($this->clog))));
 	}
 
 
@@ -142,31 +142,31 @@ class Logger {
 
 
 	public static function debug() {
-		$logger = Logger::getInstance();
+		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::DEBUG);
 	}
 
 
 	public static function info() {
-		$logger = Logger::getInstance();
+		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::INFO);
 	}
 
 
 	public static function warning() {
-		$logger = Logger::getInstance();
+		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::WARNING);
 	}
 
 
 	public static function error() {
-		$logger = Logger::getInstance();
+		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::ERROR);
 	}
 
 
 	public static function critical() {
-		$logger = Logger::getInstance();
+		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::CRITICAL);
 	}
 

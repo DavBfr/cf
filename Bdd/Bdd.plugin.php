@@ -32,12 +32,12 @@ class BddPlugin extends Plugins {
 
 		$class_name = $this->removeNamespace($class_name);
 		$plugin = Plugins::find(self::MODEL_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php');
-		if ($plugin !== NULL) {
+		if ($plugin !== null) {
 			require_once($plugin);
 			return true;
 		}
 		$plugin = Plugins::find(self::BASE_MODEL_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php');
-		if ($plugin !== NULL) {
+		if ($plugin !== null) {
 			require_once($plugin);
 			return true;
 		}
@@ -56,7 +56,7 @@ class BddPlugin extends Plugins {
 			$className = __NAMESPACE__ . "\\" . ucfirst($table) . "Model";
 			$model = new $className();
 			if (!$bdd->tableExists($model->getTableName())) {
-				Cli::pinfo(" * Create table ".$model->getTableName());
+				Cli::pinfo(" * Create table " . $model->getTableName());
 				$model->createTable();
 			}
 		}
@@ -66,8 +66,8 @@ class BddPlugin extends Plugins {
 	public function install() {
 		Cli::pinfo(" * Create database structure");
 		$bdd = Bdd::getInstance();
-		if (is_dir(BddPlugin::MODEL_DIR)) {
-			if ($dh = opendir(BddPlugin::MODEL_DIR)) {
+		if (is_dir(self::MODEL_DIR)) {
+			if ($dh = opendir(self::MODEL_DIR)) {
 				while (($file = readdir($dh)) !== false) {
 					if (substr($file, -15) == "Model.class.php" && substr($file, 0, 4) != "Base") {
 						$class = __NAMESPACE__ . "\\" . substr($file, 0, -10);

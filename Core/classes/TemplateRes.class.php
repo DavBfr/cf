@@ -18,14 +18,14 @@
  **/
 
 class TemplateRes extends Template {
-	public function __construct($params=Array()) {
+	public function __construct($params = array()) {
 		$conf = Config::getInstance();
 
 		$resources = new Resources();
 
 		Plugins::dispatchAll("resources", $resources);
 
-		foreach($conf->get("scripts", Array()) as $script) {
+		foreach($conf->get("scripts", array()) as $script) {
 			$resources->add($script);
 		}
 		foreach(Plugins::findAll("www/app") as $dir) {
