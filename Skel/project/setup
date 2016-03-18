@@ -14,11 +14,14 @@
  **/
 
 define("ROOT_DIR", dirname(__file__));
-if (file_exists(dirname(__file__) . "/config/paths.php"))
-	include_once(dirname(__file__) . "/config/paths.php");
+if (file_exists(ROOT_DIR . "/config/paths.php"))
+	include_once(ROOT_DIR . "/config/paths.php");
 
-if (file_exists(dirname(__file__) . "/vendor/autoload.php"))
-	include_once(dirname(__file__) . "/vendor/autoload.php");
+if (file_exists(ROOT_DIR . "/vendor/autoload.php"))
+	include_once(ROOT_DIR . "/vendor/autoload.php");
+
+if (file_exists(ROOT_DIR . "/phpunit.phar"))
+	include_once(ROOT_DIR . "/phpunit.phar");
 
 if (!defined("CF_DIR"))
 	die("Site not configured. To install dependencies, run\n\$ composer.phar install\n");
