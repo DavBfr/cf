@@ -1,4 +1,17 @@
 <?php $this->insert("header.php"); ?>
+<style type="text/css">
+.code {
+	white-space: pre;
+}
+.code span {
+	color: #000;
+}
+.code .red {
+	font-weight: normal;
+	background-color: #aed4e7;
+	color: #31708f;
+}
+</style>
 <div class="container">
 	<div class="page-header">
 		<h1><?php echo $this->config("title") ?></h1>
@@ -8,6 +21,26 @@
 		<h2><span class="glyphicon glyphicon-wrench"></span> <?php $this->tr("core.error") ?> <?php $this->out("code") ?> <?php $this->out("message") ?></h2>
 	</div>
 	<p><?php $this->out("body") ?></p>
+	
+<?php
+	$bt = $this->get("backtrace");
+	if (count($bt)>0) {
+		try {
+			$file = file_get_contents($bt[0][0]);
+			$file = explode("\n", $file);
+			$start = max($bt[0][1] - 4, 0);
+			$end = min($bt[0][1] + 3, count($file));
+			echo $bt[0][0];
+			echo "<div class=\"alert alert-info code\">";
+			for($line = $start; $line < $end; $line++) {
+				echo "<div".($line == $bt[0][1] - 1 ? " class=\"red\"" : "")."><span>".($line+1)."</span> ".\DavBfr\CF\System::highlightCode($file[$line])."</div>";
+			}
+			echo "</div>";
+		} catch (Exception $e) {
+		}
+	}
+?>
+	
 	<?php if ($this->has("backtrace") && count($this->get("backtrace"))>0): ?>
 	<div class="well">
 		<h2><?php $this->tr("core.backtrace") ?></h2>

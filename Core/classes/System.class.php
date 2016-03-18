@@ -137,4 +137,18 @@ class System {
 		return $filename;
 	}
 
+
+	function highlightCode($text) {
+    $text = highlight_string("<?php " . $text, true);
+		$text = trim($text);
+    $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", "", $text, 1);
+    $text = preg_replace("|\\</code\\>\$|", "", $text, 1);
+    $text = trim($text);
+    $text = preg_replace("|\\</span\\>\$|", "", $text, 1);
+    $text = trim($text);
+    $text = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);
+
+    return $text;
+	}
+
 }
