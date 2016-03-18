@@ -202,7 +202,7 @@ class ErrorHandler {
 	}
 
 
-	public function exceptionHandler(Exception $e) {
+	public function exceptionHandler($e) {
 		$this->addBacktrace($e->getFile(), $e->getLine());
 		$this->send_error(500, NULL, get_class( $e ) . ": " . $e->getMessage(), false);
 	}
