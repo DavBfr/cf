@@ -1,6 +1,6 @@
 <?php namespace DavBfr\CF;
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2016 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,23 +21,32 @@ class SkelPlugin extends Plugins {
 
 	public function cli($cli) {
 		$cli->addCommand("skel:init", array($this, "skel"), "Initialize a new CF project");
+		$cli->addCommand("skel:update", array($this, "skelUpdate"), "Update a CF project");
 	}
 
-	public function skel() {
-		Cli::enableHelp();
+
+	protected function updateFiles() {
 		global $configured_options;
-		Cli::pinfo("Create new CF project");
-		System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "project", getcwd());
-		foreach(array("composer.json") as $file) {
+		Cli::pinfo("Update Files");
+		foreach(array("composer.json", "index.php", "setup") as $file) {
 			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
 			foreach($configured_options as $var) {
 				$content = str_replace("@$var@", constant($var), $content);
 			}
+			$content = str_replace("@DATE@", date("r"), $content);
 			$gitignore = trim(file_get_contents($this->getDir() . DIRECTORY_SEPARATOR . "project" . DIRECTORY_SEPARATOR . ".gitignore"));
 			$content = str_replace("@EXCLUDES@", "\"" . implode(explode("\n", $gitignore), "\", \"") . "\"", $content);
 			file_put_contents(getcwd() . DIRECTORY_SEPARATOR . $file, $content);
 		}
+	}
+
+
+	public function skel() {
+		Cli::enableHelp();
+		Cli::pinfo("Create new CF project");
+		System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "project", getcwd());
+		$this->updateFiles();
 		chmod(getcwd() . DIRECTORY_SEPARATOR . "setup", 0755);
 		System::ensureDir(DATA_DIR);
 		$conf = Config::getInstance();
@@ -46,6 +55,21 @@ class SkelPlugin extends Plugins {
 			Plugins::add($plugin);
 		}
 		Cli::install();
+	}
+
+
+	public function skelUpdate() {
+		Cli::enableHelp();
+		Cli::pinfo("Update CF project");
+		$srcdir = $this->getDir() . DIRECTORY_SEPARATOR . "project";
+		$dstdir = ROOT_DIR;
+		foreach(array("index.php", "setup", "README.md", ".htaccess", ".gitignore", "www/index.php", "www/.htaccess") as $file) {
+			copy($srcdir . DIRECTORY_SEPARATOR . $file, $dstdir . DIRECTORY_SEPARATOR . $file);
+		}
+		$this->updateFiles();
+		chmod(getcwd() . DIRECTORY_SEPARATOR . "setup", 0755);
+		System::ensureDir(DATA_DIR);
+		Cli::update();
 	}
 
 }

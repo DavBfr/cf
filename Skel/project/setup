@@ -1,7 +1,19 @@
 #!/usr/bin/env php
 <?php
-define("ROOT_DIR", dirname(__file__));
+/**
+ * Copyright (c) 2016 @CF_AUTHOR@
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Generated with CF @CF_VERSION@ on @DATE@
+ **/
 
+define("ROOT_DIR", dirname(__file__));
 if (file_exists(dirname(__file__) . "/config/paths.php"))
 	include_once(dirname(__file__) . "/config/paths.php");
 
@@ -9,6 +21,9 @@ if (file_exists(dirname(__file__) . "/vendor/autoload.php"))
 	include_once(dirname(__file__) . "/vendor/autoload.php");
 
 if (!defined("CF_DIR"))
-	die("Site not configured.\n");
+	die("Site not configured. To install dependencies, run\n\$ composer.phar install\n");
+
+if (!file_exists(CF_DIR . "/setup.php"))
+	die("Site not configured correctly. To install dependencies, run\n\$ composer.phar install\n");
 
 include(CF_DIR . "/setup.php");
