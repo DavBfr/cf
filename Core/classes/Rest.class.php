@@ -145,14 +145,17 @@ abstract class Rest {
 		}
 
 		$request = str_replace(".", "_", $request);
+		$request = str_replace("-", " ", $request);
+		$request = ucwords($request);
+		$request = str_replace(" ", "", $request) . "Rest";
 
-		$request_file = Plugins::find(self::REQUEST_DIR . DIRECTORY_SEPARATOR . ucwords($request) . "Rest.class.php");
+		$request_file = Plugins::find(self::REQUEST_DIR . DIRECTORY_SEPARATOR . $request . ".class.php");
 		if ($request_file === null) {
-			ErrorHandler::error(404, null, ucwords($request) . "Rest.class.php");
+			ErrorHandler::error(404, null, $request . ".class.php");
 		}
 
 		require_once($request_file);
-		$class_name = __NAMESPACE__ . "\\" . ucwords($request) . "Rest";
+		$class_name = __NAMESPACE__ . "\\" . $request;
 		$instance = new $class_name();
 		$instance->handleRequest($method, $next_path);
 		ErrorHandler::error(204);
