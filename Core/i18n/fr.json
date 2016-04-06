@@ -27,6 +27,7 @@
 		"none_found": "Aucun trouvé.",
 		"enter_value": "veuillez entrer une valeur",
 		"enter_valid_value": "veuillez entrer une valeur valide",
-		"fields_not_equal": "les valeurs ne sont pas identiques"
+		"fields_not_equal": "les valeurs ne sont pas identiques",
+		"disconnected": "Vous êtes maintenant déconnecté"
 	}
 }

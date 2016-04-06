@@ -233,6 +233,12 @@ class Template {
 			$options["rights"] = array();
 		}
 
+		if (Session::Has(AbstractLogin::userid)) {
+			$options["user"] = Session::Get(AbstractLogin::userid);
+		} else {
+			$options["user"] = false;
+		}
+
 		foreach (Plugins::dispatchAll("cf_options") as $opt) {
 			$options = array_merge($options, $opt);
 		}

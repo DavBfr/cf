@@ -18,28 +18,72 @@
  **/
 
 abstract class AbstractLogin extends Rest {
+	const userid = "userid";
+	const logged = "logged";
+	const apiid = "apiid";
+	const logged_api = "logged_api";
 
 	protected function getRoutes() {
 		$this->addRoute("/", "POST", "doLogin");
 		$this->addRoute("/api", "GET", "doApiLogin");
 		$this->addRoute("/logout", "GET", "logout");
 		$this->addRoute("/check", "GET", "check");
+		$this->addRoute("/user", "GET", "user");
 	}
 
 
 	protected function logout($r) {
 		Session::delete();
-		Output::success();
+		Output::success(array("message" => Lang::get("core.disconnected")));
 	}
 
 
 	protected function check($r) {
 		$user = Session::isLogged();
 		$api = Session::isLoggedApi();
+		if (Session::Has(Session::rights_key)) {
+			$rights = Session::Get(Session::rights_key);
+		} else {
+			$rights = array();
+		}
 		if ($user || $api) {
-			Output::success(array("user" => $user, "api" => $api, "next" => Session::nextCheck()));
+			if (Session::Has(self::userid))
+				$userid = Session::Get(self::userid);
+			else
+				$userid = false;
+			if (Session::Has(self::apiid))
+				$apiid = Session::Get(self::apiid);
+			else
+				$apiid = false;
+			Output::success(array("user" => $userid, "api" => $apiid, "rights" => $rights, "next" => Session::nextCheck()));
 		}
 		Output::error("Not loggied in");
+	}
+
+
+	protected function getUserData($userid) {
+		return array();
+	}
+
+
+	protected function user($r) {
+		$user = Session::isLogged();
+		if (Session::Has(Session::rights_key)) {
+			$rights = Session::Get(Session::rights_key);
+		} else {
+			$rights = array();
+		}
+		if ($user) {
+			if (Session::Has(self::userid)) {
+				$userid = Session::Get(self::userid);
+				$userdata = $this->getUserData($userid);
+			} else {
+				$userid = false;
+				$userdata = array();
+			}
+			Output::success(array_merge(array("user" => $userid, "rights" => $rights), $userdata));
+		}
+		Output::success(array("user" => false, "rights" => array()));
 	}
 
 
@@ -48,9 +92,14 @@ abstract class AbstractLogin extends Rest {
 		Input::ensureRequest($post, array("username", "password"));
 
 		if (($user = $this->login($post["username"], $post["password"])) !== false) {
-			Session::Set("userid", $user);
-			Session::addRight("logged");
-			Output::success();
+			Session::Set(self::userid, $user);
+			Session::addRight(self::logged);
+			if (Session::Has(Session::rights_key)) {
+				$rights = Session::Get(Session::rights_key);
+			} else {
+				$rights = array();
+			}
+			Output::success(array("user" => $user, "rights" => $rights));
 		}
 		ErrorHandler::error(401);
 	}
@@ -60,8 +109,8 @@ abstract class AbstractLogin extends Rest {
 		Input::ensureRequest($_REQUEST, array("token"));
 
 		if (($apiid = $this->apiLogin($_REQUEST["token"])) !== false) {
-			Session::Set("apiid", $apiid);
-			Session::addRight("logged_api");
+			Session::Set(self::apiid, $apiid);
+			Session::addRight(self::logged_api);
 			Output::success();
 		}
 		ErrorHandler::error(401);
