@@ -22,6 +22,9 @@ if (!defined("ROOT_DIR"))
 
 require_once(dirname(__file__) . DIRECTORY_SEPARATOR . "cf.php");
 
+if (file_exists(ROOT_DIR . "/phpunit.phar"))
+	include_once(ROOT_DIR . "/phpunit.phar");
+
 if (!IS_CLI)
 	die("Not running from CLI");
 

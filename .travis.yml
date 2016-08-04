@@ -1,0 +1,30 @@
+language: php
+
+php:
+  - '5.3'
+  - '5.4'
+  - '5.5'
+  - '5.6'
+  - '7.0'
+  - hhvm
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: hhvm
+
+script:
+  - php -dphar.readonly=0 setup.php core:phar
+  - curl https://phar.phpunit.de/phpunit-5.0.phar > phpunit.phar
+  - php setup.php test
+  - mkdir project
+  - cd project
+  - php ../setup.php skel:init
+
+# deploy:
+#   provider: releases
+#   api_key: ""
+#   file: "cf-2.0.phar"
+#   skip_cleanup: true
+#   on:
+#     tags: true
