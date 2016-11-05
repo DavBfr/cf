@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-configure("MINIFY_JSCSS", !DEBUG);
-configure("MINIFY_YUI", false);
+Options::set("MINIFY_JSCSS", !DEBUG);
+Options::set("MINIFY_YUI", false);
 
 class MinifierPlugin extends Plugins {
 
