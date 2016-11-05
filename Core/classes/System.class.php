@@ -138,7 +138,7 @@ class System {
 	}
 
 
-	public function highlightCode($text) {
+	public static function highlightCode($text) {
     $text = highlight_string("<?php " . $text, true);
 		$text = trim($text);
     $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", "", $text, 1);
