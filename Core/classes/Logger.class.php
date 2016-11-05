@@ -106,7 +106,9 @@ class Logger {
 		);
 		$this->clog['rows'][] = $row;
 
-		header("X-ChromeLogger-Data: " . base64_encode(utf8_encode(json_encode($this->clog))));
+		if (!headers_sent()) {
+			header("X-ChromeLogger-Data: " . base64_encode(utf8_encode(json_encode($this->clog))));
+		}
 	}
 
 
