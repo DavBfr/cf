@@ -29,7 +29,7 @@ if (substr(WWW_DIR, 0, strlen(DOCUMENT_ROOT)) == DOCUMENT_ROOT)
 else
 	Options::set("WWW_PATH", "www");
 Options::set("INDEX_PATH", WWW_PATH . "/index.php");
-Options::set("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/r" : INDEX_PATH);
+Options::set("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/api" : INDEX_PATH);
 Options::set("MEMCACHE_PREFIX", "CF");
 Options::set("MEMCACHE_LIFETIME", 10800);
 Options::set("MEMCACHE_ENABLED", false);

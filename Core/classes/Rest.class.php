@@ -19,6 +19,7 @@
 
 abstract class Rest {
 	const REQUEST_DIR = "request";
+	const REQUEST_PREFIX = "|^v\d+/|";
 
 
 	private $routes = array();
@@ -134,6 +135,13 @@ abstract class Rest {
 
 		if ($path == "")
 			$path = "index";
+		
+		if (preg_match(self::REQUEST_PREFIX, $path, $matches) != false) {
+			$prefix = $matches[0];
+			$path = substr($path, strlen($prefix));
+		} else {
+			$prefix = "";
+		}
 
 		$pos = strpos($path, "/");
 		if ($pos === false) {
@@ -149,9 +157,9 @@ abstract class Rest {
 		$request = ucwords($request);
 		$request = str_replace(" ", "", $request) . "Rest";
 
-		$request_file = Plugins::find(self::REQUEST_DIR . DIRECTORY_SEPARATOR . $request . ".class.php");
+		$request_file = Plugins::find(self::REQUEST_DIR . DIRECTORY_SEPARATOR . $prefix . $request . ".class.php");
 		if ($request_file === null) {
-			ErrorHandler::error(404, null, $request . ".class.php");
+			ErrorHandler::error(404, null, $prefix . $request . ".class.php");
 		}
 
 		require_once($request_file);
