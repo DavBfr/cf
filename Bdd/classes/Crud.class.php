@@ -155,7 +155,7 @@ abstract class Crud extends Rest {
 		}
 
 		$list = array();
-		foreach($col->getValues(Input::get("p") ? intval(Input::get("p")) : 0) as $row) {
+		foreach($col->getValues(Input::has("p") ? intval(Input::get("p")) : 0) as $row) {
 			$list[] = $this->list_values($row);
 		}
 
