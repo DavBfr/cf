@@ -169,8 +169,6 @@ class Plugins {
 				return call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
-
-		return;
 	}
 
 
