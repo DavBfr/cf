@@ -77,7 +77,7 @@ class MinifierPlugin extends Plugins {
 
 	public function minify_html($input) {
 		if (MINIFY_HTML)
-			return HtmlMinifier::minify($input);
+			return HtmlMinifier::html($input);
 		else
 			return NULL;
 	}
