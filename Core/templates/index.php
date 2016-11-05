@@ -5,5 +5,9 @@
 	</div>
 	
 	<?php echo $this->config("description", "tr") ?>
+	
+	<div class="page-footer">
+		<?php $this->out("baseline") ?>
+	</div>
 </div>
 <?php $this->insert("footer.php"); ?>
