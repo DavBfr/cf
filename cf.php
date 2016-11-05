@@ -278,6 +278,11 @@ class Options {
 	}
 
 
+	public static function updated($key) {
+		return isset(self::$options[$key]) ? self::$options[$key][1] : false;
+	}
+
+
 	public static function getAll($filter = false) {
 		$ret = array();
 		foreach(self::$options as $key => $val) {
