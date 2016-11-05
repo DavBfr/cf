@@ -35,7 +35,7 @@ class ErrorHandler {
 
 
 	protected function __construct() {
-		error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+		error_reporting(E_ALL ^ (E_NOTICE | E_USER_NOTICE | (DEBUG ? 0 : (E_WARNING | E_USER_WARNING))));
 		ini_set("display_errors", DEBUG ? 1 : 0);
 		ini_set("track_errors", 1);
 		ini_set("html_errors", 1);
@@ -180,7 +180,17 @@ class ErrorHandler {
 		}
 
 		if (!(error_reporting() & $errno)) {
-			return;
+			switch($errno) {
+				case E_NOTICE:
+					Logger::info("$errstr in $errfile on line $errline");
+					return;
+				case E_WARNING:
+					Logger::warning("$errstr in $errfile on line $errline");
+					return;
+				default:
+					Logger::error("Error $errno: $errstr in $errfile on line $errline");
+					return;
+			}
 		}
 
 		$this->addBacktrace($errfile, $errline);
