@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-Options::set("MINIFY_JSCSS", !DEBUG);
-Options::set("MINIFY_YUI", false);
+Options::set("MINIFY_JSCSS", !DEBUG, "Minify Javascript and CSS files");
+Options::set("MINIFY_YUI", false, "Use yui-compressor to minify");
 
 class MinifierPlugin extends Plugins {
 

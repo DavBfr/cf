@@ -1,5 +1,4 @@
 {
-	"title": "CoreFramework",
 	"description": "Skeletton site made with <i>CoreFramework</i>.",
 	"plugins": ["Angular", "Bootstrap", "Minifier"],
 

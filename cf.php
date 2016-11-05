@@ -275,6 +275,11 @@ class Options {
 	}
 
 
+	public static function description($key) {
+		return isset(self::$options[$key]) ? self::$options[$key][0] : null;
+	}
+
+
 	public static function getAll($filter = false) {
 		$ret = array();
 		foreach(self::$options as $key => $val) {
@@ -297,7 +302,7 @@ class Options {
 			$conf = fopen(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php", "w");
 		else
 			$conf = fopen(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php", "w");
-		fwrite($conf, "<?php namespace DavBfr\CF;\n\n");
+		fwrite($conf, "<?php namespace " . __NAMESPACE__ . ";\n\n");
 		$opts = array_merge(self::getAll(true), $values);
 		ksort($opts);
 		foreach($opts as $key => $val) {
@@ -306,9 +311,19 @@ class Options {
 			elseif (is_int($val))
 					$val = $val;
 			elseif (is_string($val))
-				$val = "\"$val\"";
-			if ($val !== null)
-				fwrite($conf, "Options::set(\"$key\", $val);\n");
+				$val = '"' . addslashes($val) . '"';
+			if ($val !== null) {
+				$desc = self::description($key);
+				fwrite($conf, "Options::set(\"$key\", $val");
+				if ($desc !== NULL)
+					if ($local)
+						fwrite($conf, "); // $desc");
+					else
+						fwrite($conf, ', "' . addslashes($desc) . '"');
+				if (!$local || $desc === NULL)
+					fwrite($conf, ");");
+				fwrite($conf, "\n");
+			}
 		}
 		fclose($conf);
 	}
@@ -347,15 +362,15 @@ if (!defined("ROOT_DIR"))
 	die("ROOT_DIR not defined." . PHP_EOL);
 
 Options::set("CF_DIR", dirname(__file__), "Path to the framework");
-Options::set("CF_PLUGINS_DIR", CF_DIR);
-Options::set("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins");
-Options::set("ROOT_DIR", dirname(CF_DIR));
-Options::set("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
-Options::set("CORE_PLUGIN", "Core");
-Options::set("FORCE_HTTPS", false);
-Options::set("USE_STS", false);
-Options::set("DEFAULT_TIMEZONE", "Europe/Paris");
-Options::set("DEBUG", false);
+Options::set("CF_PLUGINS_DIR", CF_DIR, "Path to the core plugins");
+Options::set("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins", "Path to the application plugins");
+Options::set("ROOT_DIR", dirname(CF_DIR), "Application home folder");
+Options::set("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config", "Application configuration folder");
+Options::set("CORE_PLUGIN", "Core", "Main plugin to load");
+Options::set("FORCE_HTTPS", false, "Use https by default");
+Options::set("USE_STS", false, "Use Strict Transport Security header");
+Options::set("DEFAULT_TIMEZONE", "Europe/Paris", "Server timezone");
+Options::set("DEBUG", false, "For developement only");
 Options::set("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
 Options::set("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
 

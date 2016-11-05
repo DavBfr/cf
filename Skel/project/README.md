@@ -39,9 +39,7 @@ Site specific configuration is loaded from the file
 
     config/config.local.php
 
-you can copy from config/config.php and modify to suit your needs.
-
-To generate a file with all known configuration options, run this in a
+To change the configuration, run this in a
 terminal:
 
-    ./setup core:export-conf > config/config.local.php
+    ./setup config -set key value

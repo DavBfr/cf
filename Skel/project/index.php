@@ -24,5 +24,5 @@ else
 	require_once(CF_DIR . "/cf.php");
 
 $tpt = CorePlugin::bootstrap();
-Options::set("CF_TEMPLATE", "index.php");
+Options::set("CF_TEMPLATE", "index.php", "Template to load");
 $tpt->outputCached(CF_TEMPLATE);

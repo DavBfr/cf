@@ -19,32 +19,32 @@
 
 use PHPUnit_Framework_TestSuite;
 
-Options::set("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www");
+Options::set("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www", "Public webpages home");
 
-Options::set("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data");
-Options::set("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]));
+Options::set("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data", "Data directory");
+Options::set("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]), "Root directory under which the current script is executing");
 Options::set("ALLOW_DOCUMENT_ROOT", true);
 if (substr(WWW_DIR, 0, strlen(DOCUMENT_ROOT)) == DOCUMENT_ROOT)
-	Options::set("WWW_PATH", str_replace(DOCUMENT_ROOT, '', WWW_DIR));
+	Options::set("WWW_PATH", str_replace(DOCUMENT_ROOT, '', WWW_DIR), "Website relative URL");
 else
-	Options::set("WWW_PATH", "www");
-Options::set("INDEX_PATH", WWW_PATH . "/index.php");
-Options::set("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/api" : INDEX_PATH);
+	Options::set("WWW_PATH", "www", "Website relative url");
+Options::set("INDEX_PATH", WWW_PATH . "/index.php", "Main webpage URL");
+Options::set("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/api" : INDEX_PATH, "Jaon Rest API URL");
 Options::set("MEMCACHE_PREFIX", "CF");
 Options::set("MEMCACHE_LIFETIME", 10800);
-Options::set("MEMCACHE_ENABLED", false);
-Options::set("CACHE_ENABLED", !DEBUG);
+Options::set("MEMCACHE_ENABLED", false, "Enable memory cache");
+Options::set("CACHE_ENABLED", !DEBUG, "Enable caching");
 Options::set("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
-Options::set("SESSION_NAME", "CF");
-Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"));
-Options::set("SESSION_REGENERATE", SESSION_TIMEOUT);
-Options::set("API_TOKEN_HEADER", "cf-token");
-Options::set("ERROR_TEMPLATE", "error.php");
-Options::set("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache");
-Options::set("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache");
-Options::set("LANG_DEFAULT", "en_US");
-Options::set("LANG_AUTOLOAD", true);
-Options::set("LANG_AUTODETECT", true);
+Options::set("SESSION_NAME", "CF", "Cookie Name seen in the User Agent");
+Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"), "Cookie Life Time");
+Options::set("SESSION_REGENERATE", SESSION_TIMEOUT, "Time to regenerate the cookie");
+Options::set("API_TOKEN_HEADER", "cf-token", "Api token name");
+Options::set("ERROR_TEMPLATE", "error.php", "Error template");
+Options::set("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache", "Cache directory");
+Options::set("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache", "Public Cache URL");
+Options::set("LANG_DEFAULT", "en_US", "Default language");
+Options::set("LANG_AUTOLOAD", true, "Load locale file automatically");
+Options::set("LANG_AUTODETECT", true, "Try to autodetect user language");
 Options::set("CF_URL", "https://github.com/DavBfr/cf");
 Options::set("CF_AUTHOR", "David PHAM-VAN");
 Options::set("CF_EMAIL", "dev.nfet.net@gmail.com");
