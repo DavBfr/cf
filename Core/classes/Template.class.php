@@ -119,6 +119,9 @@ class Template {
 		}
 
 		$content = $this->parse($filename);
+		$contentMin = Plugins::dispatch("minify_html", $content);
+		if ($contentMin !== NULL)
+			$content = $contentMin;
 
 		$cache->setContents($content);
 		echo $content;

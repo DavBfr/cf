@@ -18,6 +18,7 @@
  **/
 
 Options::set("MINIFY_JSCSS", !DEBUG, "Minify Javascript and CSS files");
+Options::set("MINIFY_HTML", !DEBUG, "Minify Html files");
 Options::set("MINIFY_YUI", false, "Use yui-compressor to minify");
 
 class MinifierPlugin extends Plugins {
@@ -39,11 +40,11 @@ class MinifierPlugin extends Plugins {
 		Cli::enableHelp();
 
 		Cli::pinfo("Minify images");
-		foreach (self::globRecursive($path . "/*.[pP][nN][gG]", GLOB_NOSORT) as $png) {
+		foreach (self::globRecursive($path . "/{*.[pP][nN][gG],*.[gG][iI][fF]}", GLOB_BRACE | GLOB_NOSORT) as $png) {
 			Cli::pinfo(" * $png");
 			$output = "";
 			$return_var = -1;
-			$cmd = "pngcrush -ow -brute -reduce $png";
+			$cmd = "optipng -o7 -strip all $png";
 			if ($norun) {
 				Logger::Debug("   > $cmd");
 			} else {
@@ -55,7 +56,7 @@ class MinifierPlugin extends Plugins {
 				}
 			}
 		}
-		foreach (self::globRecursive($path . "/{*.[jJ][pP][gG], *.[jJ][pP][eE][gG]}", GLOB_BRACE | GLOB_NOSORT) as $jpg) {
+		foreach (self::globRecursive($path . "/{*.[jJ][pP][gG],*.[jJ][pP][eE][gG]}", GLOB_BRACE | GLOB_NOSORT) as $jpg) {
 			Cli::pinfo(" * $jpg");
 			$output = "";
 			$return_var = -1;
@@ -71,6 +72,14 @@ class MinifierPlugin extends Plugins {
 				}
 			}
 		}
+	}
+
+
+	public function minify_html($input) {
+		if (MINIFY_HTML)
+			return HtmlMinifier::minify($input);
+		else
+			return NULL;
 	}
 
 
