@@ -146,9 +146,9 @@ class Plugins {
 	}
 
 
-	public static function findAll($filename) {
+	public static function findFrom($plugins, $filename) {
 		$files = array();
-		foreach(self::get_plugins() as $plugin) {
+		foreach($plugins as $plugin) {
 			$resource = self::get($plugin)->getDir() . DIRECTORY_SEPARATOR . $filename;
 			if (file_exists($resource)) {
 				$files[] = $resource;
@@ -158,6 +158,17 @@ class Plugins {
 	}
 
 
+	public static function findAll($filename) {
+		return self::findFrom(self::get_plugins(), $filename);
+	}
+
+
+	/**
+	 * @param string $method_name
+	 * @param mixed $method_arguments
+	 *
+	 * @return mixed
+	 */
 	public static function dispatch() {
 		$arguments = func_get_args();
 		$method_name = array_shift($arguments);
@@ -172,12 +183,20 @@ class Plugins {
 	}
 
 
-	public static function dispatchAll() {
+	/**
+	 * @param array $plugins
+	 * @param string $method_name
+	 * @param mixed $method_arguments
+	 *
+	 * @return array
+	 */
+	public static function dispatchTo() {
 		$results = array();
 		$arguments = func_get_args();
+		$plugins = array_shift($arguments);
 		$method_name = array_shift($arguments);
 
-		foreach(self::get_plugins() as $plugin) {
+		foreach($plugins as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
 				Logger::debug("Dispatch " . $plugin . "::" . $method_name);
@@ -189,20 +208,29 @@ class Plugins {
 	}
 
 
-	public static function dispatchAllReversed() {
-		$results = array();
+	/**
+	 * @param string $method_name
+	 * @param mixed $method_arguments
+	 *
+	 * @return array
+	 */
+	public static function dispatchAll() {
 		$arguments = func_get_args();
-		$method_name = array_shift($arguments);
+		array_unshift($arguments, self::get_plugins());
+		return call_user_func_array(array(__CLASS__, "dispatchTo"), $arguments);
+	}
 
-		foreach(array_reverse(self::get_plugins()) as $plugin) {
-			$class = self::get($plugin);
-			if (method_exists($class, $method_name)) {
-				Logger::debug("Dispatch " . $plugin . "::" . $method_name);
-				$results[] = call_user_func_array(array($class, $method_name), $arguments);
-			}
-		}
 
-		return $results;
+	/**
+	 * @param string $method_name
+	 * @param mixed $method_arguments
+	 *
+	 * @return array
+	 */
+	public static function dispatchAllReversed() {
+		$arguments = func_get_args();
+		array_unshift($arguments, array_reverse(self::get_plugins()));
+		return call_user_func_array(array(__CLASS__, "dispatchTo"), $arguments);
 	}
 
 
