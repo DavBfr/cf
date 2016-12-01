@@ -25,6 +25,7 @@ class Session {
 
 	protected function __construct() {
 		session_name(SESSION_NAME);
+		session_set_cookie_params(0, SESSION_PATH, SESSION_DOMAIN, FORCE_HTTPS, true);
 		session_start();
 
 		if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > SESSION_TIMEOUT)) {
