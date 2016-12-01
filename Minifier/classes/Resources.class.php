@@ -127,7 +127,6 @@ class Resources extends AbstractResources {
 
 
 	public function getScripts() {
-
 		$res = $this->getResourcesByExt(".js");
 		$output = Cache::Pub($this->tag . ".js");
 		if (! MINIFY_JSCSS) {

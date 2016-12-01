@@ -87,6 +87,8 @@ class Template {
 
 	public function insertNew($filenames, $params = null, $class = "Template") {
 		$nsclass = __NAMESPACE__ . "\\" . $class;
+		if ($params === null)
+			$params = array();
 		$tpt = new $nsclass(array_merge($this->params, $params));
 		echo $tpt->parse($filenames);
 	}

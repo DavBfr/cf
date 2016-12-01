@@ -96,7 +96,7 @@ abstract class AbstractResources {
 
 
 	public function getResources() {
-		return array_map(array(self, "web"), $this->resources);
+		return array_map(array(__CLASS__, "web"), $this->resources);
 	}
 
 
@@ -113,12 +113,12 @@ abstract class AbstractResources {
 
 
 	public function getScripts() {
-		return array_map(array(self, "web"), $this->getResourcesByExt(".js"));
+		return array_map(array(__CLASS__, "web"), $this->getResourcesByExt(".js"));
 	}
 
 
 	public function getStylesheets() {
-		return array_map(array(self, "web"), $this->getResourcesByExt(".css"));
+		return array_map(array(__CLASS__, "web"), $this->getResourcesByExt(".css"));
 	}
 
 }
