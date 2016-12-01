@@ -115,10 +115,7 @@ class Template {
 			Lang::getLang(),
 			$this->params
 		))), ".html");
-		if ($cache->exists()) {
-			echo $cache->getContents();
-			Output::finish();
-		}
+		$cache->outputIfCached();
 
 		$content = $this->parse($filename);
 		$contentMin = Plugins::dispatch("minify_html", $content);
