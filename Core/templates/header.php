@@ -5,6 +5,7 @@
 	<?php if ($this->has("description")): ?>
 	<meta name="description" content="<?php $this->out("description", "st") ?>">
 	<?php endif ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<?php if ($this->has("favicon")): ?>
 	<link rel="shortcut icon" href="<?php echo $this->media($this->get("favicon")) ?>">
 	<?php endif ?>
@@ -12,5 +13,8 @@
 	<?php if ($this->has("stylesheets")) foreach($this->get("stylesheets") as $stylesheet): ?>
 	<link href="<?php echo $stylesheet ?>" rel="stylesheet" media="screen">
 	<?php endforeach; ?>
+	<script type="text/javascript">
+		window.cf_options = <?php $this->cf_options(); ?>;
+	</script>
 </head>
 <body>

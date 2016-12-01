@@ -5,6 +5,7 @@
 	<?php if ($this->has("description")): ?>
 	<meta name="description" content="<?php $this->out("description", "st") ?>">
 	<?php endif ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<?php if ($this->has("favicon")): ?>
 	<link rel="shortcut icon" href="<?php echo $this->media($this->get("favicon")) ?>">
 	<?php endif ?>
@@ -17,5 +18,8 @@
 		display: none !important;
 	}
 	</style>
+	<script type="text/javascript">
+		window.cf_options = <?php $this->cf_options(); ?>;
+	</script>
 </head>
 <body>
