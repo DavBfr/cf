@@ -24,6 +24,9 @@ class Session {
 
 
 	protected function __construct() {
+		if (session_id() != '')
+			ErrorHandler::error(500, "Session already started");
+
 		session_name(SESSION_NAME);
 		session_set_cookie_params(0, SESSION_PATH, SESSION_DOMAIN, FORCE_HTTPS, true);
 		session_start();
