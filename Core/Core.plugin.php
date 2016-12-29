@@ -35,6 +35,7 @@ Options::set("MEMCACHE_LIFETIME", 10800);
 Options::set("MEMCACHE_ENABLED", false, "Enable memory cache");
 Options::set("CACHE_ENABLED", !DEBUG, "Enable caching");
 Options::set("CACHE_TIME", 86400, "Cache expire time");
+Options::set("MESSAGE_QUEUE", 92873, "Message Queue ID");
 Options::set("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
 Options::set("SESSION_NAME", "CF", "Cookie Name seen in the User Agent");
 Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"), "Cookie Life Time");
@@ -210,6 +211,7 @@ class CorePlugin extends Plugins {
 		$cli->addCommand("install", array(__NAMESPACE__ . "\\Cli", "install"), "Install the application");
 		$cli->addCommand("update", array(__NAMESPACE__ . "\\Cli", "update"), "Update the application");
 		$cli->addCommand("clean", array(__NAMESPACE__ . "\\Cli", "clean"), "Clean the application cache");
+		$cli->addCommand("mq", array(__NAMESPACE__ . "\\MessageQueue", "process"), "Process the application message queue");
 		if (class_exists("PHPUnit_Framework_TestSuite", true)) {
 			$cli->addCommand("test", array(__NAMESPACE__ . "\\UnitTest", "runtests"), "Run unit testing");
 		}
