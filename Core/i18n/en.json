@@ -4,6 +4,7 @@
 		"no": "No",
 		"error": "Error",
 		"backtrace": "Backtrace",
+		"debug_output": "Output",
 		"file": "File",
 		"function": "Function",
 		"form": "Record #{{id}}",

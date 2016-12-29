@@ -80,11 +80,14 @@ class Output {
 	}
 
 
-	public static function debug($message) {
+	public static function debug($message = "") {
 		if (!DEBUG)
 			return;
 
-		ErrorHandler::error(500, "Debug", "<pre>" . $message . "</pre>", 3);
+		if ($message != "")
+			$message = "<pre>" . $message . "</pre>";
+
+		ErrorHandler::error(500, "Debug", $message, 3);
 	}
 
 }

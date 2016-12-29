@@ -97,6 +97,7 @@ class ErrorHandler {
 				"code" => $code,
 				"message" => $message,
 				"body" => $body,
+				"debug" => ob_get_contents(),
 				"backtrace" => $backtrace,
 				"baseline" => $baseline,
 				"log" => $log

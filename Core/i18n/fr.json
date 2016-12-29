@@ -4,6 +4,7 @@
 		"no": "Non",
 		"error": "Erreur",
 		"backtrace": "Trace de débogage",
+		"debug_output": "Sortie",
 		"file": "Fichier",
 		"function": "Fonction",
 		"form": "Fiche #{{id}}",
