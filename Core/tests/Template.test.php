@@ -17,9 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-use PHPUnit_Framework_TestCase;
-
-class TemplateTest extends PHPUnit_Framework_TestCase {
+class TemplateTest extends \PHPUnit\Framework\TestCase {
     public function testVariables() {
         $tpt = new Template(array("myvar" => "456"));
 
@@ -47,12 +45,9 @@ class TemplateTest extends PHPUnit_Framework_TestCase {
 
     public function testParsing() {
         $tpt = new Template(array("myvar" => "456"));
-        $data = $tpt->parse("test.php");
+        $data = $tpt->parse("test.template.php");
 
         $this->assertEquals(trim($data), 'test 123 456');
     }
 
-    public function testParsingErr() {
-
-    }
 }

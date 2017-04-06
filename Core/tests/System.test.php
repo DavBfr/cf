@@ -17,9 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-use PHPUnit_Framework_TestCase;
-
-class SystemTest extends PHPUnit_Framework_TestCase {
+class SystemTest extends \PHPUnit\Framework\TestCase {
 
 	public function testRelativePath() {
 		$rp = System::relativePath("/var/www/blog/files", "/var/www/cf");

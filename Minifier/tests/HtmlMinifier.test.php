@@ -17,9 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-use PHPUnit_Framework_TestCase;
-
-class HtmlMinifierTest extends PHPUnit_Framework_TestCase {
+class HtmlMinifierTest extends \PHPUnit\Framework\TestCase {
 
 	public function testHtml() {
 		$rp = HtmlMinifier::html("<p>  <!-- test -->    </p>");

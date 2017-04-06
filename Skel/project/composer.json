@@ -14,9 +14,6 @@
 	"require": {
 		"davbfr/cf": "@CF_VERSION@"
 	},
-	"require-dev": {
-    "phpunit/phpunit": "5.0.*"
-  },
 	"scripts": {
 		"post-install-cmd": [
 			"php vendor/bin/setup.php install"

@@ -212,7 +212,7 @@ class CorePlugin extends Plugins {
 		$cli->addCommand("update", array(__NAMESPACE__ . "\\Cli", "update"), "Update the application");
 		$cli->addCommand("clean", array(__NAMESPACE__ . "\\Cli", "clean"), "Clean the application cache");
 		$cli->addCommand("mq", array(__NAMESPACE__ . "\\MessageQueue", "process"), "Process the application message queue");
-		if (class_exists("PHPUnit_Framework_TestSuite", true)) {
+		if (class_exists("\PHPUnit\Framework\TestSuite", true)) {
 			$cli->addCommand("test", array(__NAMESPACE__ . "\\UnitTest", "runtests"), "Run unit testing");
 		}
 	}

@@ -18,14 +18,15 @@
  **/
 
 use Exception;
-use PHPUnit_Framework_AssertionFailedError;
-use PHPUnit_Framework_Test;
-use PHPUnit_Framework_TestListener;
-use PHPUnit_Framework_TestResult;
-use PHPUnit_Framework_TestSuite;
+use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Test;
+use PHPUnit\Framework\TestListener;
+use PHPUnit\Framework\TestResult;
+use PHPUnit\Framework\TestSuite;
+use PHPUnit\Framework\Warning;
 use ReflectionClass;
 
-class UnitTest implements PHPUnit_Framework_TestListener {
+class UnitTest implements TestListener {
 	const TESTS_DIR = "tests";
 
 
@@ -45,13 +46,13 @@ class UnitTest implements PHPUnit_Framework_TestListener {
 		}
 		$this->flushed = true;
 
-		Cli::pinfo("		* Test for " . $this->curplugin . " :: " . $this->cursuite . " :: " . $this->curtest);
+		Cli::pinfo("    * Test for " . $this->curplugin . " :: " . $this->cursuite . " :: " . $this->curtest);
 	}
 
 
-	public function addError(PHPUnit_Framework_Test $test, Exception $e, $time) {
+	public function addError(Test $test, Exception $e, $time) {
 		$this->flushError();
-		Cli::pcolor(Cli::ansiwarn, "				Exception: ");
+		Cli::pcolor(Cli::ansiwarn, "       Exception: ");
 		Cli::pcolor(Cli::ansilerr, $e->getMessage());
 		Cli::pcolor(Cli::ansicrit, " in ");
 		Cli::pcolor(Cli::ansierr, $e->getFile());
@@ -65,7 +66,7 @@ class UnitTest implements PHPUnit_Framework_TestListener {
 			if (!array_key_exists("file", $item))
 				break;
 
-			Cli::pr("					");
+			Cli::pr("         ");
 			if(array_key_exists("class", $item) && $item["class"] != "") {
 				Cli::pcolor(Cli::ansicrit, $item["class"] . "->");
 			}
@@ -81,66 +82,83 @@ class UnitTest implements PHPUnit_Framework_TestListener {
 		}
 	}
 
-	public function addFailure(PHPUnit_Framework_Test $test, PHPUnit_Framework_AssertionFailedError $e, $time) {
+
+	public function addWarning(Test $test, Warning $e, $time) {
 		$this->flushError();
-		Cli::pcolor(Cli::ansiwarn, "				Failure: ");
+		Cli::pcolor(Cli::ansiwarn, "       Warning: ");
 		Cli::pcolorln(Cli::ansilerr, $e->getMessage());
 		$trace = $e->getTrace();
 		if (count($trace) >= 2) {
 			$trace = $trace[2];
-			Cli::pcolor(Cli::ansicrit, "					in ");
+			Cli::pcolor(Cli::ansicrit, "         in ");
 			Cli::pcolor(Cli::ansierr, $trace["file"]);
 			Cli::pcolor(Cli::ansicrit, " line ");
 			Cli::pcolorln(Cli::ansierr, $trace["line"]);
-			Cli::perr("					'" . implode($trace["args"], "' '") . "'");
+			Cli::perr("         '" . implode($trace["args"], "' '") . "'");
 		}
 	}
 
 
-	public function addIncompleteTest(PHPUnit_Framework_Test $test, Exception $e, $time) {
+	public function addFailure(Test $test, AssertionFailedError $e, $time) {
 		$this->flushError();
-		Cli::pcolor(Cli::ansiwarn, "				Incomplete: ");
+		Cli::pcolor(Cli::ansiwarn, "       Failure: ");
+		Cli::pcolorln(Cli::ansilerr, $e->getMessage());
+		$trace = $e->getTrace();
+		if (count($trace) >= 2) {
+			$trace = $trace[2];
+			Cli::pcolor(Cli::ansicrit, "         in ");
+			Cli::pcolor(Cli::ansierr, $trace["file"]);
+			Cli::pcolor(Cli::ansicrit, " line ");
+			Cli::pcolorln(Cli::ansierr, $trace["line"]);
+			Cli::perr("         '" . implode($trace["args"], "' '") . "'");
+		}
+	}
+
+
+	public function addIncompleteTest(Test $test, Exception $e, $time) {
+		$this->flushError();
+		Cli::pcolor(Cli::ansiwarn, "       Incomplete: ");
 		Cli::pcolorln(Cli::ansilerr, $e->getMessage());
 	}
 
 
-	public function addRiskyTest(PHPUnit_Framework_Test $test, Exception $e, $time) {
+	public function addRiskyTest(Test $test, Exception $e, $time) {
 		$this->flushError();
-		Cli::pcolor(Cli::ansiwarn, "				Risky: ");
+		Cli::pcolor(Cli::ansiwarn, "       Risky: ");
 		Cli::pcolorln(Cli::ansilerr, $e->getMessage());
 	}
 
 
-	public function addSkippedTest(PHPUnit_Framework_Test $test, Exception $e, $time) {
+	public function addSkippedTest(Test $test, Exception $e, $time) {
 		$this->flushError();
-		Cli::pcolor(Cli::ansiwarn, "				Skipped: ");
+		Cli::pcolor(Cli::ansiwarn, "       Skipped: ");
 		Cli::pcolorln(Cli::ansilerr, $e->getMessage());
 	}
 
 
-	public function startTestSuite(PHPUnit_Framework_TestSuite $suite) {
+	public function startTestSuite(TestSuite $suite) {
 		$this->cursuite = $suite->getName();
 	}
 
 
-	public function endTestSuite(PHPUnit_Framework_TestSuite $suite) {
+	public function endTestSuite(TestSuite $suite) {
 		$this->cursuite = "";
 	}
 
 
-	public function startTest(PHPUnit_Framework_Test $test) {
+	public function startTest(Test $test) {
 		$this->curtest = $test->getName();
 	}
 
 
-	public function endTest(PHPUnit_Framework_Test $test, $time) {
+	public function endTest(Test $test, $time) {
 		if ($this->curtest != "") {
 			if ($this->count++ >= 40) {
 				$this->dot = false;
 				Cli::pcolorln(Cli::ansiinfo, "]");
 			}
 			if (!$this->dot) {
-				Cli::pcolor(Cli::ansiinfo, "	* ");
+				Cli::pcolor(Cli::ansiinfo, "  * ");
 				Cli::pcolor(Cli::ansilog, $this->curplugin);
 				Cli::pcolor(Cli::ansiinfo, " [");
 				$this->dot = true;
@@ -159,7 +177,7 @@ class UnitTest implements PHPUnit_Framework_TestListener {
 
 		// Create Suite
 		foreach(Plugins::get_plugins() as $name) {
-			$result = new PHPUnit_Framework_TestResult();
+			$result = new TestResult();
 			$listner = new self($name);
 			$result->addListener($listner);
 			$plugin = Plugins::get($name);
@@ -168,7 +186,7 @@ class UnitTest implements PHPUnit_Framework_TestListener {
 				foreach(glob($dir . DIRECTORY_SEPARATOR . "*.test.php") as $file) {
 					require_once($file);
 					$testclassname = __NAMESPACE__ . "\\" . substr(basename($file), 0, -9) . "Test";
-					$suite = new PHPUnit_Framework_TestSuite(new ReflectionClass($testclassname));
+					$suite = new TestSuite(new ReflectionClass($testclassname));
 					$suite->run($result);
 				}
 			}
