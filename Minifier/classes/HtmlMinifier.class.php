@@ -25,6 +25,7 @@ class HtmlMinifier {
 	const SS = '"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'';
 	const CC = '\/\*[\s\S]*?\*\/';
 	const CH = '<\!--[\s\S]*?-->';
+	const X = "\x1A";
 
 	private static function _minify_html($input) {
 		return preg_replace_callback('#<\s*([^\/\s]+)\s*(?:>|(\s[^<>]+?)\s*>)#', function ($m) {
@@ -59,12 +60,12 @@ class HtmlMinifier {
 	}
 
 	private static function __minify_x($input) {
-		return str_replace(array("\n", "\t", ' '), array(X . '\n', X . '\t', X . '\s'), $input);
+		return str_replace(array("\n", "\t", ' '), array(self::X . '\n', self::X . '\t', self::X . '\s'), $input);
 	}
 
 
 	private static function __minify_v($input) {
-		return str_replace(array(X . '\n', X . '\t', X . '\s'), array("\n", "\t", ' '), $input);
+		return str_replace(array(self::X . '\n', self::X . '\t', self::X . '\s'), array("\n", "\t", ' '), $input);
 	}
 
 	public static function html($input) {
@@ -72,7 +73,7 @@ class HtmlMinifier {
 			return $input;
 
 		// Keep important white-space(s) after self-closing HTML tag(s)
-		$input = preg_replace('#(<(?:img|input)(?:\s[^<>]*?)?\s*\/?>)\s+#i', '$1' . X . '\s', $input);
+		$input = preg_replace('#(<(?:img|input)(?:\s[^<>]*?)?\s*\/?>)\s+#i', '$1' . self::X . '\s', $input);
 		// Create chunk(s) of HTML tag(s), ignored HTML group(s), HTML comment(s) and text
 		$input = preg_split('#(' . self::CH . '|<pre(?:>|\s[^<>]*?>)[\s\S]*?<\/pre>|<code(?:>|\s[^<>]*?>)[\s\S]*?<\/code>|<script(?:>|\s[^<>]*?>)[\s\S]*?<\/script>|<style(?:>|\s[^<>]*?>)[\s\S]*?<\/style>|<textarea(?:>|\s[^<>]*?>)[\s\S]*?<\/textarea>|<[^<>]+?>)#i', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		$output = "";
@@ -96,9 +97,9 @@ class HtmlMinifier {
 					}
 			} else {
 				// Force line-break with `&#10;` or `&#xa;`
-				$v = str_replace(array('&#10;', '&#xA;', '&#xa;'), X . '\n', $v);
+				$v = str_replace(array('&#10;', '&#xA;', '&#xa;'), self::X . '\n', $v);
 				// Force white-space with `&#32;` or `&#x20;`
-				$v = str_replace(array('&#32;', '&#x20;'), X . '\s', $v);
+				$v = str_replace(array('&#32;', '&#x20;'), self::X . '\s', $v);
 				// Replace multiple white-space(s) with a space
 				$output .= preg_replace('#\s+#', ' ', $v);
 			}
@@ -128,7 +129,7 @@ class HtmlMinifier {
 		// Keep important white-space(s) in `calc()`
 		if (stripos($input, 'calc(') !== false) {
 			$input = preg_replace_callback('#\b(calc\()\s*(.*?)\s*\)#i', function ($m) {
-				return $m[1] . preg_replace('#\s+#', X . '\s', $m[2]) . ')';
+				return $m[1] . preg_replace('#\s+#', self::X . '\s', $m[2]) . ')';
 			}, $input);
 		}
 		// Minify ...
@@ -161,9 +162,9 @@ class HtmlMinifier {
 			),
 			array(
 				// [^1]
-				X . '\s$1',
+				self::X . '\s$1',
 				// [^2]
-				']' . X . '\s', X . '\s(', ')' . X . '\s',
+				']' . self::X . '\s', self::X . '\s(', ')' . self::X . '\s',
 				// [^3]
 				'#$1$2$3',
 				// [^4]
@@ -194,7 +195,7 @@ class HtmlMinifier {
 			return $input;
 		
 		// Keep important white-space(s) between comment(s)
-		$input = preg_replace('#(' . self::CC . ')\s+(' . self::CC . ')#', '$1' . X . '\s$2', $input);
+		$input = preg_replace('#(' . self::CC . ')\s+(' . self::CC . ')#', '$1' . self::X . '\s$2', $input);
 		// Create chunk(s) of string(s), comment(s) and text
 		$input = preg_split('#(' . self::SS . '|' . self::CC . ')#', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		$output = "";
@@ -249,7 +250,7 @@ class HtmlMinifier {
 				// [^3]
 				'$1',
 				// [^4]
-				//'!0', '!1', 
+				//'!0', '!1',
 				'return '
 			),
 		$input);
