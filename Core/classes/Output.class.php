@@ -45,13 +45,12 @@ class Output {
 
 
 	public static function success($object = array()) {
-		self::json(array_merge($object, array("success" => true)));
+		self::json($object);
 	}
 
 
-	public static function error($message) {
-		Logger::error($message);
-		self::json(array("error" => $message, "success" => false));
+	public static function error($message, $code = 400) {
+		ErrorHandler::error($code, $message, json_encode(array("error" => $message)), 3);
 	}
 
 

@@ -245,6 +245,10 @@ class Template {
 			$options = array_merge($options, $opt);
 		}
 
+		if (DEBUG) {
+			$options['debug'] = DEBUG;
+		}
+
 		echo json_encode($options);
 	}
 

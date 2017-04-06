@@ -217,4 +217,7 @@ class CorePlugin extends Plugins {
 		}
 	}
 
+	public function resources($res) {
+		$res->add("crudHelper.js");
+	}
 }

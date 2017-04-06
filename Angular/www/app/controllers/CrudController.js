@@ -35,12 +35,10 @@ function CrudService($http, service) {
 		if (filter == undefined)
 			filter = "";
 		$http.get(service_url + "?p="+page+"&q="+filter).success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess(data.list, status);
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess(data.list, status);
 		}).error(function (data, status) {
-			onerror && onerror(data, status);
+			if (!restError(data, status))
+				onerror && onerror(data, status);
 		});
 	};
 
@@ -48,78 +46,64 @@ function CrudService($http, service) {
 		if (filter == undefined)
 			filter = "";
 		$http.get(service_url + "/count?q="+filter).success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess(data);
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess(data);
 		}).error(function (data, status) {
-			onerror && onerror(data, status);
+			if (!restError(data, status))
+				onerror && onerror(data, status);
 		});
 	};
 
 	this.add = function (data, onsuccess, onerror) {
 		$http.put(service_url, data).success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess(data.id);
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess(data.id);
 		}).error(function (data, status) {
-			onerror && onerror(data);
+			if (!restError(data, status))
+				onerror && onerror(data);
 		});
 	};
 
 	this.del = function (id, onsuccess, onerror) {
 		$http.delete(service_url + "/" + id).success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess();
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess();
 		}).error(function (data, status) {
-			onerror && onerror(data);
+			if (!restError(data, status))
+				onerror && onerror(data);
 		});
 	};
 
 	this.save = function (id, data, onsuccess, onerror) {
 		$http.post(service_url + "/" + id, data).success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess();
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess();
 		}).error(function (data, status) {
-			onerror && onerror(data);
+			if (!restError(data, status))
+				onerror && onerror(data);
 		});
 	};
 
 	this.getOne = function (id, onsuccess, onerror) {
 		$http.get(service_url + "/get/" + id).success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess(data, status);
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess(data, status);
 		}).error(function (data, status) {
-			onerror && onerror(data, status);
+			if (!restError(data, status))
+				onerror && onerror(data, status);
 		});
 	};
 
 	this.getNew = function (onsuccess, onerror) {
 		$http.get(service_url + "/new").success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess(data, status);
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess(data, status);
 		}).error(function (data, status) {
-			onerror && onerror(data, status);
+			if (!restError(data, status))
+				onerror && onerror(data, status);
 		});
 	};
 
 	this.getForeign = function (field, onsuccess, onerror) {
 		$http.get(service_url + "/foreign/" + field).success(function (data, status) {
-			if (data.success)
-				onsuccess && onsuccess(data, status);
-			else
-				onerror && onerror(data.error);
+			onsuccess && onsuccess(data, status);
 			}).error(function (data, status) {
-				onerror && onerror(data, status);
+				if (!restError(data, status))
+					onerror && onerror(data, status);
 			});
 	};
 

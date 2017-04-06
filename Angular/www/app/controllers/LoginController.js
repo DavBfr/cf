@@ -41,7 +41,8 @@ app.service('LoginService', function($http, NotificationFactory) {
 			cf_options.user = null;
 			onsuccess && onsuccess(data.message);
 		}).error(function(data, status) {
-			NotificationFactory.error(data);
+			if (!restError(data, status))
+				NotificationFactory.error(data);
 		})
 	};
 
@@ -54,25 +55,21 @@ app.service('LoginService', function($http, NotificationFactory) {
 			cf_options.user = data.user;
 			onsuccess && onsuccess(data.rights, data.message);
 		}).error(function(data, status) {
-			NotificationFactory.error(data);
+			if (!restError(data, status))
+				NotificationFactory.error(data);
 		})
 	};
 
 	this.check = function(callback) {
 		$http.get(cf_options.rest_path + "/login/check").success(function(data, status) {
-			if (!data.success) {
-				cf_options.rights = [];
-				cf_options.user = null;
-				callback && callback(false, [], null);
-			} else {
-				cf_options.rights = data.rights;
-				cf_options.user = data.user;
-				callback && callback(data.next, data.rights, data.user);
-			}
+			cf_options.rights = data.rights;
+			cf_options.user = data.user;
+			callback && callback(data.next, data.rights, data.user);
 		}).error(function(data, status) {
 			cf_options.rights = [];
 			cf_options.user = null;
-			callback && callback(false, [], null);
+			if (!restError(data, status))
+				callback && callback(false, [], null);
 		})
 	};
 
@@ -83,7 +80,7 @@ app.service('LoginService', function($http, NotificationFactory) {
 				cf_options.user = data.user;
 				userdata = data;
 				onsuccess && onsuccess(data);
-			});
+			}).error(restError);
 		} else {
 			onsuccess && onsuccess(userdata);
 		}
