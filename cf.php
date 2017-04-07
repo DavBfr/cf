@@ -370,7 +370,7 @@ function configure($key, $value) {
 
 define("URL_SEPARATOR", "/");
 define("START_TIME", microtime(true));
-Options::set("CF_VERSION", "2.0");
+Options::set("CF_VERSION", "2.1");
 if (defined("ROOT_DIR")) {
 	Options::set("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 } else {
