@@ -7,8 +7,8 @@
  */
 (function(window, document, undefined) {
   'use strict';
-  bsCompilerService.$inject = [ '$q', '$http', '$injector', '$compile', '$controller', '$templateCache' ];
-  angular.module('mgcrea.ngStrap.typeahead', [ 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.helpers.parseOptions' ]).provider('$typeahead', function() {
+  bsCompilerService.$inject = ["$q", "$http", "$injector", "$compile", "$controller", "$templateCache"];
+  angular.module('mgcrea.ngStrap.typeahead', [ 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.helpers.parseOptions' ]).provider('$bsTypeahead', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       prefixClass: 'typeahead',
@@ -27,7 +27,7 @@
       comparator: '',
       trimValue: true
     };
-    this.$get = [ '$window', '$rootScope', '$tooltip', '$$rAF', '$timeout', function($window, $rootScope, $tooltip, $$rAF, $timeout) {
+    this.$get = ["$window", "$rootScope", "$bsTooltip", "$$rAF", "$timeout", function($window, $rootScope, $tooltip, $$rAF, $timeout) {
       function TypeaheadFactory(element, controller, config) {
         var $typeahead = {};
         var options = angular.extend({}, defaults, config);
@@ -155,7 +155,7 @@
       TypeaheadFactory.defaults = defaults;
       return TypeaheadFactory;
     } ];
-  }).filter('bsAsyncFilter', [ '$filter', function($filter) {
+  }).filter('bsAsyncFilter', ["$filter", function($filter) {
     return function(array, expression, comparator) {
       if (array && angular.isFunction(array.then)) {
         return array.then(function(results) {
@@ -164,7 +164,7 @@
       }
       return $filter('filter')(array, expression, comparator);
     };
-  } ]).directive('bsTypeahead', [ '$window', '$parse', '$q', '$typeahead', '$parseOptions', function($window, $parse, $q, $typeahead, $parseOptions) {
+  } ]).directive('bsTypeahead', ["$window", "$parse", "$q", "$bsTypeahead", "$bsParseOptions", function($window, $parse, $q, $typeahead, $parseOptions) {
     var defaults = $typeahead.defaults;
     return {
       restrict: 'EAC',
@@ -251,7 +251,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.tooltip', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$tooltip', function() {
+  angular.module('mgcrea.ngStrap.tooltip', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$bsTooltip', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       customClass: '',
@@ -279,7 +279,7 @@
         padding: 0
       }
     };
-    this.$get = [ '$window', '$rootScope', '$bsCompiler', '$q', '$templateCache', '$http', '$animate', '$sce', 'dimensions', '$$rAF', '$timeout', function($window, $rootScope, $bsCompiler, $q, $templateCache, $http, $animate, $sce, dimensions, $$rAF, $timeout) {
+    this.$get = ["$window", "$rootScope", "$bsCompiler", "$q", "$templateCache", "$http", "$animate", "$sce", "bsDimensions", "$$rAF", "$timeout", function($window, $rootScope, $bsCompiler, $q, $templateCache, $http, $animate, $sce, dimensions, $$rAF, $timeout) {
       var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
       var isTouch = 'createTouch' in $window.document && isNative;
       var $body = angular.element($window.document);
@@ -818,7 +818,7 @@
       }
       return TooltipFactory;
     } ];
-  }).directive('bsTooltip', [ '$window', '$location', '$sce', '$parse', '$tooltip', '$$rAF', function($window, $location, $sce, $parse, $tooltip, $$rAF) {
+  }).directive('bsTooltip', ["$window", "$location", "$sce", "$parse", "$bsTooltip", "$$rAF", function($window, $location, $sce, $parse, $tooltip, $$rAF) {
     return {
       restrict: 'EAC',
       scope: true,
@@ -920,7 +920,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.timepicker', [ 'mgcrea.ngStrap.helpers.dateParser', 'mgcrea.ngStrap.helpers.dateFormatter', 'mgcrea.ngStrap.tooltip' ]).provider('$timepicker', function() {
+  angular.module('mgcrea.ngStrap.timepicker', [ 'mgcrea.ngStrap.helpers.dateParser', 'mgcrea.ngStrap.helpers.dateFormatter', 'mgcrea.ngStrap.tooltip' ]).provider('$bsTimepicker', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       defaultDate: 'auto',
@@ -949,7 +949,7 @@
       iconDown: 'glyphicon glyphicon-chevron-down',
       arrowBehavior: 'pager'
     };
-    this.$get = [ '$window', '$document', '$rootScope', '$sce', '$dateFormatter', '$tooltip', '$timeout', function($window, $document, $rootScope, $sce, $dateFormatter, $tooltip, $timeout) {
+    this.$get = ["$window", "$document", "$rootScope", "$sce", "$bsDateFormatter", "$bsTooltip", "$timeout", function($window, $document, $rootScope, $sce, $dateFormatter, $tooltip, $timeout) {
       var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
       var isTouch = 'createTouch' in $window.document && isNative;
       if (!defaults.lang) {
@@ -1266,7 +1266,7 @@
       timepickerFactory.defaults = defaults;
       return timepickerFactory;
     } ];
-  }).directive('bsTimepicker', [ '$window', '$parse', '$q', '$dateFormatter', '$dateParser', '$timepicker', function($window, $parse, $q, $dateFormatter, $dateParser, $timepicker) {
+  }).directive('bsTimepicker', ["$window", "$parse", "$q", "$bsDateFormatter", "$bsDateParser", "$bsTimepicker", function($window, $parse, $q, $dateFormatter, $dateParser, $timepicker) {
     var defaults = $timepicker.defaults;
     var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
     return {
@@ -1394,7 +1394,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.tab', []).provider('$tab', function() {
+  angular.module('mgcrea.ngStrap.tab', []).provider('$bsTab', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       template: 'tab/tab.tpl.html',
@@ -1456,7 +1456,7 @@
       $tab.controller = controller;
       return $tab;
     };
-  }).directive('bsTabs', [ '$window', '$animate', '$tab', '$parse', function($window, $animate, $tab, $parse) {
+  }).directive('bsTabs', ["$window", "$animate", "$bsTab", "$parse", function($window, $animate, $tab, $parse) {
     var defaults = $tab.defaults;
     return {
       require: [ '?ngModel', 'bsTabs' ],
@@ -1489,7 +1489,7 @@
         }
       }
     };
-  } ]).directive('bsPane', [ '$window', '$animate', '$sce', function($window, $animate, $sce) {
+  } ]).directive('bsPane', ["$window", "$animate", "$sce", function($window, $animate, $sce) {
     return {
       require: [ '^?ngModel', '^bsTabs' ],
       scope: true,
@@ -1521,7 +1521,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.select', [ 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.helpers.parseOptions' ]).provider('$select', function() {
+  angular.module('mgcrea.ngStrap.select', [ 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.helpers.parseOptions' ]).provider('$bsSelect', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       prefixClass: 'select',
@@ -1545,7 +1545,7 @@
       iconCheckmark: 'glyphicon glyphicon-ok',
       toggle: false
     };
-    this.$get = [ '$window', '$document', '$rootScope', '$tooltip', '$timeout', function($window, $document, $rootScope, $tooltip, $timeout) {
+    this.$get = ["$window", "$document", "$rootScope", "$bsTooltip", "$timeout", function($window, $document, $rootScope, $tooltip, $timeout) {
       var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
       var isTouch = 'createTouch' in $window.document && isNative;
       function SelectFactory(element, controller, config) {
@@ -1756,7 +1756,7 @@
       SelectFactory.defaults = defaults;
       return SelectFactory;
     } ];
-  }).directive('bsSelect', [ '$window', '$parse', '$q', '$select', '$parseOptions', function($window, $parse, $q, $select, $parseOptions) {
+  }).directive('bsSelect', ["$window", "$parse", "$q", "$bsSelect", "$bsParseOptions", function($window, $parse, $q, $select, $parseOptions) {
     var defaults = $select.defaults;
     return {
       restrict: 'EAC',
@@ -1843,14 +1843,14 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.scrollspy', [ 'mgcrea.ngStrap.helpers.debounce', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$scrollspy', function() {
+  angular.module('mgcrea.ngStrap.scrollspy', [ 'mgcrea.ngStrap.helpers.debounce', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$bsScrollspy', function() {
     var spies = this.$$spies = {};
     var defaults = this.defaults = {
       debounce: 150,
       throttle: 100,
       offset: 100
     };
-    this.$get = [ '$window', '$document', '$rootScope', 'dimensions', 'debounce', 'throttle', function($window, $document, $rootScope, dimensions, debounce, throttle) {
+    this.$get = ["$window", "$document", "$rootScope", "bsDimensions", "bsDebounce", "bsThrottle", function($window, $document, $rootScope, dimensions, debounce, throttle) {
       var windowEl = angular.element($window);
       var docEl = angular.element($document.prop('documentElement'));
       var bodyEl = angular.element($window.document.body);
@@ -1983,7 +1983,7 @@
       }
       return ScrollSpyFactory;
     } ];
-  }).directive('bsScrollspy', [ '$rootScope', 'debounce', 'dimensions', '$scrollspy', function($rootScope, debounce, dimensions, $scrollspy) {
+  }).directive('bsScrollspy', ["$rootScope", "bsDebounce", "bsDimensions", "$bsScrollspy", function($rootScope, debounce, dimensions, $scrollspy) {
     return {
       restrict: 'EAC',
       link: function postLink(scope, element, attr) {
@@ -2005,7 +2005,7 @@
         });
       }
     };
-  } ]).directive('bsScrollspyList', [ '$rootScope', 'debounce', 'dimensions', '$scrollspy', function($rootScope, debounce, dimensions, $scrollspy) {
+  } ]).directive('bsScrollspyList', ["$rootScope", "bsDebounce", "bsDimensions", "$bsScrollspy", function($rootScope, debounce, dimensions, $scrollspy) {
     return {
       restrict: 'A',
       compile: function postLink(element, attr) {
@@ -2017,7 +2017,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.popover', [ 'mgcrea.ngStrap.tooltip' ]).provider('$popover', function() {
+  angular.module('mgcrea.ngStrap.popover', [ 'mgcrea.ngStrap.tooltip' ]).provider('$bsPopover', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       customClass: '',
@@ -2034,7 +2034,7 @@
       delay: 0,
       autoClose: false
     };
-    this.$get = [ '$tooltip', function($tooltip) {
+    this.$get = ["$bsTooltip", function($tooltip) {
       function PopoverFactory(element, config) {
         var options = angular.extend({}, defaults, config);
         var $popover = $tooltip(element, options);
@@ -2045,7 +2045,7 @@
       }
       return PopoverFactory;
     } ];
-  }).directive('bsPopover', [ '$window', '$sce', '$popover', function($window, $sce, $popover) {
+  }).directive('bsPopover', ["$window", "$sce", "$bsPopover", function($window, $sce, $popover) {
     var requestAnimationFrame = $window.requestAnimationFrame || $window.setTimeout;
     return {
       restrict: 'EAC',
@@ -2139,7 +2139,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.navbar', []).provider('$navbar', function() {
+  angular.module('mgcrea.ngStrap.navbar', []).provider('$bsNavbar', function() {
     var defaults = this.defaults = {
       activeClass: 'active',
       routeAttr: 'data-match-route',
@@ -2150,7 +2150,7 @@
         defaults: defaults
       };
     };
-  }).directive('bsNavbar', [ '$window', '$location', '$navbar', function($window, $location, $navbar) {
+  }).directive('bsNavbar', ["$window", "$location", "$bsNavbar", function($window, $location, $navbar) {
     var defaults = $navbar.defaults;
     return {
       restrict: 'A',
@@ -2180,7 +2180,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.modal', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$modal', function() {
+  angular.module('mgcrea.ngStrap.modal', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$bsModal', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       backdropAnimation: 'am-fade',
@@ -2200,7 +2200,7 @@
       size: null,
       zIndex: null
     };
-    this.$get = [ '$window', '$rootScope', '$bsCompiler', '$animate', '$timeout', '$sce', 'dimensions', function($window, $rootScope, $bsCompiler, $animate, $timeout, $sce, dimensions) {
+    this.$get = ["$window", "$rootScope", "$bsCompiler", "$animate", "$timeout", "$sce", "bsDimensions", function($window, $rootScope, $bsCompiler, $animate, $timeout, $sce, dimensions) {
       var forEach = angular.forEach;
       var requestAnimationFrame = $window.requestAnimationFrame || $window.setTimeout;
       var bodyElement = angular.element($window.document.body);
@@ -2458,7 +2458,7 @@
       }
       return ModalFactory;
     } ];
-  }).directive('bsModal', [ '$window', '$sce', '$parse', '$modal', function($window, $sce, $parse, $modal) {
+  }).directive('bsModal', ["$window", "$sce", "$parse", "$bsModal", function($window, $sce, $parse, $modal) {
     return {
       restrict: 'EAC',
       scope: true,
@@ -2511,7 +2511,7 @@
     };
   } ]);
   if (angular.version.minor < 3 && angular.version.dot < 14) {
-    angular.module('ng').factory('$$rAF', [ '$window', '$timeout', function($window, $timeout) {
+    angular.module('ng').factory('$$rAF', ["$window", "$timeout", function($window, $timeout) {
       var requestAnimationFrame = $window.requestAnimationFrame || $window.webkitRequestAnimationFrame || $window.mozRequestAnimationFrame;
       var cancelAnimationFrame = $window.cancelAnimationFrame || $window.webkitCancelAnimationFrame || $window.mozCancelAnimationFrame || $window.webkitCancelRequestAnimationFrame;
       var rafSupported = !!requestAnimationFrame;
@@ -2530,11 +2530,11 @@
       return raf;
     } ]);
   }
-  angular.module('mgcrea.ngStrap.helpers.parseOptions', []).provider('$parseOptions', function() {
+  angular.module('mgcrea.ngStrap.helpers.parseOptions', []).provider('$bsParseOptions', function() {
     var defaults = this.defaults = {
       regexp: /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+(.*?)(?:\s+track\s+by\s+(.*?))?$/
     };
-    this.$get = [ '$parse', '$q', function($parse, $q) {
+    this.$get = ["$parse", "$q", function($parse, $q) {
       function ParseOptionsFactory(attr, config) {
         var $parseOptions = {};
         var options = angular.extend({}, defaults, config);
@@ -2590,7 +2590,7 @@
       return ParseOptionsFactory;
     } ];
   });
-  angular.module('mgcrea.ngStrap.helpers.dimensions', []).factory('dimensions', function() {
+  angular.module('mgcrea.ngStrap.helpers.dimensions', []).factory('bsDimensions', function() {
     var fn = {};
     var nodeName = fn.nodeName = function(element, name) {
       return element.nodeName && element.nodeName.toLowerCase() === name.toLowerCase();
@@ -2714,7 +2714,7 @@
     };
     return fn;
   });
-  angular.module('mgcrea.ngStrap.helpers.debounce', []).factory('debounce', [ '$timeout', function($timeout) {
+  angular.module('mgcrea.ngStrap.helpers.debounce', []).factory('bsDebounce', ["$timeout", function($timeout) {
     return function(func, wait, immediate) {
       var timeout = null;
       return function() {
@@ -2736,7 +2736,7 @@
         return timeout;
       };
     };
-  } ]).factory('throttle', [ '$timeout', function($timeout) {
+  } ]).factory('bsThrottle', ["$timeout", function($timeout) {
     return function(func, wait, options) {
       var timeout = null;
       if (!options) options = {};
@@ -2757,7 +2757,7 @@
       };
     };
   } ]);
-  angular.module('mgcrea.ngStrap.helpers.dateParser', []).provider('$dateParser', [ '$localeProvider', function($localeProvider) {
+  angular.module('mgcrea.ngStrap.helpers.dateParser', []).provider('$bsDateParser', ["$localeProvider", function($localeProvider) {
     function ParseDate() {
       this.year = 1970;
       this.month = 0;
@@ -2823,7 +2823,7 @@
       format: 'shortDate',
       strict: false
     };
-    this.$get = [ '$locale', 'dateFilter', function($locale, dateFilter) {
+    this.$get = ["$locale", "dateFilter", function($locale, dateFilter) {
       var DateParserFactory = function(config) {
         var options = angular.extend({}, defaults, config);
         var $dateParser = {};
@@ -3030,7 +3030,7 @@
       return DateParserFactory;
     } ];
   } ]);
-  angular.module('mgcrea.ngStrap.helpers.dateFormatter', []).service('$dateFormatter', [ '$locale', 'dateFilter', function($locale, dateFilter) {
+  angular.module('mgcrea.ngStrap.helpers.dateFormatter', []).service('$bsDateFormatter', ["$locale", "dateFilter", function($locale, dateFilter) {
     this.getDefaultLocale = function() {
       return $locale.id;
     };
@@ -3153,7 +3153,7 @@
       });
     }
   }
-  angular.module('mgcrea.ngStrap.dropdown', [ 'mgcrea.ngStrap.tooltip' ]).provider('$dropdown', function() {
+  angular.module('mgcrea.ngStrap.dropdown', [ 'mgcrea.ngStrap.tooltip' ]).provider('$bsDropdown', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       prefixClass: 'dropdown',
@@ -3166,7 +3166,7 @@
       html: false,
       delay: 0
     };
-    this.$get = [ '$window', '$rootScope', '$tooltip', '$timeout', function($window, $rootScope, $tooltip, $timeout) {
+    this.$get = ["$window", "$rootScope", "$bsTooltip", "$timeout", function($window, $rootScope, $tooltip, $timeout) {
       var bodyEl = angular.element($window.document.body);
       var matchesSelector = Element.prototype.matchesSelector || Element.prototype.webkitMatchesSelector || Element.prototype.mozMatchesSelector || Element.prototype.msMatchesSelector || Element.prototype.oMatchesSelector;
       function DropdownFactory(element, config) {
@@ -3218,7 +3218,7 @@
       }
       return DropdownFactory;
     } ];
-  }).directive('bsDropdown', [ '$window', '$sce', '$dropdown', function($window, $sce, $dropdown) {
+  }).directive('bsDropdown', ["$window", "$sce", "$bsDropdown", function($window, $sce, $dropdown) {
     return {
       restrict: 'EAC',
       scope: true,
@@ -3277,7 +3277,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.button', []).provider('$button', function() {
+  angular.module('mgcrea.ngStrap.button', []).provider('$bsButton', function() {
     var defaults = this.defaults = {
       activeClass: 'active',
       toggleEvent: 'click'
@@ -3302,7 +3302,7 @@
         });
       }
     };
-  }).directive('bsCheckbox', [ '$button', '$$rAF', function($button, $$rAF) {
+  }).directive('bsCheckbox', ["$bsButton", "$$rAF", function($button, $$rAF) {
     var defaults = $button.defaults;
     var constantValueRegExp = /^(true|false|\d+)$/;
     return {
@@ -3360,7 +3360,7 @@
         });
       }
     };
-  }).directive('bsRadio', [ '$button', '$$rAF', function($button, $$rAF) {
+  }).directive('bsRadio', ["$bsButton", "$$rAF", function($button, $$rAF) {
     var defaults = $button.defaults;
     var constantValueRegExp = /^(true|false|\d+)$/;
     return {
@@ -3395,7 +3395,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.datepicker', [ 'mgcrea.ngStrap.helpers.dateParser', 'mgcrea.ngStrap.helpers.dateFormatter', 'mgcrea.ngStrap.tooltip' ]).provider('$datepicker', function() {
+  angular.module('mgcrea.ngStrap.datepicker', [ 'mgcrea.ngStrap.helpers.dateParser', 'mgcrea.ngStrap.helpers.dateFormatter', 'mgcrea.ngStrap.tooltip' ]).provider('$bsDatepicker', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       prefixClass: 'datepicker',
@@ -3429,7 +3429,7 @@
       iconLeft: 'glyphicon glyphicon-chevron-left',
       iconRight: 'glyphicon glyphicon-chevron-right'
     };
-    this.$get = [ '$window', '$document', '$rootScope', '$sce', '$dateFormatter', 'datepickerViews', '$tooltip', '$timeout', function($window, $document, $rootScope, $sce, $dateFormatter, datepickerViews, $tooltip, $timeout) {
+    this.$get = ["$window", "$document", "$rootScope", "$sce", "$bsDateFormatter", "bsDatepickerViews", "$bsTooltip", "$timeout", function($window, $document, $rootScope, $sce, $dateFormatter, datepickerViews, $tooltip, $timeout) {
       var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
       var isTouch = 'createTouch' in $window.document && isNative;
       if (!defaults.lang) defaults.lang = $dateFormatter.getDefaultLocale();
@@ -3624,7 +3624,7 @@
       DatepickerFactory.defaults = defaults;
       return DatepickerFactory;
     } ];
-  }).directive('bsDatepicker', [ '$window', '$parse', '$q', '$dateFormatter', '$dateParser', '$datepicker', function($window, $parse, $q, $dateFormatter, $dateParser, $datepicker) {
+  }).directive('bsDatepicker', ["$window", "$parse", "$q", "$bsDateFormatter", "$bsDateParser", "$bsDatepicker", function($window, $parse, $q, $dateFormatter, $dateParser, $datepicker) {
     var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
     return {
       restrict: 'EAC',
@@ -3766,7 +3766,7 @@
         });
       }
     };
-  } ]).provider('datepickerViews', function() {
+  } ]).provider('bsDatepickerViews', function() {
     function split(arr, size) {
       var arrays = [];
       while (arr.length > 0) {
@@ -3777,7 +3777,7 @@
     function mod(n, m) {
       return (n % m + m) % m;
     }
-    this.$get = [ '$dateFormatter', '$dateParser', '$sce', function($dateFormatter, $dateParser, $sce) {
+    this.$get = ["$bsDateFormatter", "$bsDateParser", "$sce", function($dateFormatter, $dateParser, $sce) {
       return function(picker) {
         var scope = picker.$scope;
         var options = picker.$options;
@@ -3992,7 +3992,7 @@
       };
     } ];
   });
-  angular.module('mgcrea.ngStrap.collapse', []).provider('$collapse', function() {
+  angular.module('mgcrea.ngStrap.collapse', []).provider('$bsCollapse', function() {
     var defaults = this.defaults = {
       animation: 'am-collapse',
       disallowToggle: false,
@@ -4091,7 +4091,7 @@
       $collapse.controller = controller;
       return $collapse;
     };
-  }).directive('bsCollapse', [ '$window', '$animate', '$collapse', function($window, $animate, $collapse) {
+  }).directive('bsCollapse', ["$window", "$animate", "$bsCollapse", function($window, $animate, $collapse) {
     return {
       require: [ '?ngModel', 'bsCollapse' ],
       controller: [ '$scope', '$element', '$attrs', $collapse.controller ],
@@ -4139,7 +4139,7 @@
         });
       }
     };
-  }).directive('bsCollapseTarget', [ '$animate', function($animate) {
+  }).directive('bsCollapseTarget', ["$animate", function($animate) {
     return {
       require: [ '^?ngModel', '^bsCollapse' ],
       link: function postLink(scope, element, attrs, controllers) {
@@ -4172,7 +4172,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.aside', [ 'mgcrea.ngStrap.modal' ]).provider('$aside', function() {
+  angular.module('mgcrea.ngStrap.aside', [ 'mgcrea.ngStrap.modal' ]).provider('$bsAside', function() {
     var defaults = this.defaults = {
       animation: 'am-fade-and-slide-right',
       prefixClass: 'aside',
@@ -4187,7 +4187,7 @@
       html: false,
       show: true
     };
-    this.$get = [ '$modal', function($modal) {
+    this.$get = ["$bsModal", function($modal) {
       function AsideFactory(config) {
         var $aside = {};
         var options = angular.extend({}, defaults, config);
@@ -4196,7 +4196,7 @@
       }
       return AsideFactory;
     } ];
-  }).directive('bsAside', [ '$window', '$sce', '$aside', function($window, $sce, $aside) {
+  }).directive('bsAside', ["$window", "$sce", "$bsAside", function($window, $sce, $aside) {
     return {
       restrict: 'EAC',
       scope: true,
@@ -4245,7 +4245,7 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.alert', [ 'mgcrea.ngStrap.modal' ]).provider('$alert', function() {
+  angular.module('mgcrea.ngStrap.alert', [ 'mgcrea.ngStrap.modal' ]).provider('$bsAlert', function() {
     var defaults = this.defaults = {
       animation: 'am-fade',
       prefixClass: 'alert',
@@ -4261,7 +4261,7 @@
       type: false,
       dismissable: true
     };
-    this.$get = [ '$modal', '$timeout', function($modal, $timeout) {
+    this.$get = ["$bsModal", "$timeout", function($modal, $timeout) {
       function AlertFactory(config) {
         var $alert = {};
         var options = angular.extend({}, defaults, config);
@@ -4283,7 +4283,7 @@
       }
       return AlertFactory;
     } ];
-  }).directive('bsAlert', [ '$window', '$sce', '$alert', function($window, $sce, $alert) {
+  }).directive('bsAlert', ["$window", "$sce", "$bsAlert", function($window, $sce, $alert) {
     return {
       restrict: 'EAC',
       scope: true,
@@ -4335,13 +4335,13 @@
       }
     };
   } ]);
-  angular.module('mgcrea.ngStrap.affix', [ 'mgcrea.ngStrap.helpers.dimensions', 'mgcrea.ngStrap.helpers.debounce' ]).provider('$affix', function() {
+  angular.module('mgcrea.ngStrap.affix', [ 'mgcrea.ngStrap.helpers.dimensions', 'mgcrea.ngStrap.helpers.debounce' ]).provider('$bsAffix', function() {
     var defaults = this.defaults = {
       offsetTop: 'auto',
       inlineStyles: true,
       setWidth: true
     };
-    this.$get = [ '$window', 'debounce', 'dimensions', function($window, debounce, dimensions) {
+    this.$get = ["$window", "bsDebounce", "bsDimensions", function($window, debounce, dimensions) {
       var bodyEl = angular.element($window.document.body);
       var windowEl = angular.element($window);
       function AffixFactory(element, config) {
@@ -4487,7 +4487,7 @@
       }
       return AffixFactory;
     } ];
-  }).directive('bsAffix', [ '$affix', '$window', '$timeout', function($affix, $window, $timeout) {
+  }).directive('bsAffix', ["$bsAffix", "$window", "$timeout", function($affix, $window, $timeout) {
     return {
       restrict: 'EAC',
       require: '^?bsAffixTarget',
@@ -4517,7 +4517,7 @@
     };
   } ]).directive('bsAffixTarget', function() {
     return {
-      controller: [ '$element', function($element) {
+      controller: ["$element", function($element) {
         this.$element = $element;
       } ]
     };
