@@ -34,8 +34,14 @@ foreach($this->get("model") as $field) {
 			$this->insertNew("field-bool.php", array("field" => $field));
 		elseif($field->isInt())
 			$this->insertNew("field-int.php", array("field" => $field));
+		elseif($field->isDecimal())
+			$this->insertNew("field-num.php", array("field" => $field));
 		elseif($field->isDate())
 			$this->insertNew("field-date.php", array("field" => $field));
+		elseif($field->isTime())
+			$this->insertNew("field-time.php", array("field" => $field));
+		elseif($field->isDateTime() || $field->isTimestamp())
+			$this->insertNew("field-date-time.php", array("field" => $field));
 		elseif($field->isEmail())
 			$this->insertNew("field-email.php", array("field" => $field));
 		elseif($field->isPassword())

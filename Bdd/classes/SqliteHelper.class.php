@@ -102,10 +102,18 @@ class SqliteHelper extends PDOHelper {
 class SqliteStatementHelper extends PDOStatementHelper {
 	protected function convertType($meta) {
 		switch ($meta["sqlite:decl_type"]) {
+			case "NUMBER":
+				return ModelField::TYPE_DECIMAL;
 			case "INTEGER":
 				return ModelField::TYPE_INT;
 			case "DATETIME":
 				return ModelField::TYPE_DATETIME;
+			case "DATE":
+				return ModelField::TYPE_DATE;
+			case "TIME":
+				return ModelField::TYPE_TIME;
+			case "BLOB":
+				return ModelField::TYPE_BLOB;
 		}
 		return parent::convertType($meta);
 	}

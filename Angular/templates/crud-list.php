@@ -52,13 +52,11 @@
 			<?php elseif($field->isBool()): ?>
 					<span data-ng-show="{{item.<?php echo $field->getName() ?>}}" class="glyphicon glyphicon-ok"></span>
 				<?php elseif($field->isTime()): ?>
-					{{item.<?php echo $field->getName() ?>*1000|date:'mediumTime'}}
+					{{item.<?php echo $field->getName() ?>*1000|date:'<?php echo $this->config('angular.time') ?>'}}
 				<?php elseif($field->isDate()): ?>
-					{{item.<?php echo $field->getName() ?>*1000|date:'mediumDate'}}
-				<?php elseif($field->isDateTime()): ?>
-					{{item.<?php echo $field->getName() ?>*1000|date:'medium'}}
-				<?php elseif($field->isTimestamp()): ?>
-					{{item.<?php echo $field->getName() ?>*1000|date:'medium'}}
+					{{item.<?php echo $field->getName() ?>*1000|date:'<?php echo $this->config("angular.date") ?>'}}
+				<?php elseif($field->isDateTime() || $field->isTimestamp()): ?>
+					{{item.<?php echo $field->getName() ?>*1000|date:'<?php echo $this->config("angular.datetime") ?>'}}
 				<?php else: ?>
 					{{item.<?php echo $field->getName() ?>}}
 				<?php endif; ?>
