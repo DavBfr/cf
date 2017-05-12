@@ -133,6 +133,8 @@ abstract class BddHelper {
 			case ModelField::TYPE_BOOL:
 				return intval($value) != 0;
 			case ModelField::TYPE_DATETIME:
+			case ModelField::TYPE_DATE:
+			case ModelField::TYPE_TIME:
 				if ($value instanceof DateTime)
 					return $value->getTimestamp();
 				try {

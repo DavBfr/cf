@@ -267,9 +267,22 @@ class PDOStatementHelper extends BddCursorHelper {
 
 
 	protected function convertType($meta) {
-		switch ($meta["native_type"]) {
+		switch (strtolower($meta["native_type"])) {
 			case "integer":
+			case "long":
+			case "longlong":
+			case "int":
 				return ModelField::TYPE_INT;
+			case "double":
+				return ModelField::TYPE_DECIMAL;
+			case "date":
+				return ModelField::TYPE_DATE;
+			case "time":
+				return ModelField::TYPE_DATE;
+			case "blob":
+				return ModelField::TYPE_BLOB;
+			case "bool":
+				return ModelField::TYPE_BOOL;
 		}
 		return ModelField::TYPE_TEXT;
 	}
