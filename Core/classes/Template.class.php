@@ -197,7 +197,7 @@ class Template {
 
 	public function config($key, $filter = 'raw', $default = null) {
 		$config = Config::getInstance();
-		$value = $config->get($key, $key, $default);
+		$value = $config->get($key, $default);
 		return $this->filter($value, $filter);
 	}
 
