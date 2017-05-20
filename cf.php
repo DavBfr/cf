@@ -400,7 +400,7 @@ Options::set("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config", "Applicati
 Options::set("CORE_PLUGIN", "Core", "Main plugin to load");
 Options::set("FORCE_HTTPS", false, "Use https by default");
 Options::set("USE_STS", false, "Use Strict Transport Security header");
-Options::set("DEFAULT_TIMEZONE", "Europe/Paris", "Server timezone");
+Options::set("DEFAULT_TIMEZONE", "UTC", "Server timezone");
 Options::set("DEBUG", false, "For developement only");
 Options::set("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
 Options::set("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
