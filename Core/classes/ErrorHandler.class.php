@@ -29,6 +29,7 @@ class ErrorHandler {
 				500 => "Internal server error",
 				204 => "No Content",
 				404 => "Path not found",
+				400 => "Bad Request",
 				401 => "Unauthorized",
 				417 => "Expectation failed",
 	);
@@ -124,8 +125,11 @@ class ErrorHandler {
 	}
 
 
-	public static function error($code, $message = null, $body = null, $backtrace = 2) {
-		self::getInstance()->send_error($code, $message, $body, $backtrace);
+	public static function error($code, $message = null, $body = null, $backtrace = 2, $finish = null) {
+		$i = self::getInstance();
+		if ($finish !== null)
+			$i->raise_exception = !$finish;
+		$i->send_error($code, $message, $body, $backtrace);
 	}
 
 
@@ -154,8 +158,10 @@ class ErrorHandler {
 			Logger::info("[$code] $message: $body");
 		}
 
-		if ($this->raise_exception)
+		if ($this->raise_exception) {
+			$this->inerror = false;
 			throw new Exception($body);
+		}
 
 		header("$protocol $code $message");
 
