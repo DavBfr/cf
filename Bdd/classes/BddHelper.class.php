@@ -133,7 +133,6 @@ abstract class BddHelper {
 			case ModelField::TYPE_BOOL:
 				return intval($value) != 0;
 			case ModelField::TYPE_DATETIME:
-			case ModelField::TYPE_DATE:
 			case ModelField::TYPE_TIME:
 				if ($value instanceof DateTime)
 					return $value->getTimestamp();
@@ -144,6 +143,16 @@ abstract class BddHelper {
 					Logger::Error("Date {$value} invalid: " . $e->getMessage());
 					return $value;
 				}
+			case ModelField::TYPE_DATE:
+			if ($value instanceof DateTime)
+				return $value->getTimestamp() + 43200;
+			try {
+				$value = new DateTime($value);
+				return $value->getTimestamp() + 43200;
+			} catch (Exception $e) {
+				Logger::Error("Date {$value} invalid: " . $e->getMessage());
+				return $value + 43200;
+			}
 		}
 		return $value;
 	}
