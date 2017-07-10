@@ -35,7 +35,11 @@ function CrudService($http, service) {
 		if (filter == undefined)
 			filter = "";
 		$http.get(service_url + "?p="+page+"&q="+filter).success(function (data, status) {
-			onsuccess && onsuccess(data.list, status);
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess(data.list, status);
 		}).error(function (data, status) {
 			if (!restError(data, status))
 				onerror && onerror(data, status);
@@ -46,7 +50,11 @@ function CrudService($http, service) {
 		if (filter == undefined)
 			filter = "";
 		$http.get(service_url + "/count?q="+filter).success(function (data, status) {
-			onsuccess && onsuccess(data);
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess(data);
 		}).error(function (data, status) {
 			if (!restError(data, status))
 				onerror && onerror(data, status);
@@ -55,7 +63,11 @@ function CrudService($http, service) {
 
 	this.add = function (data, onsuccess, onerror) {
 		$http.put(service_url, data).success(function (data, status) {
-			onsuccess && onsuccess(data.id);
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess(data.id);
 		}).error(function (data, status) {
 			if (!restError(data, status))
 				onerror && onerror(data);
@@ -64,7 +76,11 @@ function CrudService($http, service) {
 
 	this.del = function (id, onsuccess, onerror) {
 		$http.delete(service_url + "/" + id).success(function (data, status) {
-			onsuccess && onsuccess();
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess();
 		}).error(function (data, status) {
 			if (!restError(data, status))
 				onerror && onerror(data);
@@ -73,7 +89,11 @@ function CrudService($http, service) {
 
 	this.save = function (id, data, onsuccess, onerror) {
 		$http.post(service_url + "/" + id, data).success(function (data, status) {
-			onsuccess && onsuccess();
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess();
 		}).error(function (data, status) {
 			if (!restError(data, status))
 				onerror && onerror(data);
@@ -82,7 +102,11 @@ function CrudService($http, service) {
 
 	this.getOne = function (id, onsuccess, onerror) {
 		$http.get(service_url + "/get/" + id).success(function (data, status) {
-			onsuccess && onsuccess(data, status);
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess(data, status);
 		}).error(function (data, status) {
 			if (!restError(data, status))
 				onerror && onerror(data, status);
@@ -91,7 +115,11 @@ function CrudService($http, service) {
 
 	this.getNew = function (onsuccess, onerror) {
 		$http.get(service_url + "/new").success(function (data, status) {
-			onsuccess && onsuccess(data, status);
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess(data, status);
 		}).error(function (data, status) {
 			if (!restError(data, status))
 				onerror && onerror(data, status);
@@ -100,7 +128,11 @@ function CrudService($http, service) {
 
 	this.getForeign = function (field, onsuccess, onerror) {
 		$http.get(service_url + "/foreign/" + field).success(function (data, status) {
-			onsuccess && onsuccess(data, status);
+			if (status != 200) {
+				if (!restError(data, status))
+					onerror && onerror(data, status);
+			} else
+				onsuccess && onsuccess(data, status);
 			}).error(function (data, status) {
 				if (!restError(data, status))
 					onerror && onerror(data, status);
