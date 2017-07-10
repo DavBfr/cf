@@ -50,7 +50,7 @@ class Output {
 
 
 	public static function error($message, $code = 400) {
-		ErrorHandler::error($code, NULL, $message, 3, true);
+		ErrorHandler::error($code, $message, json_encode(array("error" => $message)), 3, true);
 	}
 
 
