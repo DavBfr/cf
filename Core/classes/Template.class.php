@@ -21,6 +21,7 @@ class Template {
 	const TEMPLATES_DIR = "templates";
 
 	private $params;
+	private $caching = true;
 
 
 	public function __construct($params = array()) {
@@ -104,6 +105,11 @@ class Template {
 	}
 
 
+	public function disable_cache() {
+		$this->caching = false;
+	}
+
+
 	public function outputCached($filename, $contentType = "text/html", $encoding = "utf-8") {
 		while (ob_get_length())
 			ob_end_clean();
@@ -122,7 +128,9 @@ class Template {
 		if ($contentMin !== NULL)
 			$content = $contentMin;
 
-		$cache->setContents($content);
+		if ($this->caching)
+			$cache->setContents($content);
+
 		echo $content;
 		Output::finish();
 	}
@@ -248,6 +256,8 @@ class Template {
 		if (DEBUG) {
 			$options['debug'] = DEBUG;
 		}
+
+		$this->disable_cache();
 
 		echo json_encode($options);
 	}
