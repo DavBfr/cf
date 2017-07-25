@@ -49,6 +49,7 @@ abstract class Crud extends Rest {
 			"list_partial" => "crud-list.php",
 			"detail_partial" => "crud-detail.php",
 			"limit" => CRUD_LIMIT,
+			"foreign_limit" => null,
 		);
 	}
 
@@ -119,7 +120,7 @@ abstract class Crud extends Rest {
 		->SelectAs($bdd->quoteIdent($key), $bdd->quoteIdent('key'))
 		->SelectAs($bdd->quoteIdent($value), $bdd->quoteIdent('val'))
 		->orderBy($bdd->quoteIdent($value))
-		->limit($this->options["limit"]);
+		->limit($this->options["foreign_limit"]);
 
 		if (Input::has("q") && strlen(Input::get("q")) > 0) {
 			$col->filter(Input::get("q"));
