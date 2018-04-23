@@ -1,0 +1,22 @@
+{
+	"name": "davbfr/@NAME@",
+	"description": "CoreFramework Plugin",
+	"keywords": ["framework", "cf"],
+	"homepage": "@CF_URL@",
+	"license": "MIT",
+	"require": {
+		"php": ">=5.2.0",
+		"davbfr/cf": "*",
+	},
+	"authors": [{
+		"name": "@CF_AUTHOR@",
+		"email": "@CF_EMAIL@",
+		"homepage": "@CF_URL@",
+		"role": "Developer"
+	}],
+	"autoload": {
+		"classmap": [
+			"@NAME@.plugin.php",
+		]
+	}
+}
