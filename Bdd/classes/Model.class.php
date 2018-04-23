@@ -247,7 +247,8 @@ abstract class Model {
 	public function getForeign($field) {
 		if (array_key_exists($field, $this->fields)) {
 			list($table, $key, $value) = $this->fields[$field]->getForeign();
-			return new $table;
+			$className = __NAMESPACE__ . "\\" . ucfirst($table) . "Model";
+			return new $className;
 		}
 
 		return;
