@@ -88,36 +88,42 @@ class SkelPlugin extends Plugins {
 
 
 	public function pluginCreate() {
-		$name = Cli::addOption('name', null, 'Plugin name');
+		$names = Cli::getInputs('name', 'Plugin name');
 		Cli::enableHelp();
 
-		if ($name === null) {
+		if (count($names) == 0) {
 			Cli::pfatal("Missing plugin name");
 		}
 
-		$dest = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
-		if (file_exists($dest)) {
-			if (!Cli::question("A plugin with this name already exists, do you want to replace?")) {
-				System::rmtree($dest);
-			} else {
-				return;
+		foreach($names as $name) {
+			$dest = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
+			if (file_exists($dest)) {
+				if (!Cli::question("A plugin with this name already exists, do you want to replace?")) {
+					System::rmtree($dest);
+				} else {
+					return;
+				}
 			}
-		}
 
-		Cli::pinfo("Create CF plugin '$name'");
-		System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "plugin", $dest);
-		rename($dest . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "config.json", $dest . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "$name.json");
-		rename($dest . DIRECTORY_SEPARATOR . "plugin.php", $dest . DIRECTORY_SEPARATOR . "$name.plugin.php");
+			Cli::pinfo("Create CF plugin '$name'");
+			System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "plugin", $dest);
+			rename($dest . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "config.json", $dest . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "$name.json");
+			rename($dest . DIRECTORY_SEPARATOR . "plugin.php", $dest . DIRECTORY_SEPARATOR . "$name.plugin.php");
 
-		foreach(array("composer.json", "$name.plugin.php") as $file) {
-			Cli::pinfo(" * Update $file");
-			$content = file_get_contents($dest . DIRECTORY_SEPARATOR . $file);
-			foreach(Options::getAll() as $key => $val) {
-				$content = str_replace("@$key@", $val, $content);
+			foreach(array("composer.json", "$name.plugin.php") as $file) {
+				Cli::pinfo(" * Update $file");
+				$content = file_get_contents($dest . DIRECTORY_SEPARATOR . $file);
+				foreach(Options::getAll() as $key => $val) {
+					$content = str_replace("@$key@", $val, $content);
+				}
+				$content = str_replace("@DATE@", date("r"), $content);
+				$content = str_replace("@NAME@", $name, $content);
+				file_put_contents($dest . DIRECTORY_SEPARATOR . $file, $content);
 			}
-			$content = str_replace("@DATE@", date("r"), $content);
-			$content = str_replace("@NAME@", $name, $content);
-			file_put_contents($dest . DIRECTORY_SEPARATOR . $file, $content);
+			
+			foreach(array("model", "requests", "www", "classes") as $name) {
+				System::ensureDir($dest . DIRECTORY_SEPARATOR . $name);
+			}
 		}
 	}
 
