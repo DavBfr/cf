@@ -116,8 +116,11 @@ class Plugins {
 	}
 
 
-	public static function get_plugins() {
-		return array_merge(self::$app_list, self::$plugins_list, self::$core_list);
+	public static function get_plugins($reversed=false) {
+		if ($reversed)
+			return array_merge(array_reverse(self::$app_list), array_reverse(self::$plugins_list), array_reverse(self::$core_list));
+		else
+			return array_merge(self::$app_list, self::$plugins_list, self::$core_list);
 	}
 
 
@@ -126,7 +129,7 @@ class Plugins {
 	}
 
 
-	public static function find($filename) {
+	public static function find($filename, $reversed=true) {
 		if (class_exists("MemCache", true)) {
 			$memcached = new MemCache();
 			if ($memcached->offsetExists("plugin." . $filename))
@@ -134,7 +137,7 @@ class Plugins {
 		} else {
 			$memcached = array();
 		}
-		foreach(self::get_plugins() as $plugin) {
+		foreach(self::get_plugins($reversed) as $plugin) {
 			$resource = self::get($plugin)->getDir() . DIRECTORY_SEPARATOR . $filename;
 			if (file_exists($resource)) {
 				$memcached["plugin." . $filename] = $resource;
