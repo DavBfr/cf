@@ -144,7 +144,7 @@ abstract class Model {
 
 			$className = ucfirst($table) . "Model";
 			$filename = BddPlugin::MODEL_DIR . "/" . $className . ".class.php";
-			if (file_exists($filename))
+			if (Plugins::find($filename))
 				continue;
 
 			if (array_key_exists("__baseClassName__", $columns)) {
