@@ -234,7 +234,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 
 	$scope.save = function(id, data) {
 		$scope.loading = true;
-		for (item in data) {
+		for (var item in data) {
 			if (data[item] instanceof Date) {
 				data[item] = data[item].getTime()/1000;
 			}
