@@ -61,6 +61,11 @@ class SkelPlugin extends Plugins {
 		foreach($conf->get("plugins", array()) as $plugin) {
 			Plugins::add($plugin);
 		}
+		if (DEBUG) {
+			foreach($conf->get("debugPlugins", array()) as $plugin) {
+				Plugins::add($plugin);
+			}
+		}
 		Cli::install();
 		Options::updateConf(array("DEBUG" => true));
 	}

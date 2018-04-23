@@ -66,6 +66,11 @@ class CorePlugin extends Plugins {
 			foreach($conf->get("plugins", array()) as $plugin) {
 				Plugins::add($plugin);
 			}
+			if (DEBUG) {
+				foreach($conf->get("debugPlugins", array()) as $plugin) {
+					Plugins::add($plugin);
+				}
+			}
 		} else {
 			$cache = Cache::Priv(self::config, ".php");
 			if ($cache->check()) {
@@ -91,6 +96,11 @@ class CorePlugin extends Plugins {
 				foreach($conf->get("plugins", array()) as $plugin) {
 					Plugins::add($plugin);
 				}
+				if (DEBUG) {
+					foreach($conf->get("debugPlugins", array()) as $plugin) {
+						Plugins::add($plugin);
+					}
+				}
 				foreach (array_reverse(Plugins::findAll(self::config)) as $dirname) {
 					if (file_exists($dirname . "/config.json")) {
 						$conf->append($dirname . "/config.json");
@@ -109,6 +119,11 @@ class CorePlugin extends Plugins {
 				$conf->setData(ArrayWriter::fromFile($cache->getFilename()));
 				foreach($conf->get("plugins", array()) as $plugin) {
 					Plugins::add($plugin);
+				}
+				if (DEBUG) {
+					foreach($conf->get("debugPlugins", array()) as $plugin) {
+						Plugins::add($plugin);
+					}
 				}
 			}
 			$memcache["JCONFIG_FILE"] = $conf->getData();
