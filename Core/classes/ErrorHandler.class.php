@@ -167,6 +167,8 @@ class ErrorHandler {
 
 		if ($code < 500 && $code != 404) {
 			echo $body;
+			if (DEBUG)
+				echo "\n";
 			Output::finish($code);
 		}
 
