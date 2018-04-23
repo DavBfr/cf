@@ -99,6 +99,8 @@ abstract class AbstractLogin extends Rest {
 			} else {
 				$rights = array();
 			}
+
+			Session::setXsrfToken();
 			Output::success(array("user" => $user, "rights" => $rights));
 		}
 		ErrorHandler::error(401);

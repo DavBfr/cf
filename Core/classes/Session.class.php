@@ -19,6 +19,7 @@
 
 class Session {
 	const rights_key = "RIGHTS";
+	const xsrf_token = "XSRF_TOKEN";
 
 	private static $instance = null;
 
@@ -65,6 +66,10 @@ class Session {
 		if (ini_get("session.use_cookies")) {
 			$params = session_get_cookie_params();
 			setcookie(session_name(), '', time() - 42000,
+				$params["path"], $params["domain"],
+				$params["secure"], $params["httponly"]
+			);
+			setcookie(XSRF_TOKEN, '', time() - 42000,
 				$params["path"], $params["domain"],
 				$params["secure"], $params["httponly"]
 			);
@@ -177,7 +182,37 @@ class Session {
 
 
 	public static function ensureLoggedinUser() {
-		if (!is_logged()) {
+		if (!self::isLogged()) {
+			ErrorHandler::error(401);
+		}
+	}
+
+
+	public static function setXsrfToken() {
+		$pwd = new Password();
+		$token = substr($pwd->hash($pwd->getRandomBytes(32)), 7);
+		Session::Set(self::xsrf_token, $token);
+		$params = session_get_cookie_params();
+		setcookie(XSRF_TOKEN, $token, $params["lifetime"], $params["path"], $params["domain"],
+		$params["secure"], false);
+	}
+
+
+	public static function checkXsrfToken() {
+		if (DEBUG)
+			return true;
+
+		$headers = array_change_key_case(getallheaders(), CASE_LOWER);
+
+		if (!array_key_exists(XSRF_HEADER, $headers))
+			return false;
+
+		return Session::Get(self::xsrf_token) == $headers[XSRF_HEADER];
+	}
+
+
+	public static function ensureXsrfToken() {
+		if (!self::checkXsrfToken()) {
 			ErrorHandler::error(401);
 		}
 	}

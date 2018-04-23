@@ -53,6 +53,8 @@ Options::set("LANG_AUTODETECT", true, "Try to autodetect user language");
 Options::set("CF_URL", "https://github.com/DavBfr/cf");
 Options::set("CF_AUTHOR", "David PHAM-VAN");
 Options::set("CF_EMAIL", "dev.nfet.net@gmail.com");
+Options::set("XSRF_TOKEN", "XSRF-TOKEN");
+Options::set("XSRF_HEADER", "x-xsrf-token");
 
 class CorePlugin extends Plugins {
 	const config = "config";
