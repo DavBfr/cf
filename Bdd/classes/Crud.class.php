@@ -114,7 +114,13 @@ abstract class Crud extends Rest {
 		$field = $this->model->getField($name);
 		$bdd = Bdd::getInstance();
 
-		list($table, $key, $value) = $field->getForeign();
+		$foreign = $field->getForeign();
+		if (is_string($foreign)) {
+			$conf = Config::getInstance();
+			Output::success(array("list"=>$conf->get($foreign)));
+		}
+
+		list($table, $key, $value) = $foreign;
 		$foreignModel = Model::getModel($table);
 		$col = Collection::Query($table)
 		->SelectAs($bdd->quoteIdent($key), $bdd->quoteIdent('key'))
