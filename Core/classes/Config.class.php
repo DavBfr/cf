@@ -36,24 +36,6 @@ class Config implements \arrayaccess {
 	}
 
 
-	public static function jsonLastErrorMsg() {
-		if (!function_exists('json_last_error_msg')) {
-			static $errors = array(
-					JSON_ERROR_NONE             => null,
-					JSON_ERROR_DEPTH            => 'Maximum stack depth exceeded',
-					JSON_ERROR_STATE_MISMATCH   => 'Underflow or the modes mismatch',
-					JSON_ERROR_CTRL_CHAR        => 'Unexpected control character found',
-					JSON_ERROR_SYNTAX           => 'Syntax error, malformed JSON',
-					JSON_ERROR_UTF8             => 'Malformed UTF-8 characters, possibly incorrectly encoded'
-			);
-			$error = json_last_error();
-			return array_key_exists($error, $errors) ? $errors[$error] : "Unknown error ({$error})";
-		}
-
-		return json_last_error_msg();
-	}
-
-
 	public function load($filename) {
 		$this->data = array();
 		$this->append($filename);
@@ -71,10 +53,12 @@ class Config implements \arrayaccess {
 
 
 	public function append($filename, $reverse = false, $subkey = null) {
-		$data = json_decode(file_get_contents($filename), true);
-		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, null, "Error in ${filename} : " . self::jsonLastErrorMsg());
+		try {
+			$data = Input::jsonDecode(file_get_contents($filename));
+		} catch (\Exception $e) {
+			ErrorHandler::error(500, null, "Error in $filename: $e");
 		}
+
 		if ($subkey !== null) {
 			$data = array($subkey => $data);
 		}
@@ -93,10 +77,12 @@ class Config implements \arrayaccess {
 
 
 	public function loadAsKey($key, $filename) {
-		$data = json_decode(file_get_contents($filename), true);
-		if (json_last_error() !== JSON_ERROR_NONE) {
-			ErrorHandler::error(500, null, "Error in ${filename} : " . self::jsonLastErrorMsg());
+		try {
+			$data = Input::jsonDecode(file_get_contents($filename));
+		} catch (\Exception $e) {
+			ErrorHandler::error(500, null, "Error in $filename: $e");
 		}
+
 		$this->data[$key] = $data;
 		Logger::debug("Config $filename loaded");
 	}

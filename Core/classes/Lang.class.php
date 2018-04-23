@@ -26,12 +26,11 @@ class Lang {
 	protected static $baselang;
 
 
-
 	public static function load($filename, $lang = null) {
 		if (!is_file($filename))
 			throw new Exception("Can't find translation file \"${filename}\"");
 
-		$words = json_decode(file_get_contents($filename), true);
+		$words = Input::jsonDecode(file_get_contents($filename));
 		self::setWords($words, $lang);
 	}
 

@@ -86,7 +86,7 @@ class MessageQueue {
 			pcntl_alarm(0);
 
 		Logger::debug("Message pulled from queue - type:{$msg_type}");
-		return array("msg" => json_decode($msg), "type" => $msg_type);
+		return array("msg" => Input::jsonDecode($msg), "type" => $msg_type);
 	}
 
 

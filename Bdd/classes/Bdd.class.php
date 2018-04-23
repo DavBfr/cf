@@ -94,7 +94,7 @@ class Bdd {
 		$bdd = self::getInstance();
 		foreach($files as $filename) {
 			Cli::pinfo("Import $filename in database");
-			$data = json_decode(file_get_contents($filename));
+			$data = Input::jsonDecode(file_get_contents($filename));
 			$bdd->import($data);
 		}
 	}
