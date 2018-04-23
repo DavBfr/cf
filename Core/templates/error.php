@@ -49,7 +49,7 @@
 	<?php endif; ?>
 <?php
 	$bt = $this->get("backtrace");
-	if (count($bt) > 0) {
+	if (is_array($bt) && count($bt) > 1) {
 		try {
 			$file = file_get_contents($bt[0][0]);
 			$file = explode("\n", $file);
