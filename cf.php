@@ -60,7 +60,7 @@ class Plugins {
 		$class_fullname = __NAMESPACE__ . "\\" . $class_name . "Plugin";
 
 		if (class_exists($class_fullname)) {
-			$reflector = new ReflectionClass($class_fullname);
+			$reflector = new \ReflectionClass($class_fullname);
 			$dir = dirname($reflector->getFileName());
 			unset($reflector);
 		}
