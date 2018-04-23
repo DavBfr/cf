@@ -28,7 +28,7 @@ class Session {
 			ErrorHandler::error(500, "Session already started");
 
 		session_name(SESSION_NAME);
-		session_set_cookie_params(0, SESSION_PATH, SESSION_DOMAIN, FORCE_HTTPS, true);
+		session_set_cookie_params(0, SESSION_PATH . '; samesite=' . SESSION_SAME_SITE, SESSION_DOMAIN, FORCE_HTTPS, true);
 		session_start();
 
 		if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > SESSION_TIMEOUT)) {

@@ -42,6 +42,7 @@ Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"), "Cookie Life 
 Options::set("SESSION_REGENERATE", SESSION_TIMEOUT, "Time to regenerate the cookie");
 Options::set("SESSION_PATH", ini_get("session.cookie_path"), "Cookie path");
 Options::set("SESSION_DOMAIN", ini_get("session.cookie_domain"), "Cookie domain name");
+Options::set("SESSION_SAME_SITE", "strict", "Cookie same site policy");
 Options::set("API_TOKEN_HEADER", "cf-token", "Api token name");
 Options::set("ERROR_TEMPLATE", "error.php", "Error template");
 Options::set("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache", "Cache directory");
