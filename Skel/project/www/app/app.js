@@ -1,6 +1,6 @@
 if (typeof angular != 'undefined') {
 
-  var app = angular.module('app', ['ngRoute', 'ngAnimate', 'mgcrea.ngStrap', 'ui.select']);
+  var app = angular.module('app', []);
 
   app.config(function ($routeProvider) {
     if (typeof AddUserRoutes != 'undefined') {

@@ -30,8 +30,6 @@ class AngularPlugin extends Plugins {
 		$res->add("angular/angular.js");
 		$res->add("angular/angular-route.js");
 		$res->add("angular/angular-animate.js");
-		$res->add("angular-strap/angular-strap.js");
-		$res->add("angular-strap/angular-strap.tpl.js");
 		$res->add("ui-select/select.js");
 		$res->add("ui-select/select.css");
 	}
