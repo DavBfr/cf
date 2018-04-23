@@ -21,7 +21,7 @@ abstract class Rest {
 	const REQUEST_DIR = "request";
 	const REQUEST_PREFIX = "|^v\d+/|";
 
-
+	private $list = array();
 	private $routes = array();
 	private $complex_routes = array();
 	private $jsonpost_data = null;
@@ -36,7 +36,9 @@ abstract class Rest {
 	}
 
 
-	protected function addRoute($path, $method, $callback) {
+	protected function addRoute($path, $method, $callback, $openapi = array()) {
+		$this->list[] = array($path, $method, $callback, $openapi);
+
 		if (strpos($path, ":") !== false) {
 			$vars = array();
 			$aPath = explode("/", $path);
@@ -169,4 +171,108 @@ abstract class Rest {
 		ErrorHandler::error(204);
 	}
 
+
+	public function buildApi() {
+		$classname = explode('\\', get_class($this));
+		$tag = substr(array_pop($classname), 0, -4);
+		// Todo: Manage special cases
+		// $request = str_replace(".", "_", $request);
+		// $request = str_replace("-", " ", $request);
+		// $request = ucwords($request);
+		// $request = str_replace(" ", "", $request) . "Rest";
+		$prefix = "/" . strtolower($tag);
+
+		$paths = array();
+		foreach($this->list as $route) {
+			list($path, $method, $callback, $openapi) = $route;
+			$path = $prefix . $path;
+			$vars = array();
+
+			if (strpos($path, ":") !== false) {
+				$aPath = explode("/", $path);
+				foreach($aPath as $key => $item) {
+					if (substr($item, 0, 1) == ":") {
+						$item = substr($item, 1);
+						$vars[] = array(
+							"name" => $item,
+							"in" => "path",
+							"required" => true,
+							"description" => $item,
+							"schema" => array("type" => "string"),
+						);
+						$aPath[$key] = "{" . $item . "}";
+					}
+				}
+				$path = implode("/", $aPath);
+			}
+
+			if (! array_key_exists($path, $paths))
+				$paths[$path] = array();
+
+			$paths[$path][strtolower($method)] = array_merge(array(
+				"summary" => $callback,
+				"tags" => array($tag),
+				"operationId" => $callback,
+				"parameters" => $vars,
+				"responses" => array(
+					200 => array("description" => "OK"),
+					400 => array("description" => ErrorHandler::$messagecode[400]),
+					401 => array("description" => ErrorHandler::$messagecode[401]),
+					417 => array("description" => ErrorHandler::$messagecode[417]),
+					500 => array("description" => ErrorHandler::$messagecode[500]),
+				),
+			), $openapi);
+		}
+
+		return $paths;
+	}
+
+
+	public static function getOpenApi() {
+		$config = Config::getInstance();
+		$authors = $config->get("composer.authors");
+
+		$api = array(
+			"openapi" => "3.0.0",
+			"info" => array(
+				"version" => $config->get("composer.version"),
+				"title" => $config->get("title"),
+				"description" => $config->get("description"),
+				"contact" => array(
+					"name" => $authors[0]["name"],
+					"email" => $authors[0]["email"],
+				),
+			),
+			"license" => array(
+				"name" => $config->get("composer.license"),
+			),
+			"servers" => array(
+				array("url" => "http" . ($_SERVER["HTTPS"] ? "s" : "") . "://" . $_SERVER['HTTP_HOST'] . REST_PATH),
+			),
+		);
+
+		$paths = array();
+		foreach(Plugins::get_plugins() as $plugin) {
+			$request = Plugins::get($plugin)->getDir() . DIRECTORY_SEPARATOR . Rest::REQUEST_DIR;
+			$files = glob($request . DIRECTORY_SEPARATOR . "*Rest.class.php");
+			foreach($files as $file) {
+				$cn = __NAMESPACE__ . "\\" .substr(basename($file), 0, -10);
+				try {
+					if (!class_exists($cn, false)) {
+						require_once($file);
+					}
+					$req = new $cn();
+				} catch (Exception $e) {
+					$paths[] = "$file";
+					continue;
+				}
+
+				$paths = array_merge($paths, $req->buildApi());
+			}
+		}
+
+		$api["paths"] = $paths;
+
+		return $api;
+	}
 }
