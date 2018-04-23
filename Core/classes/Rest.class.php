@@ -92,11 +92,16 @@ abstract class Rest {
 		$this->mp = $method . "@" . $path;
 
 		if (isset($this->routes[$this->mp])) {
-			if (!$this->preCheck($this->mp)) {
-				ErrorHandler::error(401);
+			restore_exception_handler();
+			try {
+				if (!$this->preCheck($this->mp)) {
+					ErrorHandler::error(401);
+				}
+				$this->preProcess(array());
+				call_user_func(array($this, $this->routes[$this->mp]), array());
+			} catch(\Exception $e) {
+				ErrorHandler::getInstance()->exceptionHandler($e);
 			}
-			$this->preProcess(array());
-			call_user_func(array($this, $this->routes[$this->mp]), array());
 			ErrorHandler::error(204);
 		} else {
 			foreach($this->complex_routes as $cPath => $route) {
@@ -109,11 +114,16 @@ abstract class Rest {
 							$pa[$k] = $matches[$i + 1];
 						}
 						$this->mp = $cPath;
-						if (!$this->preCheck($this->mp)) {
-							ErrorHandler::error(401);
+						restore_exception_handler();
+						try {
+							if (!$this->preCheck($this->mp)) {
+								ErrorHandler::error(401);
+							}
+							$this->preProcess($pa);
+							call_user_func(array($this, $c), $pa);
+						} catch(\Exception $e) {
+							ErrorHandler::getInstance()->exceptionHandler($e);
 						}
-						$this->preProcess($pa);
-						call_user_func(array($this, $c), $pa);
 						ErrorHandler::error(204);
 					}
 				}
