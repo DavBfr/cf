@@ -112,6 +112,9 @@ abstract class Crud extends Rest {
 		Input::ensureRequest($r, array("name"));
 		$name = $r["name"];
 		$field = $this->model->getField($name);
+		if ($field == null)
+			ErrorHandler::error(400);
+
 		$bdd = Bdd::getInstance();
 
 		$foreign = $field->getForeign();
