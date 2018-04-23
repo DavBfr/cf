@@ -62,16 +62,16 @@ abstract class Crud extends Rest {
 
 
 	public function getRoutes() {
-		$this->addRoute("/", "GET", "get_list");
-		$this->addRoute("/count", "GET", "get_count");
-		$this->addRoute("/list", "GET", "get_list_partial");
-		$this->addRoute("/detail", "GET", "get_detail_partial");
-		$this->addRoute("/new", "GET", "get_new");
-		$this->addRoute("/get/:id", "GET", "get_item");
-		$this->addRoute("/:id", "DELETE", "delete_item");
-		$this->addRoute("/", "PUT", "new_item");
-		$this->addRoute("/:id", "POST", "update_item");
-		$this->addRoute("/foreign/:name", "GET", "get_foreign");
+		$this->addRoute("/", "GET", "get_list", array("description" => "Return elements in the list", "parameters"=>array(array("name" => "q", "description" => "List filter", "schema" => array("type" => "string"), "in" => "query"), array("name" => "p", "description" => "Page number", "schema" => array("type" => "integer"), "in" => "query"))));
+		$this->addRoute("/count", "GET", "get_count", array("description" => "Return the number of elements in the list", "parameters"=>array(array("name" => "q", "description" => "List filter", "schema" => array("type" => "string"), "in" => "query"))));
+		$this->addRoute("/list", "GET", "get_list_partial", array("description" => "Return the listing template"));
+		$this->addRoute("/detail", "GET", "get_detail_partial", array("description" => "Return the editor template"));
+		$this->addRoute("/new", "GET", "get_new", array("description" => "Return default data for a new entry"));
+		$this->addRoute("/get/:id", "GET", "get_item", array("description" => "Return data for the entry {id}"));
+		$this->addRoute("/:id", "DELETE", "delete_item", array("description" => "Delete the entry {id}"));
+		$this->addRoute("/", "PUT", "new_item", array("description" => "Create a new entry"));
+		$this->addRoute("/:id", "POST", "update_item", array("description" => "Update the entry {id}"));
+		$this->addRoute("/foreign/:name", "GET", "get_foreign", array("description" => "Get the data for foreign {name}"));
 	}
 
 

@@ -191,6 +191,12 @@ abstract class Rest {
 		// $request = ucwords($request);
 		// $request = str_replace(" ", "", $request) . "Rest";
 		$prefix = "/" . strtolower($tag);
+		
+		$class = new \ReflectionClass($this);
+		$path = basename(dirname($class->getFileName()));
+		if (preg_match("|v\d+|", $path, $matches) != false) {
+			$prefix = "/" . $path . $prefix;
+		}
 
 		$paths = array();
 		foreach($this->list as $route) {
@@ -264,7 +270,7 @@ abstract class Rest {
 		$paths = array();
 		foreach(Plugins::get_plugins() as $plugin) {
 			$request = Plugins::get($plugin)->getDir() . DIRECTORY_SEPARATOR . Rest::REQUEST_DIR;
-			$files = glob($request . DIRECTORY_SEPARATOR . "*Rest.class.php");
+			$files = System::globRec($request . DIRECTORY_SEPARATOR . "*Rest.class.php");
 			foreach($files as $file) {
 				$cn = __NAMESPACE__ . "\\" .substr(basename($file), 0, -10);
 				try {
@@ -273,7 +279,6 @@ abstract class Rest {
 					}
 					$req = new $cn();
 				} catch (Exception $e) {
-					$paths[] = "$file";
 					continue;
 				}
 
