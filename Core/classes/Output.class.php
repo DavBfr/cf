@@ -40,6 +40,8 @@ class Output {
 			$object["__debug__"] = $content;
 		}
 		echo json_encode($object);
+		if (DEBUG)
+			echo "\n";
 		self::finish();
 	}
 
