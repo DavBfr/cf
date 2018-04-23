@@ -128,6 +128,17 @@ class System {
 	}
 
 
+	public static function globRec($pattern, $flags = 0) {
+		$files = glob($pattern, $flags);
+
+		foreach (glob(dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
+			$files = array_merge($files, self::globRec($dir . DIRECTORY_SEPARATOR . basename($pattern), $flags));
+		}
+
+		return $files;
+	}
+
+
 	public static function sanitize($filename) {
 		$filename = preg_replace("([^\w\d\-_.])", '-', $filename);
 		$filename = preg_replace("([\.]{2,})", '', $filename);
