@@ -24,6 +24,8 @@ class Output {
 		if ($code == 0) {
 			Logger::debug("Response time: " . (microtime(true) - START_TIME));
 		}
+
+		error_clear_last();
 		exit($code);
 	}
 
