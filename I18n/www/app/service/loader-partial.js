@@ -49,10 +49,10 @@ angular.module('pascalprecht.translate')
       $http({
         method : 'GET',
         url : this.parseUrl(urlTemplate, lang)
-      }).success(function(data){
-        self.tables[lang] = data;
-        deferred.resolve(data);
-      }).error(function() {
+      }).then(function(response){
+        self.tables[lang] = response.data;
+        deferred.resolve(response.data);
+      }, function() {
         if (errorHandler) {
           errorHandler(self.name, lang).then(function(data) {
             self.tables[lang] = data;

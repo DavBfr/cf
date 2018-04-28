@@ -28,9 +28,9 @@ angular.module('pascalprecht.translate')
       url: options.url,
       params: { lang: options.key },
       method: 'GET'
-    }).success(function (data) {
-      deferred.resolve(data);
-    }).error(function (data) {
+    }).then(function (r) {
+      deferred.resolve(r.data);
+    }, function (r) {
       deferred.reject(options.key);
     });
 

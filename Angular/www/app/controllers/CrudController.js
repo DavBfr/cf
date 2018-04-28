@@ -25,117 +25,117 @@ function CrudService($http, service) {
 	
 	this.getServiceUrl = function() {
 		return service_url;
-	}
+	};
 
 	this.get_list = function (filter, page, onsuccess, onerror) {
 		if (page<0) {
 			onsuccess && onsuccess([], 200);
 			return;
 		}
-		if (filter == undefined)
+		if (filter === undefined)
 			filter = "";
-		$http.get(service_url + "?p="+page+"&q="+filter).success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.get(service_url + "?p="+page+"&q="+filter).then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
-				onsuccess && onsuccess(data.list, status);
-		}).error(function (data, status) {
-			if (!restError(data, status))
-				onerror && onerror(data, status);
+				onsuccess && onsuccess(response.data.list, response.status);
+		}, function (response) {
+			if (!restError(response))
+				onerror && onerror(response.data, response.status);
 		});
 	};
 
 	this.get_count = function (filter, onsuccess, onerror) {
-		if (filter == undefined)
+		if (filter === undefined)
 			filter = "";
-		$http.get(service_url + "/count?q="+filter).success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.get(service_url + "/count?q="+filter).then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
-				onsuccess && onsuccess(data);
-		}).error(function (data, status) {
-			if (!restError(data, status))
-				onerror && onerror(data, status);
+				onsuccess && onsuccess(response.data);
+		}, function (response) {
+			if (!restError(response))
+				onerror && onerror(response.data, response.status);
 		});
 	};
 
 	this.add = function (data, onsuccess, onerror) {
-		$http.put(service_url, data).success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.put(service_url, data).then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
 				onsuccess && onsuccess(data.id);
-		}).error(function (data, status) {
-			if (!restError(data, status))
-				onerror && onerror(data);
+		}, function (response) {
+			if (!restError(response))
+				onerror && onerror(response.data);
 		});
 	};
 
 	this.del = function (id, onsuccess, onerror) {
-		$http.delete(service_url + "/" + id).success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.delete(service_url + "/" + id).then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
 				onsuccess && onsuccess();
-		}).error(function (data, status) {
-			if (!restError(data, status))
-				onerror && onerror(data);
+		}, function (response) {
+			if (!restError(response))
+				onerror && onerror(response.data);
 		});
 	};
 
 	this.save = function (id, data, onsuccess, onerror) {
-		$http.post(service_url + "/" + id, data).success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.post(service_url + "/" + id, data).then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
 				onsuccess && onsuccess();
-		}).error(function (data, status) {
-			if (!restError(data, status))
-				onerror && onerror(data);
+		}, function (response) {
+			if (!restError(response))
+				onerror && onerror(response.data);
 		});
 	};
 
 	this.getOne = function (id, onsuccess, onerror) {
-		$http.get(service_url + "/get/" + id).success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.get(service_url + "/get/" + id).then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
-				onsuccess && onsuccess(data, status);
-		}).error(function (data, status) {
-			if (!restError(data, status))
-				onerror && onerror(data, status);
+				onsuccess && onsuccess(response.data, response.status);
+		}, function (response) {
+			if (!restError(response))
+				onerror && onerror(response.data, response.status);
 		});
 	};
 
 	this.getNew = function (onsuccess, onerror) {
-		$http.get(service_url + "/new").success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.get(service_url + "/new").then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
-				onsuccess && onsuccess(data, status);
-		}).error(function (data, status) {
-			if (!restError(data, status))
-				onerror && onerror(data, status);
+				onsuccess && onsuccess(response.data, response.status);
+		}, function (response) {
+			if (!restError(response))
+				onerror && onerror(response.data, response.status);
 		});
 	};
 
 	this.getForeign = function (field, onsuccess, onerror) {
-		$http.get(service_url + "/foreign/" + field).success(function (data, status) {
-			if (status != 200) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+		$http.get(service_url + "/foreign/" + field).then(function (response) {
+			if (response.status !== 200) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			} else
-				onsuccess && onsuccess(data, status);
-			}).error(function (data, status) {
-				if (!restError(data, status))
-					onerror && onerror(data, status);
+				onsuccess && onsuccess(response.data, response.status);
+			}, function (response) {
+				if (!restError(response))
+					onerror && onerror(response.data, response.status);
 			});
 	};
 

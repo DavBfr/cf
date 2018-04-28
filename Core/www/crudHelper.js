@@ -1,6 +1,6 @@
-function restError(data, status) {
+function restError(response) {
 	if (cf_options.debug) {
-		if (status == 500) {
+		if (response.status === 500) {
 			var div = document.createElement('div');
 			var iframe = document.createElement('iframe');
 			var btn = document.createElement('div');
@@ -15,7 +15,7 @@ function restError(data, status) {
 			div.appendChild(iframe);
 			document.body.appendChild(div);
 			iframe.contentWindow.document.open();
-			iframe.contentWindow.document.write(data);
+			iframe.contentWindow.document.write(response.data);
 			iframe.contentWindow.document.close();
 			return true;
 		}
