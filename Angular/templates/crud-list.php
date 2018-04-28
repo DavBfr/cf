@@ -6,7 +6,10 @@
 	<?php if ($this->get("can_filter")): ?>
 	<div class="form-group">
 		<label class="sr-only" for="filter"><?php $this->tr("core.filter") ?></label>
-		<input type="search" class="form-control" id="filter" placeholder="<?php $this->tr("core.filter") ?>" data-ng-model="filter" data-ng-change="Search()">
+		<div class="input-group">
+			<div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+			<input type="search" class="form-control" id="filter" placeholder="<?php $this->tr("core.filter") ?>" data-ng-model="filter" data-ng-change="Search()">
+		</div>
 	</div>
 	<?php endif ?>
 	<?php if ($this->get("can_create")): ?>
@@ -31,6 +34,7 @@
 	<?php $this->tr("core.none_found") ?>
 </div>
 
+<div class="table-responsive">
 <table data-ng-cloak data-ng-hide="count == 0 || loading" class="table table-hover">
 	<thead>
 		<tr>
@@ -39,7 +43,7 @@
 			<th><?php echo $field->getCaption() ?></th>
 			<?php endif; ?>
 			<?php endforeach; ?>
-			<th class="table-actions"><?php $this->tr("core.actions") ?></th>
+			<th class="table-actions col-sm-1"></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -63,15 +67,15 @@
 			</td>
 			<?php endif; ?>
 			<?php endforeach; ?>
-			<td>
+			<td class="text-nowrap">
 				<?php if ($this->get("can_delete")): ?>
-				<button data-ng-click="del(item.<?php echo DavBfr\CF\Crud::ID ?>);$event.stopPropagation();" type="button" class="btn btn-danger btn-xs">
-					<span class="glyphicon glyphicon-remove"></span> <?php $this->tr("core.del") ?>
+				<button data-ng-click="del(item.<?php echo DavBfr\CF\Crud::ID ?>);$event.stopPropagation();" type="button" class="btn btn-danger btn-sm" title="<?php $this->tr("core.delete") ?>">
+					<span class="glyphicon glyphicon-trash"></span>
 				</button>
 				<?php endif ?>
 				<?php if ($this->get("can_view")): ?>
-				<button data-ng-click="go_detail(item.<?php echo DavBfr\CF\Crud::ID ?>)" type="button" class="btn btn-primary btn-xs">
-					<span class="glyphicon glyphicon-info-sign"></span> <?php $this->tr("core.details") ?>
+				<button data-ng-click="go_detail(item.<?php echo DavBfr\CF\Crud::ID ?>)" type="button" class="btn btn-primary btn-sm" title="<?php $this->tr("core.details") ?>">
+					<span class="glyphicon glyphicon-pencil"></span>
 				</button>
 				<?php endif ?>
 				<?php if ($this->has("buttons_list")) $this->out("buttons_list"); ?>
@@ -79,6 +83,7 @@
 		</tr>
 	</tbody>
 </table>
+</div>
 
 <ul data-ng-hide="pages <= 1" class="pagination pull-right">
 	<li data-ng-class="page == 0?'disabled':''">

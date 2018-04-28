@@ -1,5 +1,7 @@
-<div class="container pull-right" data-ng-cloak data-ng-controller="NotificationController">
-	<div data-ng-repeat="item in alerts" class="alert alert-{{item.type}}">{{item.message}}</div>
+<div class="container" data-ng-cloak data-ng-controller="NotificationController">
+	<div class="col-sm-4 alert-container">
+		<div data-ng-repeat="item in alerts" class="alert alert-{{item.type}}">{{item.message}}</div>
+	</div>
 	<div id="confirm" class="modal fade">
 		<div class="modal-dialog">
 		<div class="modal-content">
