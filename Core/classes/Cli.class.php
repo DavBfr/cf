@@ -94,6 +94,8 @@ class Cli {
 		}
 		self::perr("Unknown command $command");
 		$this->printHelp($params);
+
+		return null;
 	}
 
 
@@ -302,7 +304,7 @@ class Cli {
 
 	public static function question($s = "") {
 		if (!IS_CLI)
-			return;
+			return false;
 
 		self::pinfo($s);
 		self::perr("Type 'yes' to continue: ");
@@ -310,9 +312,11 @@ class Cli {
 		$line = fgets($handle);
 		if(trim($line) != 'yes'){
 			self::pfatal("ABORTING!");
+            return false;
 		}
 		self::pln();
 		self::pinfo("Thank you, continuing...");
+		return true;
 	}
 
 
@@ -322,7 +326,7 @@ class Cli {
 		$get = self::addSwitch("get", "Get an option");
 		if ($set || $get) {
 			$keys = self::getInputs("key", "Key and value to set or search");
-		}
+		} else $keys = array();
 		self::enableHelp();
 
 		if ($set) {

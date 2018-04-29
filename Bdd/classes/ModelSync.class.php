@@ -19,6 +19,7 @@
 
 abstract class ModelSync extends RestApi {
 	protected $model;
+	protected $options;
 
 	protected function preProcess($r) {
 		parent::preProcess($r);
@@ -62,7 +63,7 @@ abstract class ModelSync extends RestApi {
 	}
 
 
-	function searchDuplicate($row) {
+	function searchDuplicate($item) {
 		$id = $this->model->getPrimaryField();
 		return $this->model->getBy($id, $item[$id]);
 	}

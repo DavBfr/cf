@@ -51,7 +51,6 @@ class Bdd {
 
 	public static function export() {
 		Cli::enableHelp();
-		$bdd = self::getInstance();
 		Cli::pr("{");
 		$first_model = true;
 		foreach (Model::getModels() as $class) {

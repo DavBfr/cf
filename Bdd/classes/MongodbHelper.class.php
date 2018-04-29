@@ -156,14 +156,14 @@ class MongodbHelper extends BddHelper {
 			$value = "/" . $filter . "/";
 
 			$filter = array();
-			foreach ($fields as $field) {
+			foreach ($filter_fields as $field) {
 				$filter[] = $this->quoteIdent($field) . " LIKE " . $value;
 			}
 			if (count($filter) > 0) {
 				$where[] = implode(" OR ", $filter);
 			}
 
-			$query['$or'] = $o;'function() { for (var key in this) { if (this[key] == "' . $filter . '") return true;} return false; }
+			$query['$or'] = 'function() { for (var key in this) { if (this[key] == "' . $filter . '") return true;} return false; }
 			';
 		}
 
@@ -258,7 +258,7 @@ class MongodbHelper extends BddHelper {
 		if ($file)
 			return $file->getBytes();
 
-		return;
+		return null;
 	}
 
 
@@ -272,7 +272,7 @@ class MongodbHelper extends BddHelper {
 		}
 
 		if ($value === null)
-			return;
+			return null;
 
 		return $gridFS->storeBytes($value, $metadata);
 	}

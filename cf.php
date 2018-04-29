@@ -28,7 +28,6 @@ class Plugins {
 	const PLUGIN = 1;
 	const CORE = 2;
 
-	private static $instance = null;
 	private static $plugins = array();
 	private static $plugins_list = array();
 	private static $core_list = array();
@@ -145,7 +144,7 @@ class Plugins {
 			}
 		}
 		$memcached["plugin." . $filename] = null;
-		return;
+		return null;
 	}
 
 
@@ -183,6 +182,8 @@ class Plugins {
 				return call_user_func_array(array($class, $method_name), $arguments);
 			}
 		}
+
+		return null;
 	}
 
 
@@ -343,7 +344,7 @@ class Options {
 			if (is_bool($val))
 				$val = $val ? "true" : "false";
 			elseif (is_int($val))
-					$val = $val;
+					$val = intval($val);
 			elseif (is_string($val))
 				$val = '"' . addslashes($val) . '"';
 			if ($val !== null) {
@@ -388,7 +389,7 @@ if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
 	Options::import(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
 }
 
-Options::set("MINIMUM_PHP_VERSION", "5.3.0");
+Options::set("MINIMUM_PHP_VERSION", "5.4.0");
 if (version_compare(MINIMUM_PHP_VERSION, PHP_VERSION, '>'))
 	die("PHP " . MINIMUM_PHP_VERSION . " required." . PHP_EOL);
 

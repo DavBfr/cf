@@ -21,24 +21,24 @@ use lessc;
 use lessc_formatter_compressed;
 
 class Less extends lessc {
-  private $origdir = null;
+	private $origdir = null;
 
 
-  public function setOriginalDir($dir) {
-    $this->origdir = $dir;
-  }
+	public function setOriginalDir($dir) {
+		$this->origdir = $dir;
+	}
 
 
 	protected function findImport($url) {
-    if ($this->origdir) {
-      $partial = $this->origdir . '/' . $url;
-      if ($res = AbstractResources::find($partial)) {
-        return $res;
-      }
-      if ($res = AbstractResources::find($partial . '.less')) {
-        return $res;
-      }
-    }
+		if ($this->origdir) {
+			$partial = $this->origdir . '/' . $url;
+			if ($res = AbstractResources::find($partial)) {
+				return $res;
+			}
+			if ($res = AbstractResources::find($partial . '.less')) {
+				return $res;
+			}
+		}
 
 		foreach ((array)$this->importDir as $dir) {
 			$full = $dir . (substr($dir, -1) != '/' ? '/' : '') . $url;
@@ -47,12 +47,12 @@ class Less extends lessc {
 			}
 		}
 
-		return;
+		return null;
 	}
 
 
-  public function enableMinify() {
-    $this->setFormatter(new lessc_formatter_compressed());
-  }
+	public function enableMinify() {
+		$this->setFormatter(new lessc_formatter_compressed());
+	}
 
 }

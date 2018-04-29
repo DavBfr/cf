@@ -20,7 +20,7 @@
 class Input {
 
 	public static function decodeJsonPost() {
-		return self::jsonDecode(file_get_contents("php://input"), true);
+		return self::jsonDecode(file_get_contents("php://input"));
 	}
 
 
@@ -56,7 +56,7 @@ class Input {
 
 	public static function protect($data) {
 		if (is_array($data)) {
-			return array_map(self::protect, $data);
+			return array_map(array(self, "protect"), $data);
 		}
 
 		$data = trim($data);

@@ -79,8 +79,6 @@ abstract class BddHelper {
 
 
 	public function updateModelField($name, $params) {
-		$f = new ModelField(null, $name, $params);
-
 		if (!array_key_exists("type", $params) || $params["type"] == ModelField::TYPE_AUTO) {
 			$params["type"] = ModelField::TYPE_INT;
 		} elseif (array_key_exists("type", $params) && in_array($params["type"], array("password", "email", "url"))) {
@@ -95,11 +93,6 @@ abstract class BddHelper {
 		}
 
 		return array($name, $params);
-	}
-
-
-	public function collection() {
-		return new Collection($this);
 	}
 
 

@@ -121,8 +121,8 @@ class SkelPlugin extends Plugins {
 				file_put_contents($dest . DIRECTORY_SEPARATOR . $file, $content);
 			}
 			
-			foreach(array("model", "requests", "www", "classes") as $name) {
-				System::ensureDir($dest . DIRECTORY_SEPARATOR . $name);
+			foreach(array("model", "requests", "www", "classes") as $_name) {
+				System::ensureDir($dest . DIRECTORY_SEPARATOR . $_name);
 			}
 		}
 	}

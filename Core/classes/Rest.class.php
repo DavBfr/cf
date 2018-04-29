@@ -278,7 +278,7 @@ abstract class Rest {
 						require_once($file);
 					}
 					$req = new $cn();
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 					continue;
 				}
 

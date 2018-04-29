@@ -50,9 +50,9 @@ class MinifierPlugin extends Plugins {
 			} else {
 				exec("$cmd 2>& 1", $output, $return_var);
 				if ($return_var != 0) {
-					Cli::perr(implode($output, "\n"));
+					Cli::perr(implode("\n", $output));
 				} else {
-					Logger::Debug(implode($output, "\n"));
+					Logger::Debug(implode("\n", $output));
 				}
 			}
 		}
@@ -66,9 +66,9 @@ class MinifierPlugin extends Plugins {
 			} else {
 				exec("$cmd 2>& 1", $output, $return_var);
 				if ($return_var != 0) {
-					Cli::perr(implode($output, "\n"));
+					Cli::perr(implode("\n", $output));
 				} else {
-					Logger::Debug(implode($output, "\n"));
+					Logger::Debug(implode("\n", $output));
 				}
 			}
 		}

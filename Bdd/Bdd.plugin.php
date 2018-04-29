@@ -48,7 +48,7 @@ class BddPlugin extends Plugins {
 
 	public function preupdate() {
 		Cli::pinfo(" * Create base classes");
-		Model::createClassesFromConfig(array());
+		Model::createClassesFromConfig();
 		$bdd = Bdd::getInstance();
 
 		$config = Config::getInstance();

@@ -63,7 +63,7 @@ class CorePlugin extends Plugins {
 		$conf = Config::getInstance();
 
 		$memcache = new MemCache();
-		if (array_key_exists("JCONFIG_FILE", $memcache)) {
+		if ($memcache->offsetExists("JCONFIG_FILE")) {
 			$conf->setData($memcache["JCONFIG_FILE"]);
 			Logger::debug("Config loaded from cache");
 			foreach($conf->get("plugins", array()) as $plugin) {

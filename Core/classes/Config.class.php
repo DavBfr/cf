@@ -136,7 +136,7 @@ class Config implements \arrayaccess {
 
 
 	public function offsetExists($offset) {
-		return $this->get($key) !== null;
+		return $this->get($offset) !== null;
 	}
 
 

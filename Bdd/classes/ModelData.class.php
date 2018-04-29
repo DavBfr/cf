@@ -238,7 +238,7 @@ class ModelData implements Iterator {
 				return $this->values[$field->getName()];
 			}
 		}
-		return;
+		return null;
 	}
 
 

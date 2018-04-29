@@ -30,7 +30,7 @@ class PDOHelper extends BddHelper {
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
 			ErrorHandler::error(500, null, "Unable to connect to Database: " . $e->getMessage());
-		} catch (Exeption $e) {
+		} catch (Exception $e) {
 			ErrorHandler::error(500, null, "Unable to connect to Database: " . $e->getMessage());
 		}
 	}

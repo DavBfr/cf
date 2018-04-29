@@ -137,7 +137,7 @@ abstract class Crud extends Rest {
 
 		$this->filterForeign($col, $field);
 
-		$list = [];
+		$list = array();
 		foreach ($col->getValues(Input::has("p") ? intval(Input::get("p")) : 0) as $row) {
 			if ($foreignModel)
 				$list[] = array("key" => $foreignModel->getField($key)->formatOut($row['key']), "value" => $foreignModel->getField($value)->formatOut($row['val']));
@@ -233,7 +233,7 @@ abstract class Crud extends Rest {
 
 		$foreigns = $this->getForeigns($item);
 
-		Output::success(array(self::ID => $id, "foreigns" => $foreigns, "data" => $item->getValues()));
+		Output::success(array(self::ID => null, "foreigns" => $foreigns, "data" => $item->getValues()));
 	}
 
 

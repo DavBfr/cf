@@ -41,7 +41,7 @@ abstract class Model {
 		if (class_exists($md) && is_subclass_of($md, __NAMESPACE__ . "\\Model"))
 			return new $md;
 
-		return;
+		return null;
 	}
 
 
@@ -251,7 +251,7 @@ abstract class Model {
 			return new $className;
 		}
 
-		return;
+		return null;
 	}
 
 }

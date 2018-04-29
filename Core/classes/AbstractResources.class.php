@@ -38,7 +38,7 @@ abstract class AbstractResources {
 			return $resource;
 		if (($resource = Plugins::find(self::VENDOR_DIR . DIRECTORY_SEPARATOR . $filename)) !== null)
 			return $resource;
-		return;
+		return null;
 	}
 
 

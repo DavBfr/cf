@@ -208,7 +208,6 @@ class ErrorHandler {
 
 
 	protected function debugBacktrace($ignore = 1) {
-		$trace = '';
 		foreach (debug_backtrace() as $k => $v) {
 			if ($k < $ignore) {
 				continue;
