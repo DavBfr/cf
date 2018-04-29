@@ -79,9 +79,21 @@ abstract class BddHelper {
 
 
 	public function updateModelField($name, $params) {
+		$f = new ModelField(null, $name, $params);
+
 		if (!array_key_exists("type", $params) || $params["type"] == ModelField::TYPE_AUTO) {
 			$params["type"] = ModelField::TYPE_INT;
+		} elseif (array_key_exists("type", $params) && in_array($params["type"], array("password", "email", "url"))) {
+			Cli::perr("Deprecated: Field type " . $params["type"] . " for $name");
+			if (!array_key_exists("editor", $params)) {
+				if ($params["type"] == "password")
+					$params["editor"] = "passwd";
+				else
+					$params["editor"] = $params["type"];
+			}
+			$params["type"] = "text";
 		}
+
 		return array($name, $params);
 	}
 

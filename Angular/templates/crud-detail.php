@@ -26,26 +26,6 @@ foreach($this->get("model") as $field) {
 			$this->insertNew("field-" . $field->getTableName() . "." . $field->getName() . ".php", array("field" => $field));
 		elseif($field->getEditor() !== null && self::findTemplate("field-" . $field->getEditor() . ".php"))
 			$this->insertNew("field-" . $field->getEditor() . ".php", array("field" => $field));
-		elseif($field->isAutoincrement())
-			$this->insertNew("field-auto.php", array("field" => $field));
-		elseif ($field->isSelect())
-			$this->insertNew("field-select.php", array("field" => $field));
-		elseif($field->isBool())
-			$this->insertNew("field-bool.php", array("field" => $field));
-		elseif($field->isInt())
-			$this->insertNew("field-int.php", array("field" => $field));
-		elseif($field->isDecimal())
-			$this->insertNew("field-num.php", array("field" => $field));
-		elseif($field->isDate())
-			$this->insertNew("field-date.php", array("field" => $field));
-		elseif($field->isTime())
-			$this->insertNew("field-time.php", array("field" => $field));
-		elseif($field->isDateTime() || $field->isTimestamp())
-			$this->insertNew("field-date-time.php", array("field" => $field));
-		elseif($field->isEmail())
-			$this->insertNew("field-email.php", array("field" => $field));
-		elseif($field->isPassword())
-			$this->insertNew("field-passwd.php", array("field" => $field));
 		else
 			$this->insertNew("field-text.php", array("field" => $field));
 	}

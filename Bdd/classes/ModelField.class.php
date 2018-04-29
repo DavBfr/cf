@@ -26,9 +26,6 @@ class ModelField {
 	const TYPE_DECIMAL = "num";
 	const TYPE_BOOL = "bool";
 	const TYPE_TEXT = "text";
-	const TYPE_PASSWD = "password";
-	const TYPE_EMAIL = "email";
-	const TYPE_URL = "url";
 	const TYPE_DATE = "date"; // Y-m-d
 	const TYPE_TIME = "time"; // h:i:s
 	const TYPE_DATETIME = "datetime"; // Y-m-d h:i:s
@@ -96,6 +93,24 @@ class ModelField {
 
 
 	public function getEditor() {
+		if ($this->props["editor"] === null) {
+		if($this->isAutoincrement())
+			$this->props["editor"] = "auto";
+		elseif ($this->isSelect())
+			$this->props["editor"] = "select";
+		elseif($this->isBool())
+			$this->props["editor"] = "bool";
+		elseif($this->isInt())
+			$this->props["editor"] = "int";
+		elseif($this->isDecimal())
+			$this->props["editor"] = "num";
+		elseif($this->isDate())
+			$this->props["editor"] = "date";
+		elseif($this->isTime())
+			$this->props["editor"] = "time";
+		elseif($this->isDateTime() || $this->isTimestamp())
+			$this->props["editor"] = "date-time";
+		}
 		return $this->props["editor"];
 	}
 
@@ -111,17 +126,20 @@ class ModelField {
 
 
 	public function isPassword() {
-		return $this->props["type"] == self::TYPE_PASSWD;
+		trigger_error('Deprecated: isPassword() is deprecated', E_NOTICE);
+		return $this->props["editor"] == "passwd";
 	}
 
 
 	public function isEmail() {
-		return $this->props["type"] == self::TYPE_EMAIL;
+		trigger_error('Deprecated: isEmail() is deprecated', E_NOTICE);
+		return $this->props["editor"] == "email";
 	}
 
 
 	public function isUrl() {
-		return $this->props["type"] == self::TYPE_URL;
+		trigger_error('Deprecated: isUrl() is deprecated', E_NOTICE);
+		return $this->props["editor"] == "url";
 	}
 
 
@@ -236,9 +254,6 @@ class ModelField {
 			case self::TYPE_INT:
 				return is_int($value) || preg_match('/^\d*$/', $value);
 			case self::TYPE_TEXT:
-			case self::TYPE_PASSWD:
-			case self::TYPE_EMAIL:
-			case self::TYPE_URL:
 			case self::TYPE_DATE:
 			case self::TYPE_TIME:
 			case self::TYPE_DATETIME:

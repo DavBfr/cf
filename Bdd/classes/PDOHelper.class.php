@@ -233,10 +233,7 @@ class PDOHelper extends BddHelper {
 				return "INTEGER";
 			case ModelField::TYPE_DECIMAL:
 				return "NUMBER";
-				case ModelField::TYPE_TEXT:
-			case ModelField::TYPE_PASSWD:
-			case ModelField::TYPE_EMAIL:
-			case ModelField::TYPE_URL:
+			case ModelField::TYPE_TEXT:
 				return "TEXT";
 			case ModelField::TYPE_DATE:
 				return "DATE";
