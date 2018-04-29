@@ -7,5 +7,4 @@ data/db.sqlite
 vendor
 www/cache
 www/fonts
-www/app/crud
 www/i18n
