@@ -1,4 +1,4 @@
-if (typeof angular != 'undefined') {
+if (typeof angular !== 'undefined') {
 
   var app = angular.module('app', []);
 
