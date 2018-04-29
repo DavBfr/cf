@@ -116,9 +116,16 @@ class Template {
 
 		header("Content-Type: ${contentType};charset=${encoding}");
 
+		if (Session::Has(Session::rights_key)) {
+			$rights = Session::Get(Session::rights_key);
+		} else {
+			$rights = 0;
+		}
+
 		$cache = Cache::Priv(sha1(json_encode(array(
 			$filename,
 			Lang::getLang(),
+			$rights,
 			$this->params
 		))), ".html");
 		$cache->outputIfCached();
