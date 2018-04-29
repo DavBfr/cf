@@ -62,11 +62,6 @@ abstract class ModelSync extends RestApi {
 	}
 
 
-	protected function duplicateFields() {
-		return array($this->model->getPrimaryField(), 'port', 'email');
-	}
-
-
 	function searchDuplicate($row) {
 		$id = $this->model->getPrimaryField();
 		return $this->model->getBy($id, $item[$id]);
