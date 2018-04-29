@@ -19,6 +19,7 @@
 </div>
 
 <form data-ng-cloak data-ng-hide="loading" name="form" class="form-horizontal" data-role="form">
+<fieldset>
 <?php
 foreach($this->get("model") as $field) {
 	if($field->isEditable()) {
@@ -40,5 +41,5 @@ foreach($this->get("model") as $field) {
 			<?php if ($this->has("buttons_detail")) $this->out("buttons_detail"); ?>
 		</div>
 	</div>
-
+</fieldset>
 </form>
