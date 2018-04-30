@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -26,15 +27,18 @@ class ErrorHandler {
 	private $raise_exception = false;
 
 	public static $messagecode = array(
-				500 => "Internal server error",
-				204 => "No Content",
-				404 => "Path not found",
-				400 => "Bad Request",
-				401 => "Unauthorized",
-				417 => "Expectation failed",
+		500 => "Internal server error",
+		204 => "No Content",
+		404 => "Path not found",
+		400 => "Bad Request",
+		401 => "Unauthorized",
+		417 => "Expectation failed",
 	);
 
 
+	/**
+	 * ErrorHandler constructor.
+	 */
 	protected function __construct() {
 		error_reporting(E_ALL ^ (E_NOTICE | E_USER_NOTICE | (DEBUG ? 0 : (E_WARNING | E_USER_WARNING))));
 		ini_set("display_errors", DEBUG ? 1 : 0);
@@ -46,12 +50,18 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function unregister() {
 		restore_error_handler();
 		restore_exception_handler();
 	}
 
 
+	/**
+	 * @param string $className
+	 */
 	public static function Init($className) {
 		if (is_null(self::$instance)) {
 			self::$instance = new $className();
@@ -59,6 +69,9 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 * @return ErrorHandler
+	 */
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
@@ -68,17 +81,35 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function RaiseExceptionOnError() {
 		$i = self::getInstance();
 		$i->raise_exception = true;
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param int $lineno
+	 * @param \stdClass $class
+	 * @param callable $function
+	 * @param array $args
+	 */
 	protected function addBacktrace($filename, $lineno, $class = null, $function = null, $args = null) {
 		$this->backtrace[] = array($filename, $lineno, $class, $function, $args);
 	}
 
 
+	/**
+	 * @param int $code
+	 * @param string $message
+	 * @param string $body
+	 * @param array $backtrace
+	 * @param array $log
+	 * @throws Exception
+	 */
 	protected function formatErrorBody($code, $message, $body, $backtrace = array(), $log = array()) {
 		$baseline = CorePlugin::getBaseline();
 		if ($message === null) {
@@ -88,7 +119,7 @@ class ErrorHandler {
 				$message = "Error #${code}";
 		}
 
-		 if (!DEBUG) {
+		if (!DEBUG) {
 			$body = "";
 			$backtrace = array();
 		}
@@ -110,13 +141,13 @@ class ErrorHandler {
 		$body = "$message ($code)\n$body";
 		if (is_array($backtrace) && count($backtrace) > 0) {
 			$body .= "\n\nBacktrace:\n";
-			foreach($backtrace as $n => $bt) {
+			foreach ($backtrace as $n => $bt) {
 				$body .=
-				"#$n"
-				. " ${bt[0]} (${bt[1]}):\n"
-				. (isset($bt[2]) ? $bt[2] . '->' : '')
-				. (isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '')
-				. "\n";
+					"#$n"
+					. " ${bt[0]} (${bt[1]}):\n"
+					. (isset($bt[2]) ? $bt[2] . '->' : '')
+					. (isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '')
+					. "\n";
 			}
 		}
 		$body .= "\n---\n" . $baseline . "\n";
@@ -125,6 +156,14 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 * @param int $code
+	 * @param string|null $message
+	 * @param string|null $body
+	 * @param int $backtrace
+	 * @param bool|null $finish
+	 * @throws Exception
+	 */
 	public static function error($code, $message = null, $body = null, $backtrace = 2, $finish = null) {
 		$i = self::getInstance();
 		if ($finish !== null)
@@ -133,6 +172,13 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 * @param int $code
+	 * @param string $message
+	 * @param string $body
+	 * @param int $backtrace
+	 * @throws Exception
+	 */
 	public function send_error($code, $message = null, $body = null, $backtrace = 1) {
 		if ($this->inerror) {
 			Logger::critical("Already processing error (send_error) $code $message $body");
@@ -182,6 +228,13 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 * @param int $errno
+	 * @param string $errstr
+	 * @param string $errfile
+	 * @param string $errline
+	 * @throws Exception
+	 */
 	public function errorHandler($errno, $errstr, $errfile, $errline) {
 		if ($this->inerror) {
 			Logger::critical("Already processing error (error_handler) $errno, $errstr, $errfile, $errline");
@@ -189,7 +242,7 @@ class ErrorHandler {
 		}
 
 		if (!(error_reporting() & $errno)) {
-			switch($errno) {
+			switch ($errno) {
 				case E_NOTICE:
 					Logger::info("$errstr in $errfile on line $errline");
 					return;
@@ -207,6 +260,9 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 * @param int $ignore
+	 */
 	protected function debugBacktrace($ignore = 1) {
 		foreach (debug_backtrace() as $k => $v) {
 			if ($k < $ignore) {
@@ -220,12 +276,19 @@ class ErrorHandler {
 	}
 
 
+	/**
+	 * @param Exception $e
+	 * @throws Exception
+	 */
 	public function exceptionHandler($e) {
 		$this->addBacktrace($e->getFile(), $e->getLine());
 		$this->send_error(500, null, get_class($e) . ": " . $e->getMessage(), false);
 	}
 
 
+	/**
+	 * @throws Exception
+	 */
 	public function checkForFatal() {
 		$e = error_get_last();
 		if ($e && error_reporting() & $e["type"]) {

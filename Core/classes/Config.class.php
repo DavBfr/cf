@@ -22,11 +22,17 @@ class Config implements \arrayaccess {
 	private $data;
 
 
+	/**
+	 * Config constructor.
+	 */
 	public function __construct() {
 		$this->data = array();
 	}
 
 
+	/**
+	 * @return Config
+	 */
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
@@ -36,22 +42,38 @@ class Config implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @throws \Exception
+	 */
 	public function load($filename) {
 		$this->data = array();
 		$this->append($filename);
 	}
 
 
+	/**
+	 * @param array $array
+	 */
 	public function setData($array) {
 		$this->data = $array;
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getData() {
 		return $this->data;
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param bool $reverse
+	 * @param string $subkey
+	 * @throws \Exception
+	 */
 	public function append($filename, $reverse = false, $subkey = null) {
 		try {
 			$data = Input::jsonDecode(file_get_contents($filename));
@@ -67,6 +89,10 @@ class Config implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param array $data
+	 * @param bool $reverse
+	 */
 	public function merge($data, $reverse = false) {
 		if ($reverse) {
 			$this->data = self::arrayMerge($data, $this->data);
@@ -76,6 +102,11 @@ class Config implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param string $key
+	 * @param string $filename
+	 * @throws \Exception
+	 */
 	public function loadAsKey($key, $filename) {
 		try {
 			$data = Input::jsonDecode(file_get_contents($filename));
@@ -88,6 +119,11 @@ class Config implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param array $array1
+	 * @param array $array2
+	 * @return array
+	 */
 	private static function arrayMerge(&$array1, &$array2) {
 		$merged = $array1;
 		foreach ($array2 as $key => &$value) {
@@ -97,23 +133,34 @@ class Config implements \arrayaccess {
 				$merged[$key] = $value;
 			}
 		}
-	return $merged;
+		return $merged;
 	}
 
 
+	/**
+	 * @param string $filename
+	 */
 	public function save($filename) {
 		file_put_contents($filename, $this->getAsJson());
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getAsJson() {
 		return json_encode($this->data);
 	}
 
 
+	/**
+	 * @param string $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
 	public function get($key, $default = null) {
 		$value = $this->data;
-		foreach(explode(".", $key) as $item) {
+		foreach (explode(".", $key) as $item) {
 			if (is_array($value) && array_key_exists($item, $value)) {
 				$value = $value[$item];
 			} else {
@@ -125,26 +172,45 @@ class Config implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param string $key
+	 * @param mixed $val
+	 */
 	public function set($key, $val) {
 		$this->data[$key] = $val;
 	}
 
 
+	/**
+	 * @param string $offset
+	 * @param mixed $value
+	 */
 	public function offsetSet($offset, $value) {
 		$this->set($offset, $value);
 	}
 
 
+	/**
+	 * @param string $offset
+	 * @return bool
+	 */
 	public function offsetExists($offset) {
 		return $this->get($offset) !== null;
 	}
 
 
+	/**
+	 * @param string $offset
+	 */
 	public function offsetUnset($offset) {
 		$this->set($offset, null);
 	}
 
 
+	/**
+	 * @param string $offset
+	 * @return mixed
+	 */
 	public function offsetGet($offset) {
 		return $this->get($offset);
 	}

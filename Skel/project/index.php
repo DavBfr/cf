@@ -23,6 +23,8 @@ elseif (!file_exists(CF_DIR . "/cf.php"))
 else
 	require_once(CF_DIR . "/cf.php");
 
+/** @noinspection PhpUnhandledExceptionInspection */
 $tpt = CorePlugin::bootstrap();
 Options::set("CF_TEMPLATE", "index.php", "Template to load");
+/** @noinspection PhpUnhandledExceptionInspection */
 $tpt->outputCached(CF_TEMPLATE);

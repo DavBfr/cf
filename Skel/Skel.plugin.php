@@ -19,6 +19,9 @@
 
 class SkelPlugin extends Plugins {
 
+	/**
+	 * @param Cli $cli
+	 */
 	public function cli($cli) {
 		$cli->addCommand("skel:init", array($this, "skel"), "Initialize a new CF project");
 		$cli->addCommand("skel:update", array($this, "skelUpdate"), "Update a CF project");
@@ -26,12 +29,15 @@ class SkelPlugin extends Plugins {
 	}
 
 
+	/**
+	 *
+	 */
 	protected function updateFiles() {
 		Cli::pinfo("Update Files");
-		foreach(array("composer.json", "index.php", "setup") as $file) {
+		foreach (array("composer.json", "index.php", "setup") as $file) {
 			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
-			foreach(Options::getAll() as $key => $val) {
+			foreach (Options::getAll() as $key => $val) {
 				$content = str_replace("@$key@", $val, $content);
 			}
 			$content = str_replace("@DATE@", date("r"), $content);
@@ -42,10 +48,14 @@ class SkelPlugin extends Plugins {
 	}
 
 
+	/**
+	 * @throws \ReflectionException
+	 * @throws \Exception
+	 */
 	public function skel() {
 		Cli::enableHelp();
 		$dir = opendir(getcwd());
-		while(false !== ($file = readdir($dir))) {
+		while (false !== ($file = readdir($dir))) {
 			if (($file != '.') && ($file != '..') && ($file != 'data')) {
 				Cli::question("The current folder is not empty, do you want to continue?");
 				break;
@@ -59,11 +69,11 @@ class SkelPlugin extends Plugins {
 		System::ensureDir(DATA_DIR);
 		$conf = Config::getInstance();
 		$conf->load(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
-		foreach($conf->get("plugins", array()) as $plugin) {
+		foreach ($conf->get("plugins", array()) as $plugin) {
 			Plugins::add($plugin);
 		}
 		if (DEBUG) {
-			foreach($conf->get("debugPlugins", array()) as $plugin) {
+			foreach ($conf->get("debugPlugins", array()) as $plugin) {
 				Plugins::add($plugin);
 			}
 		}
@@ -72,12 +82,15 @@ class SkelPlugin extends Plugins {
 	}
 
 
+	/**
+	 * @throws \Exception
+	 */
 	public function skelUpdate() {
 		Cli::enableHelp();
 		Cli::pinfo("Update CF project");
 		$srcdir = $this->getDir() . DIRECTORY_SEPARATOR . "project";
 		$dstdir = ROOT_DIR;
-		foreach(array("index.php", "setup", "README.md", ".htaccess", ".gitignore", "www/index.php", "www/.htaccess") as $file) {
+		foreach (array("index.php", "setup", "README.md", ".htaccess", ".gitignore", "www/index.php", "www/.htaccess") as $file) {
 			copy($srcdir . DIRECTORY_SEPARATOR . $file, $dstdir . DIRECTORY_SEPARATOR . $file);
 		}
 		$this->updateFiles();
@@ -87,6 +100,9 @@ class SkelPlugin extends Plugins {
 	}
 
 
+	/**
+	 * @throws \Exception
+	 */
 	public function pluginCreate() {
 		$names = Cli::getInputs('name', 'Plugin name');
 		Cli::enableHelp();
@@ -95,7 +111,7 @@ class SkelPlugin extends Plugins {
 			Cli::pfatal("Missing plugin name");
 		}
 
-		foreach($names as $name) {
+		foreach ($names as $name) {
 			$dest = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
 			if (file_exists($dest)) {
 				if (!Cli::question("A plugin with this name already exists, do you want to replace?")) {
@@ -110,18 +126,18 @@ class SkelPlugin extends Plugins {
 			rename($dest . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "config.json", $dest . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "$name.json");
 			rename($dest . DIRECTORY_SEPARATOR . "plugin.php", $dest . DIRECTORY_SEPARATOR . "$name.plugin.php");
 
-			foreach(array("composer.json", "$name.plugin.php") as $file) {
+			foreach (array("composer.json", "$name.plugin.php") as $file) {
 				Cli::pinfo(" * Update $file");
 				$content = file_get_contents($dest . DIRECTORY_SEPARATOR . $file);
-				foreach(Options::getAll() as $key => $val) {
+				foreach (Options::getAll() as $key => $val) {
 					$content = str_replace("@$key@", $val, $content);
 				}
 				$content = str_replace("@DATE@", date("r"), $content);
 				$content = str_replace("@NAME@", $name, $content);
 				file_put_contents($dest . DIRECTORY_SEPARATOR . $file, $content);
 			}
-			
-			foreach(array("model", "requests", "www", "classes") as $_name) {
+
+			foreach (array("model", "requests", "www", "classes") as $_name) {
 				System::ensureDir($dest . DIRECTORY_SEPARATOR . $_name);
 			}
 		}

@@ -18,9 +18,14 @@
  **/
 
 abstract class ModelSync extends RestApi {
+	/** @var Model $model */
 	protected $model;
 	protected $options;
 
+
+	/**
+	 * @param array $r
+	 */
 	protected function preProcess($r) {
 		parent::preProcess($r);
 		$this->model = $this->getModel();
@@ -28,9 +33,15 @@ abstract class ModelSync extends RestApi {
 	}
 
 
+	/**
+	 * @return Model
+	 */
 	abstract protected function getModel();
 
 
+	/**
+	 * @return array
+	 */
 	private static function defaultOptions() {
 		return array(
 			"update_field" => "sync", // timestamp of last update
@@ -44,6 +55,9 @@ abstract class ModelSync extends RestApi {
 	}
 
 
+	/**
+	 * @return array
+	 */
 	protected function getOptions() {
 		return array();
 	}
@@ -54,6 +68,11 @@ abstract class ModelSync extends RestApi {
 	}
 
 
+	/**
+	 * @param int $lastsync
+	 * @return Collection
+	 * @throws \Exception
+	 */
 	protected function syncCollection($lastsync) {
 		$col = Collection::Model($this->model);
 		if ($this->options['update_field'] != null) {
@@ -63,16 +82,28 @@ abstract class ModelSync extends RestApi {
 	}
 
 
-	function searchDuplicate($item) {
+	/**
+	 * @param array $item
+	 * @return mixed
+	 * @throws \Exception
+	 */
+	function searchDuplicate(array $item) {
 		$id = $this->model->getPrimaryField();
 		return $this->model->getBy($id, $item[$id]);
 	}
 
 
-	protected function filterValues(& $item) {
+	/**
+	 * @param array $item
+	 */
+	protected function filterValues(array & $item) {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function doSync($r) {
 		Input::ensureRequest($r, array("lastsync"));
 		try {
@@ -88,13 +119,13 @@ abstract class ModelSync extends RestApi {
 
 		if ($json !== null) {
 			if ($this->options['can_delete'] && array_key_exists('delete', $json)) {
-				foreach($json['delete'] as $item) {
+				foreach ($json['delete'] as $item) {
 					$this->model->deleteById($item);
 				}
 			}
 			if ($this->options['can_update'] && array_key_exists('updated', $json)) {
 				// Must update master values from remote
-				foreach($json['updated'] as $item) {
+				foreach ($json['updated'] as $item) {
 					$this->filterValues($item);
 					if (array_key_exists($id, $item) && $item[$id] !== null) {
 						$entry = $this->searchDuplicate($item);
@@ -122,7 +153,7 @@ abstract class ModelSync extends RestApi {
 			}
 			if ($this->options['can_insert'] && array_key_exists('new', $json)) {
 				// Must insert new items to master
-				foreach($json['new'] as $item) {
+				foreach ($json['new'] as $item) {
 					$this->filterValues($item);
 					$entry = $this->model->newRow();
 					$deleted[] = $item[$id];
@@ -143,7 +174,7 @@ abstract class ModelSync extends RestApi {
 		}
 
 		$items = $col->getValuesArray();
-		foreach($items as $item) {
+		foreach ($items as $item) {
 			unset($deleted[$item[$id]]);
 		}
 

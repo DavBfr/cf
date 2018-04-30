@@ -17,7 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
- Options::set("BROWSER_LOG", DEBUG, "Log messages to chrome console");
+Options::set("BROWSER_LOG", DEBUG, "Log messages to chrome console");
+
 
 class Logger {
 
@@ -49,6 +50,11 @@ class Logger {
 	private $log;
 	private $clog;
 
+
+	/**
+	 * Logger constructor.
+	 * @param int $level
+	 */
 	private function __construct($level) {
 		$this->level = $level;
 		$this->stderr = fopen('php://stderr', 'w');
@@ -61,10 +67,16 @@ class Logger {
 	}
 
 
+	/**
+	 *
+	 */
 	public function __destruct() {
 	}
 
 
+	/**
+	 * @return Logger
+	 */
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new self(DEBUG ? self::DEBUG : self::ERROR);
@@ -74,21 +86,34 @@ class Logger {
 	}
 
 
+	/**
+	 * @param int $level
+	 */
 	public function setLevel($level) {
 		$this->level = $level;
 	}
 
 
-	public function getLevel($level) {
+	/**
+	 * @return int
+	 */
+	public function getLevel() {
 		return $this->level;
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getLog() {
 		return $this->log;
 	}
 
 
+	/**
+	 * @param string $data
+	 * @param int $level
+	 */
 	protected function logToChrome($data, $level) {
 		// https://craig.is/writing/chrome-logger
 		$backtrace = debug_backtrace(false);
@@ -96,7 +121,7 @@ class Logger {
 
 		$backtrace_message = 'unknown';
 		if (isset($backtrace[$level]['file']) && isset($backtrace[$level]['line'])) {
-				$backtrace_message = $backtrace[$level]['file'] . ' ' . $backtrace[$level]['line'];
+			$backtrace_message = $backtrace[$level]['file'] . ' ' . $backtrace[$level]['line'];
 		}
 
 		$row = array(
@@ -112,18 +137,22 @@ class Logger {
 	}
 
 
+	/**
+	 * @param string|array $data
+	 * @param int $level
+	 */
 	public function log($data, $level) {
 		if ($level >= $this->level) {
 			$raddr = array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : '-';
 			if (is_array($data)) {
 				$output = array();
-				foreach($data as $item) {
+				foreach ($data as $item) {
 					if (is_string($item) || is_numeric($item))
 						$output[] = (string)$item;
 					elseif (is_object($item))
 						$output[] = "<" . get_class($item) . (method_exists($item, '__toString') ? ": " . (string)$item : "") . ">";
 					else
-					$output[] = json_encode($item);
+						$output[] = json_encode($item);
 				}
 				$data = implode(" ", $output);
 			}
@@ -143,30 +172,45 @@ class Logger {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function debug() {
 		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::DEBUG);
 	}
 
 
+	/**
+	 *
+	 */
 	public static function info() {
 		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::INFO);
 	}
 
 
+	/**
+	 *
+	 */
 	public static function warning() {
 		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::WARNING);
 	}
 
 
+	/**
+	 *
+	 */
 	public static function error() {
 		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::ERROR);
 	}
 
 
+	/**
+	 *
+	 */
 	public static function critical() {
 		$logger = self::getInstance();
 		$logger->log(func_get_args(), self::CRITICAL);

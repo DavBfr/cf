@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2016 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +27,9 @@ abstract class Model {
 	protected $modelData;
 
 
+	/**
+	 * Model constructor.
+	 */
 	public function __construct() {
 		$this->modelData = $this->getModelData();
 		list($this->table, $fields) = $this->getTable();
@@ -36,6 +40,10 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @return Model
+	 */
 	public static function getModel($name) {
 		$md = __NAMESPACE__ . "\\" . ucfirst($name) . "Model";
 		if (class_exists($md) && is_subclass_of($md, __NAMESPACE__ . "\\Model"))
@@ -45,6 +53,9 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	protected function getModelData() {
 		$md = get_class($this) . "Data";
 		if (class_exists($md) && is_subclass_of($md, __NAMESPACE__ . "\\ModelData"))
@@ -54,11 +65,17 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function modelData() {
 		return $this->modelData;
 	}
 
 
+	/**
+	 * @return string[]
+	 */
 	public static function getModels() {
 		$list = array();
 		$config = Config::getInstance();
@@ -69,11 +86,15 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @throws Exception
+	 */
 	public static function export() {
 		Cli::enableHelp();
 		$bdd = Bdd::getInstance();
 		foreach (self::getModels() as $class) {
 			$class = __NAMESPACE__ . "\\$class";
+			/** @var Model $model */
 			$model = new $class();
 			$drop = $bdd->dropTableQuery($model->getTableName());
 			$create = $bdd->createTableQuery($model->table, $model->fields);
@@ -87,12 +108,15 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @throws Exception
+	 */
 	public static function import() {
 		Cli::enableHelp();
 		Cli::pr("\"model\": ");
 		$tables = array();
 		$bdd = Bdd::getInstance();
-		foreach($bdd->getTables() as $table) {
+		foreach ($bdd->getTables() as $table) {
 			$tables[$table] = $bdd->getTableInfo($table);
 		}
 		$p = 0;
@@ -103,13 +127,16 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @throws Exception
+	 */
 	public static function createClassesFromConfig() {
 		$bdd = Bdd::getInstance();
 		$config = Config::getInstance();
-		if (! is_dir(BddPlugin::MODEL_DIR)) {
+		if (!is_dir(BddPlugin::MODEL_DIR)) {
 			@mkdir(BddPlugin::MODEL_DIR, 0744, true);
 		}
-		if (! is_dir(BddPlugin::BASE_MODEL_DIR)) {
+		if (!is_dir(BddPlugin::BASE_MODEL_DIR)) {
 			@mkdir(BddPlugin::BASE_MODEL_DIR, 0744, true);
 		}
 
@@ -121,7 +148,7 @@ abstract class Model {
 			fwrite($f, "<?php namespace " . __NAMESPACE__ . ";\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($bdd->updateTableName($table)) . ";\n");
 			$new_columns = array();
 			$new_names = array();
-			foreach($columns as $name => $params) {
+			foreach ($columns as $name => $params) {
 				if (substr($name, 0, 2) == "__" && substr($name, strlen($name) - 2) == "__")
 					continue;
 				list($_name, $params) = $bdd->updateModelField($name, $params);
@@ -129,7 +156,7 @@ abstract class Model {
 				$new_names[$_name] = $name;
 			}
 			$colstr = ArrayWriter::toString($new_columns, 4);
-			foreach($new_columns as $name => $params) {
+			foreach ($new_columns as $name => $params) {
 				fwrite($f, "\tconst " . strtoupper($new_names[$name]) . " = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : ModelField::TYPE_AUTO) . "\n");
 				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($new_names[$name]), $colstr);
 			}
@@ -159,26 +186,43 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	abstract protected function getTable();
 
 
+	/**
+	 * @return string
+	 */
 	public function getTableName() {
 		return $this->table;
 	}
 
 
+	/**
+	 * @return ModelField[]
+	 */
 	public function getFields() {
 		return $this->fields;
 	}
 
 
+	/**
+	 * @param string $name
+	 * @return ModelField
+	 */
 	public function getField($name) {
 		return $this->fields[$name];
 	}
 
 
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
 	public function getPrimaryField() {
-		foreach($this->fields as $field) {
+		foreach ($this->fields as $field) {
 			if ($field->isPrimary()) {
 				return $field->getName();
 			}
@@ -188,17 +232,30 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function createTable() {
 		$bdd = Bdd::getInstance();
 		return $bdd->createTable($this->table, $this->fields);
 	}
 
 
+	/**
+	 * @return ModelData
+	 */
 	public function newRow() {
 		return new $this->modelData($this);
 	}
 
 
+	/**
+	 * @param array $where
+	 * @param array $params
+	 * @return ModelData
+	 * @throws Exception
+	 */
 	public function simpleSelect($where = array(), $params = array()) {
 		$bdd = Bdd::getInstance();
 		return Collection::Model($this)
@@ -209,18 +266,27 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @param $id
+	 * @return ModelData
+	 * @throws Exception
+	 */
 	public function getById($id) {
 		return $this->getBy($this->getPrimaryField(), $id);
 	}
 
 
+	/**
+	 * @param $id
+	 * @throws Exception
+	 */
 	public function deleteById($id) {
 		$bdd = Bdd::getInstance();
 		$data = $this->getById($id);
 		if ($data->isEmpty())
 			return;
 
-		foreach($this->fields as $name => $field) {
+		foreach ($this->fields as $name => $field) {
 			if ($field->isBlob()) {
 				$data->setBlob($name, null);
 			}
@@ -234,6 +300,12 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @param mixed $value
+	 * @return ModelData
+	 * @throws Exception
+	 */
 	public function getBy($field, $value) {
 		$bdd = Bdd::getInstance();
 		if (array_key_exists($field, $this->fields)) {
@@ -244,8 +316,13 @@ abstract class Model {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @return Model
+	 */
 	public function getForeign($field) {
 		if (array_key_exists($field, $this->fields)) {
+			/** @noinspection PhpUnusedLocalVariableInspection */
 			list($table, $key, $value) = $this->fields[$field]->getForeign();
 			$className = __NAMESPACE__ . "\\" . ucfirst($table) . "Model";
 			return new $className;

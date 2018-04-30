@@ -24,21 +24,36 @@ class Template {
 	private $caching = true;
 
 
+	/**
+	 * Template constructor.
+	 * @param array $params
+	 */
 	public function __construct($params = array()) {
 		$this->params = array_merge($this->get_defaults(), $params);
 	}
 
 
+	/**
+	 * @return array
+	 */
 	protected function get_defaults() {
 		return array();
 	}
 
 
+	/**
+	 * @param string $key
+	 * @param mixed $value
+	 */
 	public function set($key, $value) {
 		$this->params[$key] = $value;
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return bool|string
+	 */
 	public static function findTemplate($filename) {
 		if ($filename[0] != DIRECTORY_SEPARATOR) {
 			$template_file = Plugins::find(self::TEMPLATES_DIR . DIRECTORY_SEPARATOR . $filename);
@@ -51,6 +66,11 @@ class Template {
 	}
 
 
+	/**
+	 * @param string $filenames
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function parse($filenames) {
 		if (!is_array($filenames)) {
 			$filenames = array($filenames);
@@ -73,6 +93,11 @@ class Template {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param bool $optional
+	 * @throws \Exception
+	 */
 	public function insert($filename, $optional = false) {
 		$template = self::findTemplate($filename);
 		if ($template === false) {
@@ -86,15 +111,28 @@ class Template {
 	}
 
 
+	/**
+	 * @param string $filenames
+	 * @param array $params
+	 * @param string $class
+	 * @throws \Exception
+	 */
 	public function insertNew($filenames, $params = null, $class = "Template") {
 		$nsclass = __NAMESPACE__ . "\\" . $class;
 		if ($params === null)
 			$params = array();
+		/** @var Template $tpt */
 		$tpt = new $nsclass(array_merge($this->params, $params));
 		echo $tpt->parse($filenames);
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string $contentType
+	 * @param string $encoding
+	 * @throws \Exception
+	 */
 	public function output($filename, $contentType = "text/html", $encoding = "utf-8") {
 		while (ob_get_length())
 			ob_end_clean();
@@ -105,11 +143,20 @@ class Template {
 	}
 
 
+	/**
+	 *
+	 */
 	public function disable_cache() {
 		$this->caching = false;
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string $contentType
+	 * @param string $encoding
+	 * @throws \Exception
+	 */
 	public function outputCached($filename, $contentType = "text/html", $encoding = "utf-8") {
 		while (ob_get_length())
 			ob_end_clean();
@@ -132,7 +179,7 @@ class Template {
 
 		$content = $this->parse($filename);
 		$contentMin = Plugins::dispatch("minify_html", $content);
-		if ($contentMin !== NULL)
+		if ($contentMin !== null)
 			$content = $contentMin;
 
 		if ($this->caching)
@@ -143,6 +190,12 @@ class Template {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string $default
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function media($filename, $default = null) {
 		$file = Resources::find($filename);
 		if ($file !== null) {
@@ -152,6 +205,9 @@ class Template {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function all() {
 		$ret = "<ul>\n";
 		foreach ($this->params as $key => $value) {
@@ -162,6 +218,9 @@ class Template {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function dev() {
 		$ret = "<pre>";
 		$ret .= "&lt;ul>\n";
@@ -174,8 +233,14 @@ class Template {
 	}
 
 
+	/**
+	 * @param mixed $value
+	 * @param string $filter
+	 * @return string
+	 * @throws \Exception
+	 */
 	protected function filter($value, $filter) {
-		switch($filter) {
+		switch ($filter) {
 			case 'raw':
 				return $value;
 			case 'tr':
@@ -192,11 +257,22 @@ class Template {
 	}
 
 
+	/**
+	 * @param string $param
+	 * @return bool
+	 */
 	public function has($param) {
 		return array_key_exists($param, $this->params);
 	}
 
 
+	/**
+	 * @param string $param
+	 * @param string $filter
+	 * @param mixed $default
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function get($param, $filter = 'raw', $default = null) {
 		if (array_key_exists($param, $this->params)) {
 			$value = $this->params[$param];
@@ -210,6 +286,13 @@ class Template {
 	}
 
 
+	/**
+	 * @param string $key
+	 * @param string $filter
+	 * @param mixed $default
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function config($key, $filter = 'raw', $default = null) {
 		$config = Config::getInstance();
 		$value = $config->get($key, $default);
@@ -217,16 +300,30 @@ class Template {
 	}
 
 
+	/**
+	 * @param string $param
+	 * @param string $filtre
+	 * @param mixed $default
+	 * @throws \Exception
+	 */
 	public function out($param, $filtre = 'raw', $default = null) {
 		echo $this->get($param, $filtre, $default);
 	}
 
 
+	/**
+	 * @param string $param
+	 * @throws \Exception
+	 */
 	public function tr($param) {
 		echo $this->get($param, 'tr');
 	}
 
 
+	/**
+	 * @param array $keys
+	 * @throws \Exception
+	 */
 	public function cf_options($keys = null) {
 		if ($keys == null) {
 			$keys = array();

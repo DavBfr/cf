@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,9 @@ use PDO;
 
 class MysqlHelper extends PDOHelper {
 
+	/**
+	 * @return array
+	 */
 	protected function getParams() {
 		return array(
 			PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
@@ -29,12 +33,22 @@ class MysqlHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @param string $format
+	 * @param string $date
+	 * @return string
+	 */
 	public function strftime($format, $date) {
 		return "DATE_FORMAT($date, '$format')";
 	}
 
 
-	protected function buildTableColumns($table_structure) {
+	/**
+	 * @param array $table_structure
+	 * @return array
+	 * @throws \Exception
+	 */
+	protected function buildTableColumns(array $table_structure) {
 		$columns = array();
 		foreach ($table_structure as $column) {
 			$ctype = $this->getDbType($column->getType());
@@ -51,11 +65,15 @@ class MysqlHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @return string[]
+	 * @throws \Exception
+	 */
 	public function getTables() {
 		$tables = array();
 		$res = $this->query("SHOW TABLES");
 		if ($res !== false) {
-			while($row = $res->fetch(PDO::FETCH_NUM)) {
+			while ($row = $res->fetch(PDO::FETCH_NUM)) {
 				$tables[] = $row[0];
 			}
 		}
@@ -63,11 +81,16 @@ class MysqlHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getTableInfo($name) {
 		$fields = array();
 		$res = $this->query("SHOW COLUMNS FROM `$name`");
 		if ($res !== false) {
-			foreach($res as $row) {
+			foreach ($res as $row) {
 				$field = array();
 				if (strpos($row["Type"], "int") !== false) $field["type"] = ModelField::TYPE_INT;
 				elseif (strpos($row["Type"], "text") !== false) $field["type"] = ModelField::TYPE_TEXT;
@@ -89,6 +112,11 @@ class MysqlHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @param string $type
+	 * @return string
+	 * @throws \Exception
+	 */
 	protected function getDbType($type) {
 		switch ($type) {
 			case ModelField::TYPE_BLOB:

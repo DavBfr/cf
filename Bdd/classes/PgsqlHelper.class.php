@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,17 +22,30 @@ use PDO;
 
 class PgsqlHelper extends PDOHelper {
 
+	/**
+	 * @return array
+	 */
 	protected function getParams() {
 		return array(
 			PDO::ATTR_PERSISTENT => true,
 		);
 	}
 
+
+	/**
+	 * @param string $field
+	 * @return string
+	 */
 	public function quoteIdent($field) {
 		return $field;
 	}
 
 
+	/**
+	 * @param string $type
+	 * @return string
+	 * @throws \Exception
+	 */
 	protected function getDbType($type) {
 		switch ($type) {
 			case ModelField::TYPE_DECIMAL:
@@ -44,7 +58,12 @@ class PgsqlHelper extends PDOHelper {
 	}
 
 
-	protected function buildTableColumns($table_structure) {
+	/**
+	 * @param array $table_structure
+	 * @return array
+	 * @throws \Exception
+	 */
+	protected function buildTableColumns(array $table_structure) {
 		$columns = array();
 		foreach ($table_structure as $column) {
 			if ($column->isAutoincrement()) {
@@ -62,11 +81,15 @@ class PgsqlHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @return string[]
+	 * @throws \Exception
+	 */
 	public function getTables() {
 		$tables = array();
 		$res = $this->query("SELECT * FROM pg_catalog.pg_tables WHERE schemaname='public'");
 		if ($res !== false) {
-			while($row = $res->fetch()) {
+			while ($row = $res->fetch()) {
 				$tables[] = $row['tablename'];
 			}
 		}
@@ -74,11 +97,16 @@ class PgsqlHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getTableInfo($name) {
 		$fields = array();
 		$res = $this->query("SELECT * FROM information_schema.columns WHERE table_name ='$name'");
 		if ($res !== false) {
-			foreach($res as $row) {
+			foreach ($res as $row) {
 				$field = array();
 				if (strpos($row["data_type"], "int") !== false) $field["type"] = ModelField::TYPE_INT;
 				elseif (strpos($row["data_type"], "text") !== false) $field["type"] = ModelField::TYPE_TEXT;
@@ -105,14 +133,29 @@ class PgsqlHelper extends PDOHelper {
 	}
 
 
-	public function getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
+	/**
+	 * @param array $fields
+	 * @param array $tables
+	 * @param array $joint
+	 * @param array $where
+	 * @param array $filter
+	 * @param array $filter_fields
+	 * @param array $order
+	 * @param array $group
+	 * @param array $params
+	 * @param int $limit
+	 * @param $pos
+	 * @param $distinct
+	 * @return string
+	 */
+	public function getQueryString(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		$query = "SELECT " . ($distinct ? "DISTINCT " : "");
 
 		if (count($fields) == 0)
 			$query .= "*";
 		else {
 			$_fields = array();
-			foreach($fields as $k => $v) {
+			foreach ($fields as $k => $v) {
 				if (is_int($k))
 					$_fields[] = $v;
 				else
@@ -127,7 +170,7 @@ class PgsqlHelper extends PDOHelper {
 		if (count($joint) > 0) {
 			$joints = array();
 
-			foreach($joint as $k => $v) {
+			foreach ($joint as $k => $v) {
 				$joints[] = "LEFT JOIN ${v[0]} ON ${v[1]}";
 			}
 			$query .= " " . implode(" ", $joint);

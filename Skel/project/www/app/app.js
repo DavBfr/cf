@@ -3,7 +3,7 @@ if (typeof angular !== 'undefined') {
   var app = angular.module('app', []);
 
   app.config(function ($routeProvider) {
-    if (typeof AddUserRoutes != 'undefined') {
+    if (typeof AddUserRoutes !== 'undefined') {
       AddUserRoutes($routeProvider);
     }
 

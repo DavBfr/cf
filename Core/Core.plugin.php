@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -56,9 +57,15 @@ Options::set("CF_EMAIL", "dev.nfet.net@gmail.com");
 Options::set("XSRF_TOKEN", "XSRF-TOKEN");
 Options::set("XSRF_HEADER", "x-xsrf-token");
 
+
 class CorePlugin extends Plugins {
 	const config = "config";
 
+
+	/**
+	 * @throws \ReflectionException
+	 * @throws \Exception
+	 */
 	public static function loadConfig() {
 		$conf = Config::getInstance();
 
@@ -66,11 +73,11 @@ class CorePlugin extends Plugins {
 		if ($memcache->offsetExists("JCONFIG_FILE")) {
 			$conf->setData($memcache["JCONFIG_FILE"]);
 			Logger::debug("Config loaded from cache");
-			foreach($conf->get("plugins", array()) as $plugin) {
+			foreach ($conf->get("plugins", array()) as $plugin) {
 				Plugins::add($plugin);
 			}
 			if (DEBUG) {
-				foreach($conf->get("debugPlugins", array()) as $plugin) {
+				foreach ($conf->get("debugPlugins", array()) as $plugin) {
 					Plugins::add($plugin);
 				}
 			}
@@ -86,7 +93,7 @@ class CorePlugin extends Plugins {
 				if (file_exists(CONFIG_DIR . "/config.local.json")) {
 					$conf->append(CONFIG_DIR . "/config.local.json");
 				}
-				foreach(glob(CONFIG_DIR . "/*.json") as $file) {
+				foreach (glob(CONFIG_DIR . "/*.json") as $file) {
 					$bn = basename($file);
 					if (substr($bn, 0, 7) != "config.") {
 						$conf->append($file, false, substr($bn, 0, strlen($bn) - 5));
@@ -96,11 +103,11 @@ class CorePlugin extends Plugins {
 					$conf->append(CONFIG_DIR . "/config.debug.json");
 				}
 				$confsave = $conf->getData();
-				foreach($conf->get("plugins", array()) as $plugin) {
+				foreach ($conf->get("plugins", array()) as $plugin) {
 					Plugins::add($plugin);
 				}
 				if (DEBUG) {
-					foreach($conf->get("debugPlugins", array()) as $plugin) {
+					foreach ($conf->get("debugPlugins", array()) as $plugin) {
 						Plugins::add($plugin);
 					}
 				}
@@ -108,7 +115,7 @@ class CorePlugin extends Plugins {
 					if (file_exists($dirname . "/config.json")) {
 						$conf->append($dirname . "/config.json");
 					}
-					foreach(glob($dirname . "/*.json") as $file) {
+					foreach (glob($dirname . "/*.json") as $file) {
 						$bn = basename($file);
 						if (substr($bn, 0, 7) != "config.") {
 							$conf->append($file, false, substr($bn, 0, strlen($bn) - 5));
@@ -118,13 +125,13 @@ class CorePlugin extends Plugins {
 				Plugins::dispatchAllReversed("config", $conf);
 				$conf->merge($confsave);
 				ArrayWriter::toFile($conf->getData(), $cache->getFilename());
-			} else  {
+			} else {
 				$conf->setData(ArrayWriter::fromFile($cache->getFilename()));
-				foreach($conf->get("plugins", array()) as $plugin) {
+				foreach ($conf->get("plugins", array()) as $plugin) {
 					Plugins::add($plugin);
 				}
 				if (DEBUG) {
-					foreach($conf->get("debugPlugins", array()) as $plugin) {
+					foreach ($conf->get("debugPlugins", array()) as $plugin) {
 						Plugins::add($plugin);
 					}
 				}
@@ -134,6 +141,11 @@ class CorePlugin extends Plugins {
 	}
 
 
+	/**
+	 * @return TemplateRes
+	 * @throws \ReflectionException
+	 * @throws \Exception
+	 */
 	public static function bootstrap() {
 		ErrorHandler::Init(__NAMESPACE__ . "\\ErrorHandler");
 
@@ -145,13 +157,13 @@ class CorePlugin extends Plugins {
 
 		$conf = Config::getInstance();
 		$tpt = new TemplateRes(array(
-				"title" => $conf->get("title", "CF " . CF_VERSION),
-				"description" => $conf->get("description", null),
-				"favicon" => $conf->get("favicon", null),
-				"baseline" => $conf->get("baseline", self::getBaseline()),
+			"title" => $conf->get("title", "CF " . CF_VERSION),
+			"description" => $conf->get("description", null),
+			"favicon" => $conf->get("favicon", null),
+			"baseline" => $conf->get("baseline", self::getBaseline()),
 		));
 
-		foreach(Plugins::dispatchAll("index", $tpt) as $index) {
+		foreach (Plugins::dispatchAll("index", $tpt) as $index) {
 			if ($index !== null)
 				$tpt->output($index);
 		}
@@ -160,22 +172,28 @@ class CorePlugin extends Plugins {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public static function getBaseline() {
 		return "CF " . CF_VERSION . " ⠶ PHP " . PHP_VERSION . (isset($_SERVER["SERVER_SOFTWARE"]) ? " ⠶ " . $_SERVER["SERVER_SOFTWARE"] : "");
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public static function info() {
 		$info = '<div class="well"><h1><a href="' . CF_URL . '">CF ' . CF_VERSION . '</a></h1></div>';
 		$info .= '<h2>CF configuration</h2><table class="table table-bordered table-striped table-condensed"><tbody>';
-		foreach(Options::getAll() as $key => $val) {
+		foreach (Options::getAll() as $key => $val) {
 			if ($key == "DBPASSWORD")
 				$val = "****";
 			$info .= '<tr><th>' . $key . '</th><td>' . $val . '</td></tr>';
 		}
 		$info .= '</tbody></table>';
 		$info .= '<h2>Server configuration</h2><table class="table table-bordered table-striped table-condensed"></tbody>';
-		foreach($_SERVER as $key => $val) {
+		foreach ($_SERVER as $key => $val) {
 			if ($key == 'PHP_AUTH_PW')
 				$val = '*****';
 
@@ -187,6 +205,10 @@ class CorePlugin extends Plugins {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public function preupdate() {
 		Cli::pinfo(" * Create folders");
 		foreach (Options::getAll() as $key => $val) {
@@ -197,6 +219,9 @@ class CorePlugin extends Plugins {
 	}
 
 
+	/**
+	 *
+	 */
 	public function update() {
 		if (Cli::getOption("a"))
 			$cf_dir = "\"" . realpath(CF_DIR) . "\"";
@@ -213,12 +238,18 @@ class CorePlugin extends Plugins {
 	}
 
 
+	/**
+	 *
+	 */
 	public function clean() {
 		System::rmtree(CACHE_DIR);
 		System::rmtree(WWW_CACHE_DIR);
 	}
 
 
+	/**
+	 * @param Cli $cli
+	 */
 	public function cli($cli) {
 		if (!IS_PHAR && !ini_get("phar.readonly")) {
 			$cli->addCommand("core:phar", array(__NAMESPACE__ . "\\Cli", "phar"), "Build cf.phar archive");
@@ -235,6 +266,10 @@ class CorePlugin extends Plugins {
 		}
 	}
 
+
+	/**
+	 * @param Resources $res
+	 */
 	public function resources($res) {
 		$res->add("crudHelper.js");
 	}

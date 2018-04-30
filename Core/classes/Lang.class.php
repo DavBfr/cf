@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -26,6 +27,11 @@ class Lang {
 	protected static $baselang;
 
 
+	/**
+	 * @param string $filename
+	 * @param string $lang
+	 * @throws Exception
+	 */
 	public static function load($filename, $lang = null) {
 		if (!is_file($filename))
 			throw new Exception("Can't find translation file \"${filename}\"");
@@ -35,8 +41,14 @@ class Lang {
 	}
 
 
+	/**
+	 * @param array $words
+	 * @param string $lang
+	 * @param string $suffix
+	 * @throws Exception
+	 */
 	public static function setWords($words, $lang = null, $suffix = null) {
-		foreach($words as $token => $word) {
+		foreach ($words as $token => $word) {
 			if (is_array($word)) {
 				self::setWords($word, $lang, $token . ".");
 			} else {
@@ -46,6 +58,10 @@ class Lang {
 	}
 
 
+	/**
+	 * @param string $lang
+	 * @throws Exception
+	 */
 	public static function setLang($lang) {
 		if (self::$baselang == $lang)
 			return;
@@ -67,25 +83,38 @@ class Lang {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public static function getLang() {
 		return self::$baselang;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public static function getLangHtml() {
 		return str_replace("_", "-", self::getLang());
 	}
 
 
+	/**
+	 * @param string $token
+	 * @param string $lang
+	 * @param int $context
+	 * @return string
+	 * @throws Exception
+	 */
 	public static function get($token, $lang = null, $context = null) {
 		if ($lang == null)
 			$lang = self::$baselang;
 
-		if(self::exists($token)) {
-			if(!is_null($context)) {
+		if (self::exists($token)) {
+			if (!is_null($context)) {
 				return sprintf(self::getByCount($token, $context, $lang), $context);
 			} else {
-				if(is_null($t = self::getByLang($token, $lang)))
+				if (is_null($t = self::getByLang($token, $lang)))
 					$t = self::getByLang($token, LANG_DEFAULT);
 				return $t;
 			}
@@ -98,27 +127,42 @@ class Lang {
 	}
 
 
+	/**
+	 * @param string $text
+	 * @param int $count
+	 * @return string
+	 */
 	public static function getTextByCount($text, $count) {
 		preg_match('/\((.+)\)/', $text, $regs, PREG_OFFSET_CAPTURE);
 		$fill = '';
 		$x = explode('|', $regs[1][0]); // If there are different notations for singular and plural
 		if ((Int)$count != 1) {
 			$fill = $x[count($x) - 1]; // last element
-		}
-		elseif (count($x) > 1) {
+		} elseif (count($x) > 1) {
 			$fill = $x[0];
 		}
 		return substr_replace($text, $fill, $regs[0][1], strlen($regs[0][0]));
 	}
 
 
+	/**
+	 * @param string $token
+	 * @param int $count
+	 * @param string $lang
+	 * @return string
+	 * @throws Exception
+	 */
 	public static function getByCount($token, $count, $lang = null) {
 		return self::getTextByCount(self::get($token, $lang), $count);
 	}
 
 
-	public static function getByLang($token, $lang)
-	{
+	/**
+	 * @param string $token
+	 * @param string $lang
+	 * @return string
+	 */
+	public static function getByLang($token, $lang) {
 		if (isset(self::$words[$token][$lang])) {
 			return self::$words[$token][$lang];
 		}
@@ -126,6 +170,12 @@ class Lang {
 	}
 
 
+	/**
+	 * @param string $token
+	 * @param string $value
+	 * @param string $lang
+	 * @throws Exception
+	 */
 	public static function set($token, $value, $lang = null) {
 		if (is_null($token))
 			throw new Exception("token cannot be null");
@@ -138,11 +188,19 @@ class Lang {
 	}
 
 
+	/**
+	 * @param string $token
+	 * @return bool
+	 */
 	public static function exists($token) {
 		return array_key_exists($token, self::$words);
 	}
 
 
+	/**
+	 * @param string[] $supported_list [optional]
+	 * @return string[]
+	 */
 	public static function detect($supported_list = null) {
 		$languages = array();
 		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
@@ -155,7 +213,7 @@ class Lang {
 						if (!isset($match[2])) {
 							$match[2] = '1.0';
 						} else {
-							$match[2] = (string) floatval($match[2]);
+							$match[2] = (string)floatval($match[2]);
 						}
 						if (!isset($languagesQ[$match[2]])) {
 							$languagesQ[$match[2]] = array();
@@ -181,8 +239,12 @@ class Lang {
 
 }
 
-Lang::setLang(LANG_DEFAULT);
-if (LANG_AUTODETECT && !IS_CLI) {
-    $d = Lang::detect();
-    Lang::setLang($d[0]);
+
+try {
+	Lang::setLang(LANG_DEFAULT);
+	if (LANG_AUTODETECT && !IS_CLI) {
+		$d = Lang::detect();
+		Lang::setLang($d[0]);
+	}
+} catch (Exception $e) {
 }

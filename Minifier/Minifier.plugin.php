@@ -21,28 +21,21 @@ Options::set("MINIFY_JSCSS", !DEBUG, "Minify Javascript and CSS files");
 Options::set("MINIFY_HTML", !DEBUG, "Minify Html files");
 Options::set("MINIFY_YUI", false, "Use yui-compressor to minify");
 
+
 class MinifierPlugin extends Plugins {
 
-	private static function globRecursive($pattern, $flags = 0) {
-		$files = glob($pattern, $flags);
-
-		foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir){
-			$files = array_merge($files, self::globRecursive($dir . '/' . basename($pattern), $flags));
-		}
-
-		return $files;
-	}
-
-
+	/**
+	 *
+	 */
 	public static function minify_images() {
 		$path = Cli::addOption("path", WWW_PATH, "Path where to find images");
 		$norun = Cli::addSwitch("n", "Do not run the scripts, only print files to process");
 		Cli::enableHelp();
 
 		Cli::pinfo("Minify images");
-		foreach (self::globRecursive($path . "/{*.[pP][nN][gG],*.[gG][iI][fF]}", GLOB_BRACE | GLOB_NOSORT) as $png) {
+		foreach (System::globRec($path . "/{*.[pP][nN][gG],*.[gG][iI][fF]}", GLOB_BRACE | GLOB_NOSORT) as $png) {
 			Cli::pinfo(" * $png");
-			$output = "";
+			$output = array();
 			$return_var = -1;
 			$cmd = "optipng -o7 -strip all $png";
 			if ($norun) {
@@ -56,9 +49,9 @@ class MinifierPlugin extends Plugins {
 				}
 			}
 		}
-		foreach (self::globRecursive($path . "/{*.[jJ][pP][gG],*.[jJ][pP][eE][gG]}", GLOB_BRACE | GLOB_NOSORT) as $jpg) {
+		foreach (System::globRec($path . "/{*.[jJ][pP][gG],*.[jJ][pP][eE][gG]}", GLOB_BRACE | GLOB_NOSORT) as $jpg) {
 			Cli::pinfo(" * $jpg");
-			$output = "";
+			$output = array();
 			$return_var = -1;
 			$cmd = "jpegoptim -s -v -v $jpg";
 			if ($norun) {
@@ -75,14 +68,21 @@ class MinifierPlugin extends Plugins {
 	}
 
 
+	/**
+	 * @param string $input
+	 * @return string
+	 */
 	public function minify_html($input) {
 		if (MINIFY_HTML)
 			return HtmlMinifier::html($input);
 		else
-			return NULL;
+			return null;
 	}
 
 
+	/**
+	 * @param Cli $cli
+	 */
 	public function cli($cli) {
 		$cli->addCommand("minify:images", array(__NAMESPACE__ . "\\MinifierPlugin", "minify_images"), "Crush and Optimize Images");
 	}

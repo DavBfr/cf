@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,13 +22,22 @@ use PDO;
 
 class SqliteHelper extends PDOHelper {
 
-
+	/**
+	 * @param string $format
+	 * @param string $date
+	 * @return string
+	 */
 	public function strftime($format, $date) {
 		return "strftime('$format', $date)";
 	}
 
 
-	protected function buildTableColumns($table_structure) {
+	/**
+	 * @param array $table_structure
+	 * @return array
+	 * @throws \Exception
+	 */
+	protected function buildTableColumns(array $table_structure) {
 		$columns = array();
 		foreach ($table_structure as $column) {
 			$ctype = $this->getDbType($column->getType());
@@ -44,11 +54,15 @@ class SqliteHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @return string[]
+	 * @throws \Exception
+	 */
 	public function getTables() {
 		$tables = array();
 		$res = $this->query("SELECT tbl_name FROM sqlite_master WHERE type='table'");
 		if ($res !== false) {
-			while($row = $res->fetch(PDO::FETCH_NUM)) {
+			while ($row = $res->fetch(PDO::FETCH_NUM)) {
 				if ($row[0] != "sqlite_sequence")
 					$tables[] = $row[0];
 			}
@@ -57,6 +71,11 @@ class SqliteHelper extends PDOHelper {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getTableInfo($name) {
 		$auto = false;
 		$res = $this->query("select count(*) from sqlite_sequence where name=" . $this->quote($name));
@@ -69,7 +88,7 @@ class SqliteHelper extends PDOHelper {
 		$fields = array();
 		$res = $this->query("pragma table_info($name)");
 		if ($res !== false) {
-			foreach($res as $row) {
+			foreach ($res as $row) {
 				$field = array();
 				if (strpos(strtoupper($row["type"]), "INTEGER") !== false) $field["type"] = ModelField::TYPE_INT;
 				elseif (strpos(strtoupper($row["type"]), "TEXT") !== false) $field["type"] = ModelField::TYPE_TEXT;
@@ -90,16 +109,34 @@ class SqliteHelper extends PDOHelper {
 	}
 
 
-	public function getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct) {
+	/**
+	 * @param array $fields
+	 * @param array $tables
+	 * @param array $joint
+	 * @param array $where
+	 * @param array $filter
+	 * @param array $filter_fields
+	 * @param array $order
+	 * @param array $group
+	 * @param array $params
+	 * @param int $limit
+	 * @param $pos
+	 * @param $distinct
+	 * @return PDOStatementHelper|SqliteStatementHelper
+	 * @throws \Exception
+	 */
+	public function getQueryValues(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		$sql = $this->getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 		return new SqliteStatementHelper($this, $this->query($sql, $params));
 	}
-
-
 }
 
 
 class SqliteStatementHelper extends PDOStatementHelper {
+	/**
+	 * @param array $meta
+	 * @return string
+	 */
 	protected function convertType($meta) {
 		switch ($meta["sqlite:decl_type"]) {
 			case "NUMBER":

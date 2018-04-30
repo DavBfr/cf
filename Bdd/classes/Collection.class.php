@@ -1,6 +1,6 @@
 <?php namespace DavBfr\CF;
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,21 +30,27 @@ class Collection {
 	private $params;
 	private $limit;
 	private $distinct;
+	/** @var Model $model */
 	private $model;
 
 
-	protected function __construct($bdd) {
+	/**
+	 * Collection constructor.
+	 * @param Bdd $bdd
+	 * @throws \Exception
+	 */
+	protected function __construct(Bdd $bdd = null) {
 		if ($bdd === null)
 			$this->bdd = Bdd::getInstance();
 		else
-		$this->bdd = $bdd;
+			$this->bdd = $bdd;
 
 		$this->fields = array();
 		$this->tables = array();
 		$this->joint = array();
 		$this->where = array();
-		$this->filter = null;
-		$this->filter_fields = null;
+		$this->filter = array();
+		$this->filter_fields = array();
 		$this->order = array();
 		$this->group = array();
 		$this->params = array();
@@ -54,15 +60,27 @@ class Collection {
 	}
 
 
-	public static function Query($from = null, $bdd = null) {
+	/**
+	 * @param string|array $from
+	 * @param Bdd|null $bdd
+	 * @return Collection
+	 * @throws \Exception
+	 */
+	public static function Query($from = null, Bdd $bdd = null) {
 		$c = new self($bdd);
 		if ($from !== null)
-		  $c->from($from);
+			$c->from($from);
 		return $c;
 	}
 
 
-	public static function Model($model, $bdd = null) {
+	/**
+	 * @param Model $model
+	 * @param Bdd|null $bdd
+	 * @return Collection
+	 * @throws \Exception
+	 */
+	public static function Model(Model $model, Bdd $bdd = null) {
 		$c = new self($bdd);
 		$c->model = $model;
 		$c->from($c->bdd->quoteIdent($model->getTableName()));
@@ -70,18 +88,28 @@ class Collection {
 	}
 
 
+	/**
+	 * @param int $limit
+	 * @return $this
+	 */
 	public function limit($limit) {
 		$this->limit = $limit;
 		return $this;
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function distinct() {
 		$this->distinct = true;
 		return $this;
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function select() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -92,30 +120,44 @@ class Collection {
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function resetSelect() {
 		$this->fields = array();
 		return $this;
 	}
 
 
+	/**
+	 * @param string $field
+	 * @param string $name
+	 * @return $this
+	 */
 	public function selectAs($field, $name) {
 		$this->fields[$name] = $field;
 		return $this;
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function unSelect() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
 			$args = $args[0];
 
-		foreach($args as $field) {
+		foreach ($args as $field) {
 			unset($this->fields[$field]);
 		}
 		return $this;
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function from() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -126,11 +168,20 @@ class Collection {
 	}
 
 
+	/**
+	 * @param string $table
+	 * @param string $filter
+	 * @return $this
+	 */
 	public function leftJoin($table, $filter) {
 		$this->joint[] = array($table, $filter);
 		return $this;
 	}
 
+
+	/**
+	 * @return $this
+	 */
 	public function where() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -141,6 +192,12 @@ class Collection {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return $this
+	 * @throws \Exception
+	 */
 	public function whereEq($name, $value) {
 		$bdd = Bdd::getInstance();
 
@@ -159,12 +216,19 @@ class Collection {
 	}
 
 
-	public function filter($value, $fields = null) {
+	/**
+	 * @param mixed $value
+	 * @param array|null $fields
+	 */
+	public function filter($value, array $fields = null) {
 		$this->filter = $value;
 		$this->filter_fields = $fields;
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function groupBy() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -175,6 +239,9 @@ class Collection {
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function orderBy() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -185,56 +252,99 @@ class Collection {
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function orderByDesc() {
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
 			$args = $args[0];
 
-		$this->order = array_merge($this->order, array_map(function ($arg) { return "$arg desc"; }, $args));
+		$this->order = array_merge($this->order, array_map(function ($arg) {
+			return "$arg desc";
+		}, $args));
 		return $this;
 	}
 
 
-	public function with($params) {
+	/**
+	 * @param array $params
+	 * @return $this
+	 */
+	public function with(array $params) {
 		$this->params = array_merge($this->params, $params);
 		return $this;
 	}
 
 
+	/**
+	 * @param string $param
+	 * @param string $value
+	 * @return $this
+	 */
 	public function withValue($param, $value) {
 		$this->params[$param] = $value;
 		return $this;
 	}
 
+
+	/**
+	 * @param string $format
+	 * @param string $date
+	 * @return string
+	 */
 	public function strftime($format, $date) {
 		return $this->bdd->strftime($format, $date);
 	}
 
 
+	/**
+	 * @param int $pos
+	 * @return string
+	 */
 	public function getQueryString($pos = 0) {
 		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryString($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
+	/**
+	 * @param int $pos
+	 * @return BddCursorHelper
+	 * @throws \Exception
+	 */
 	public function getValues($pos = 0) {
 		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryValues($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
+	/**
+	 * @param int $pos
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getValuesArray($pos = 0) {
 		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryValuesArray($this->fields, $this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->order, $this->group, $this->params, $this->limit, $pos, $this->distinct);
 	}
 
 
+	/**
+	 * @return int
+	 * @throws \Exception
+	 */
 	public function getCount() {
 		$filter_fields = $this->filter_fields === null ? $this->fields : $this->filter_fields;
 		return $this->bdd->getQueryCount($this->tables, $this->joint, $this->where, $this->filter, $filter_fields, $this->group, $this->params, $this->distinct);
 	}
 
 
+	/**
+	 * @param int $pos
+	 * @return ModelData
+	 * @throws \Exception
+	 */
 	public function modelData($pos = 0) {
 		$md = $this->model->modelData();
 		return new $md($this->model, $this->getValues($pos));

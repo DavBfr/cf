@@ -19,10 +19,15 @@
 
 abstract class RestApi extends Rest {
 
+	/**
+	 * @param string $method
+	 * @param string $path
+	 * @throws \Exception
+	 */
 	public function handleRequest($method, $path) {
-			header('Access-Control-Allow-Origin: *');
-			header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Cf-Token");
-			header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE");
+		header('Access-Control-Allow-Origin: *');
+		header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Cf-Token");
+		header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE");
 
 		if ($method == "OPTIONS") {
 			Output::finish();
@@ -32,6 +37,11 @@ abstract class RestApi extends Rest {
 	}
 
 
+	/**
+	 * @param string $mp
+	 * @return bool
+	 * @throws \Exception
+	 */
 	protected function preCheck($mp) {
 		DEBUG || Session::ensureLoggedinApi();
 		return parent::preCheck($mp);

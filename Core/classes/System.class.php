@@ -9,32 +9,44 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
 class System {
 	private static $relative = false;
 
 
+	/**
+	 * @param bool $rel
+	 */
 	public static function setRelativePublish($rel) {
 		self::$relative = $rel;
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param int $mode
+	 * @throws \Exception
+	 */
 	public static function ensureDir($name, $mode = 0750) {
-		if (! is_dir($name)) {
-			if (! @mkdir($name, $mode, true)) {
+		if (!is_dir($name)) {
+			if (!@mkdir($name, $mode, true)) {
 				ErrorHandler::error(500, null, "Unable to create directory $name");
 			}
 		}
 	}
 
 
+	/**
+	 * @param string $resource
+	 * @param string $dest
+	 */
 	public static function publish($resource, $dest = null) {
 		if ($dest === null)
 			$dest = WWW_DIR . DIRECTORY_SEPARATOR . basename($resource);
@@ -47,26 +59,36 @@ class System {
 		if (is_link($dest))
 			unlink($dest);
 
-		if (! file_exists($dest)) {
+		if (!file_exists($dest)) {
 			self::symlink($resource, $dest, self::$relative);
 		}
 	}
 
 
+	/**
+	 * @param string $path
+	 * @return string
+	 */
 	public static function absPath($path) {
 		$out = array();
-		foreach(explode(DIRECTORY_SEPARATOR, $path) as $i => $fold) {
-				if ($fold == '' || $fold == '.') continue;
-				if ($fold == '..' && $i > 0 && end($out) != '..') array_pop($out);
-		else $out[] = $fold;
-		} return ($path{0} == DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '') . join(DIRECTORY_SEPARATOR, $out);
+		foreach (explode(DIRECTORY_SEPARATOR, $path) as $i => $fold) {
+			if ($fold == '' || $fold == '.') continue;
+			if ($fold == '..' && $i > 0 && end($out) != '..') array_pop($out);
+			else $out[] = $fold;
+		}
+		return ($path{0} == DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '') . join(DIRECTORY_SEPARATOR, $out);
 	}
 
 
+	/**
+	 * @param string $from
+	 * @param string $to
+	 * @return string
+	 */
 	public static function relativePath($from, $to) {
 		$arFrom = explode(DIRECTORY_SEPARATOR, rtrim($from, DIRECTORY_SEPARATOR));
 		$arTo = explode(DIRECTORY_SEPARATOR, rtrim($to, DIRECTORY_SEPARATOR));
-		while(count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0])) {
+		while (count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0])) {
 			array_shift($arFrom);
 			array_shift($arTo);
 		}
@@ -79,12 +101,22 @@ class System {
 	}
 
 
+	/**
+	 * @param string $src
+	 * @param string $dst
+	 * @return bool
+	 */
 	public static function relsymlink($src, $dst) {
 		$rsrc = self::relativePath(dirname(self::absPath($dst)), self::absPath($src));
 		return @symlink($rsrc, $dst);
 	}
 
 
+	/**
+	 * @param string $src
+	 * @param string $dst
+	 * @param bool $relative
+	 */
 	public static function symlink($src, $dst, $relative = true) {
 		if (substr($src, 0, 7) == "phar://" || ($relative && self::relsymlink($src, $dst) === false) || (!$relative && @symlink($src, $dst) === false)) {
 			if (is_dir($src))
@@ -95,15 +127,18 @@ class System {
 	}
 
 
+	/**
+	 * @param string $src
+	 * @param string $dst
+	 */
 	public static function copyTree($src, $dst) {
 		$dir = opendir($src);
 		@mkdir($dst);
-		while(false !== ($file = readdir($dir))) {
+		while (false !== ($file = readdir($dir))) {
 			if (($file != '.') && ($file != '..')) {
 				if (is_dir($src . DIRECTORY_SEPARATOR . $file)) {
 					self::copyTree($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
-				}
-				else {
+				} else {
 					copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
 					Logger::info("Copy $src/$file to $dst");
 				}
@@ -113,6 +148,9 @@ class System {
 	}
 
 
+	/**
+	 * @param string $path
+	 */
 	public static function rmtree($path) {
 		if (is_dir($path)) {
 			foreach (glob("{$path}/*") as $file) {
@@ -128,6 +166,12 @@ class System {
 	}
 
 
+	/**
+	 * @param string $pattern
+	 * @param int $flags
+	 * @return string[]
+	 * @see glob()
+	 */
 	public static function globRec($pattern, $flags = 0) {
 		$files = glob($pattern, $flags);
 
@@ -139,6 +183,10 @@ class System {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return string
+	 */
 	public static function sanitize($filename) {
 		$filename = preg_replace("([^\w\d\-_.])", '-', $filename);
 		$filename = preg_replace("([\.]{2,})", '', $filename);
@@ -149,17 +197,21 @@ class System {
 	}
 
 
+	/**
+	 * @param string $text
+	 * @return string
+	 */
 	public static function highlightCode($text) {
-    $text = highlight_string("<?php " . $text, true);
+		$text = highlight_string("<?php " . $text, true);
 		$text = trim($text);
-    $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", "", $text, 1);
-    $text = preg_replace("|\\</code\\>\$|", "", $text, 1);
-    $text = trim($text);
-    $text = preg_replace("|\\</span\\>\$|", "", $text, 1);
-    $text = trim($text);
-    $text = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);
+		$text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", "", $text, 1);
+		$text = preg_replace("|\\</code\\>\$|", "", $text, 1);
+		$text = trim($text);
+		$text = preg_replace("|\\</span\\>\$|", "", $text, 1);
+		$text = trim($text);
+		$text = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);
 
-    return $text;
+		return $text;
 	}
 
 }

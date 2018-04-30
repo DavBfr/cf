@@ -24,6 +24,10 @@ class Session {
 	private static $instance = null;
 
 
+	/**
+	 * Session constructor.
+	 * @throws \Exception
+	 */
 	protected function __construct() {
 		if (session_id() != '')
 			ErrorHandler::error(500, "Session already started");
@@ -47,6 +51,10 @@ class Session {
 	}
 
 
+	/**
+	 * @return Session
+	 * @throws \Exception
+	 */
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new self();
@@ -56,6 +64,10 @@ class Session {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public static function delete() {
 		self::getInstance();
 		session_unset();
@@ -79,21 +91,34 @@ class Session {
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public static function isInitialized() {
-		return ! is_null(self::$instance);
+		return !is_null(self::$instance);
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public static function hasSession() {
 		return array_key_exists(SESSION_NAME, $_COOKIE);
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public static function nextCheck() {
 		return SESSION_TIMEOUT;
 	}
 
 
+	/**
+	 * @param $value
+	 * @throws \Exception
+	 */
 	public static function addRight($value) {
 		if (self::Has(self::rights_key)) {
 			$rights = self::Get(self::rights_key);
@@ -107,6 +132,11 @@ class Session {
 	}
 
 
+	/**
+	 * @param $value
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public static function hasRight($value) {
 		if (self::Has(self::rights_key)) {
 			$rights = self::Get(self::rights_key);
@@ -117,6 +147,10 @@ class Session {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public static function ensureRight() {
 		$pass = false;
 		foreach (func_get_args() as $right) {
@@ -130,29 +164,52 @@ class Session {
 	}
 
 
+	/**
+	 * @param string $key
+	 * @param mixed $value
+	 * @throws \Exception
+	 */
 	public static function Set($key, $value) {
 		self::getInstance();
 		$_SESSION[$key] = $value;
 	}
 
 
+	/**
+	 * @param string $key
+	 * @return mixed
+	 * @throws \Exception
+	 */
 	public static function Get($key) {
 		self::getInstance();
 		return $_SESSION[$key];
 	}
 
 
+	/**
+	 * @param string $key
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public static function Has($key) {
 		self::getInstance();
 		return array_key_exists($key, $_SESSION);
 	}
 
 
+	/**
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public static function isLogged() {
 		return self::hasSession() && self::hasRight("logged");
 	}
 
 
+	/**
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public static function isLoggedApi() {
 		if (self::hasSession() && self::hasRight("logged_api"))
 			return true;
@@ -167,6 +224,10 @@ class Session {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public static function ensureLoggedin() {
 		if (!self::isLogged() && !self::isLoggedApi()) {
 			ErrorHandler::error(401);
@@ -174,6 +235,10 @@ class Session {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public static function ensureLoggedinApi() {
 		if (!self::isLoggedApi()) {
 			ErrorHandler::error(401);
@@ -181,6 +246,10 @@ class Session {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public static function ensureLoggedinUser() {
 		if (!self::isLogged()) {
 			ErrorHandler::error(401);
@@ -188,16 +257,24 @@ class Session {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public static function setXsrfToken() {
 		$pwd = new Password();
 		$token = substr($pwd->hash($pwd->getRandomBytes(32)), 7);
 		Session::Set(self::xsrf_token, $token);
 		$params = session_get_cookie_params();
 		setcookie(XSRF_TOKEN, $token, $params["lifetime"], $params["path"], $params["domain"],
-		$params["secure"], false);
+			$params["secure"], false);
 	}
 
 
+	/**
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public static function checkXsrfToken() {
 		if (DEBUG)
 			return true;
@@ -211,6 +288,10 @@ class Session {
 	}
 
 
+	/**
+	 *
+	 * @throws \Exception
+	 */
 	public static function ensureXsrfToken() {
 		if (!self::checkXsrfToken()) {
 			ErrorHandler::error(401);

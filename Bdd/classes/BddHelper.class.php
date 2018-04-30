@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,41 +28,174 @@ abstract class BddHelper {
 		return array();
 	}
 
+
+	/**
+	 * @param string $string
+	 * @return string
+	 */
 	abstract public function quote($string);
 
+
+	/**
+	 * @param string $field
+	 * @return string
+	 */
 	abstract public function quoteIdent($field);
 
-	abstract public function insert($table, $fields);
 
-	abstract public function update($table, $fields, $key);
+	/**
+	 * @param string $table
+	 * @param array $fields
+	 * @return int
+	 */
+	abstract public function insert($table, array $fields);
 
+
+	/**
+	 * @param string $table
+	 * @param array $fields
+	 * @param string $key
+	 * @return bool
+	 */
+	abstract public function update($table, array $fields, $key);
+
+
+	/**
+	 * @param string $table
+	 * @param string $key
+	 * @param string $value
+	 * @return bool
+	 */
 	abstract public function delete($table, $key, $value);
 
-	abstract public function getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 
-	abstract public function getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
+	/**
+	 * @param array $fields
+	 * @param array $tables
+	 * @param array $joint
+	 * @param array $where
+	 * @param array $filter
+	 * @param array $filter_fields
+	 * @param array $order
+	 * @param array $group
+	 * @param array $params
+	 * @param int $limit
+	 * @param int $pos
+	 * @param bool $distinct
+	 * @return string
+	 */
+	abstract public function getQueryString(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
 
-	abstract public function getQueryValuesArray($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 
-	abstract public function getQueryCount($tables, $joint, $where, $filter, $filter_fields, $group, $params, $distinct);
+	/**
+	 * @param array $fields
+	 * @param array $tables
+	 * @param array $joint
+	 * @param array $where
+	 * @param array $filter
+	 * @param array $filter_fields
+	 * @param array $order
+	 * @param array $group
+	 * @param array $params
+	 * @param int $limit
+	 * @param int $pos
+	 * @param bool $distinct
+	 * @return BddCursorHelper
+	 */
+	abstract public function getQueryValues(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
 
+
+	/**
+	 * @param array $fields
+	 * @param array $tables
+	 * @param array $joint
+	 * @param array $where
+	 * @param array $filter
+	 * @param array $filter_fields
+	 * @param array $order
+	 * @param array $group
+	 * @param array $params
+	 * @param int $limit
+	 * @param int $pos
+	 * @param bool $distinct
+	 * @return array
+	 */
+	abstract public function getQueryValuesArray(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
+
+
+	/**
+	 * @param array $tables
+	 * @param array $joint
+	 * @param array $where
+	 * @param array $filter
+	 * @param array $filter_fields
+	 * @param array $group
+	 * @param array $params
+	 * @param bool $distinct
+	 * @return int
+	 */
+	abstract public function getQueryCount(array $tables, array $joint, array $where, array $filter, array $filter_fields, array $group, array $params, $distinct);
+
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	abstract public function tableExists($name);
 
+
+	/**
+	 * @param string $name
+	 * @return string
+	 */
 	abstract public function dropTableQuery($name);
 
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	abstract public function dropTable($name);
 
-	abstract public function createTableQuery($name, $table_structure);
 
-	abstract public function createTable($name, $table_structure);
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 * @return string
+	 */
+	abstract public function createTableQuery($name, array $table_structure);
 
+
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 * @return mixed
+	 */
+	abstract public function createTable($name, array $table_structure);
+
+
+	/**
+	 * @return string[]
+	 */
 	abstract public function getTables();
 
+
+	/**
+	 * @param string $name
+	 * @return array
+	 */
 	abstract public function getTableInfo($name);
 
+
+	/**
+	 * @param string $format
+	 * @param string $date
+	 * @return string
+	 */
 	public function strftime($format, $date) {
 		return $date;
 	}
+
 
 	public function getBlob($value) {
 		return $value;
@@ -73,12 +207,21 @@ abstract class BddHelper {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @return string
+	 */
 	public function updateTableName($name) {
 		return $name;
 	}
 
 
-	public function updateModelField($name, $params) {
+	/**
+	 * @param string $name
+	 * @param array $params
+	 * @return array
+	 */
+	public function updateModelField($name, array $params) {
 		if (!array_key_exists("type", $params) || $params["type"] == ModelField::TYPE_AUTO) {
 			$params["type"] = ModelField::TYPE_INT;
 		} elseif (array_key_exists("type", $params) && in_array($params["type"], array("password", "email", "url"))) {
@@ -96,11 +239,16 @@ abstract class BddHelper {
 	}
 
 
+	/**
+	 * @param string $type
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	public function formatIn($type, $value) {
 		if ($value === null)
 			return $value;
 
-		switch($type) {
+		switch ($type) {
 			case ModelField::TYPE_INT:
 			case ModelField::TYPE_BOOL:
 				$value = intval($value);
@@ -128,11 +276,16 @@ abstract class BddHelper {
 	}
 
 
+	/**
+	 * @param string $type
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	public function formatOut($type, $value) {
 		if ($value === null)
 			return $value;
 
-		switch($type) {
+		switch ($type) {
 			case ModelField::TYPE_INT:
 				return intval($value);
 			case ModelField::TYPE_BOOL:
@@ -149,43 +302,52 @@ abstract class BddHelper {
 					return $value;
 				}
 			case ModelField::TYPE_DATE:
-			if ($value instanceof DateTime)
-				return $value->getTimestamp() + 43200;
-			try {
-				$value = new DateTime($value);
-				return $value->getTimestamp() + 43200;
-			} catch (Exception $e) {
-				Logger::Error("Date {$value} invalid: " . $e->getMessage());
-				return $value + 43200;
-			}
+				if ($value instanceof DateTime)
+					return $value->getTimestamp() + 43200;
+				try {
+					$value = new DateTime($value);
+					return $value->getTimestamp() + 43200;
+				} catch (Exception $e) {
+					Logger::Error("Date {$value} invalid: " . $e->getMessage());
+					return $value + 43200;
+				}
 		}
 		return $value;
 	}
-
-
 }
 
 
 abstract class BddCursorHelper implements Iterator {
 	protected $cursor = null;
 
+
+	/**
+	 * BddCursorHelper constructor.
+	 * @param mixed $cursor
+	 */
 	public function __construct($cursor) {
 		$this->cursor = $cursor;
 	}
 
 
- 	public function current() {
+	/**
+	 * @return array
+	 */
+	public function current() {
 		$data = $this->cursor->current();
 		return $data;
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public function key() {
 		return $this->cursor->key();
 	}
 
 
- 	public function next() {
+	public function next() {
 		$this->cursor->next();
 	}
 
@@ -195,6 +357,9 @@ abstract class BddCursorHelper implements Iterator {
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function valid() {
 		return $this->cursor->valid();
 	}

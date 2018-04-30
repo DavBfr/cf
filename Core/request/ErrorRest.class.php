@@ -19,11 +19,19 @@
 
 class ErrorRest extends Rest {
 
+	/**
+	 *
+	 */
 	public function getRoutes() {
 		$this->addRoute("/", "GET", "error");
 		$this->addRoute("/:code", "GET", "error");
 	}
 
+
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function error($r) {
 		if (array_key_exists("code", $r))
 			$code = $r["code"];

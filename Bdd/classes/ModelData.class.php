@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,16 +23,24 @@ use Iterator;
 
 class ModelData implements Iterator {
 
+	/** @var Model $model */
 	private $model;
 	private $values;
 	private $isnew;
 	private $isempty;
 	private $statement;
+	/** @var string $primary */
 	private $primary;
 	private $foreign;
 
 
-	public function __construct($model, $values = null) {
+	/**
+	 * ModelData constructor.
+	 * @param Model $model
+	 * @param BddCursorHelper|null $values
+	 * @throws Exception
+	 */
+	public function __construct(Model $model, BddCursorHelper $values = null) {
 		$this->model = $model;
 		$this->foreign = array();
 		$this->isempty = true;
@@ -44,15 +53,16 @@ class ModelData implements Iterator {
 
 		$this->isnew = $values === null || $values === false;
 		$this->values = array();
-		foreach($this->model->getFields() as $field) {
+		/** @var ModelField $field */
+		foreach ($this->model->getFields() as $field) {
 			$this->_set($field, $field->getDefault());
 			if ($field->isPrimary()) {
 				$this->primary = $field;
 			}
 		}
 
-		if (! $this->isnew) {
-			foreach($values as $key => $val) {
+		if (!$this->isnew) {
+			foreach ($values as $key => $val) {
 				$this->_set($key, $val);
 			}
 			$this->isempty = false;
@@ -60,11 +70,18 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
 	public function __toString() {
 		return json_encode($this->getValues());
 	}
 
 
+	/**
+	 * @return Model
+	 */
 	public function getModel() {
 		return $this->model;
 	}
@@ -74,26 +91,40 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function current() {
 		return $this;
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public function key() {
 		return $this->values[$this->primary];
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function valid() {
 		return !$this->isempty;
 	}
 
 
+	/**
+	 * @return $this
+	 * @throws Exception
+	 */
 	public function next() {
 		if (!$this->statement) {
 			$this->isempty = true;
 			$this->isnew = true;
-			foreach($this->model->getFields() as $field) {
+			/** @var ModelField $field */
+			foreach ($this->model->getFields() as $field) {
 				$this->_set($field->getName(), $field->getDefault());
 			}
 			return $this;
@@ -103,45 +134,65 @@ class ModelData implements Iterator {
 		if ($values === false) {
 			$this->isempty = true;
 			$this->isnew = true;
-			foreach($this->model->getFields() as $field) {
+			/** @var ModelField $field */
+			foreach ($this->model->getFields() as $field) {
 				$this->_set($field->getName(), $field->getDefault());
 			}
 			return $this;
 		}
 		$this->isnew = false;
-		foreach($values as $key => $val) {
+		foreach ($values as $key => $val) {
 			$this->_set($key, $val);
 		}
 		return $this;
 	}
 
 
-	public function setValues($values) {
-		foreach($values as $key => $val) {
+	/**
+	 * @param array $values
+	 * @throws Exception
+	 */
+	public function setValues(array $values) {
+		foreach ($values as $key => $val) {
 			$this->set($key, $val);
 		}
 	}
 
 
+	/**
+	 * @return array
+	 * @throws Exception
+	 */
 	public function getValues() {
 		$values = array();
-		foreach($this->values as $key => $val) {
+		foreach ($this->values as $key => $val) {
 			$values[$key] = $this->get($key);
 		}
 		return $values;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isNew() {
 		return $this->isnew;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isEmpty() {
 		return $this->isempty;
 	}
 
 
+	/**
+	 * @param string $field
+	 * @return mixed
+	 * @throws Exception
+	 */
 	private function _get($field) {
 		if (!is_a($field, __NAMESPACE__ . "\\ModelField"))
 			$field = $this->model->getField($field);
@@ -150,6 +201,11 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function get($field) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
@@ -167,6 +223,11 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function getBlob($field) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
@@ -176,6 +237,11 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @param mixed $value
+	 * @throws Exception
+	 */
 	public function setBlob($field, $value) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
@@ -185,6 +251,11 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @param mixed $value
+	 * @throws Exception
+	 */
 	private function _set($field, $value) {
 		if (!is_a($field, __NAMESPACE__ . "\\ModelField"))
 			$field = $this->model->getField($field);
@@ -193,6 +264,11 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @param mixed $value
+	 * @throws Exception
+	 */
 	public function set($field, $value) {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
@@ -212,28 +288,50 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @param string $field
+	 * @return bool
+	 */
 	public function has($field) {
 		return array_key_exists($field, $this->values);
 	}
 
 
+	/**
+	 * @param string $field
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function __get($field) {
 		return $this->get($field);
 	}
 
 
+	/**
+	 * @param string $field
+	 * @param mixed $value
+	 * @throws Exception
+	 */
 	public function __set($field, $value) {
 		$this->set($field, $value);
 	}
 
 
+	/**
+	 * @param string $field
+	 * @return bool
+	 */
 	public function __isset($field) {
 		return $this->has($field);
 	}
 
 
+	/**
+	 * @return mixed|null
+	 */
 	public function getId() {
-		foreach($this->model->getFields() as $field) {
+		/** @var ModelField $field */
+		foreach ($this->model->getFields() as $field) {
 			if ($field->isAutoincrement()) {
 				return $this->values[$field->getName()];
 			}
@@ -242,19 +340,24 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @throws Exception
+	 */
 	public function save() {
 		//$this->valid();
 
 		$bdd = Bdd::getInstance();
 		if ($this->isnew) {
 			$values = array();
-			foreach($this->model->getFields() as $field) {
-				if (! $field->isAutoincrement()) {
+			/** @var ModelField $field */
+			foreach ($this->model->getFields() as $field) {
+				if (!$field->isAutoincrement()) {
 					$values[$field->getName()] = $this->values[$field->getName()];
 				}
 			}
 			$id = $bdd->insert($this->model->getTableName(), $values);
-			foreach($this->model->getFields() as $field) {
+			/** @var ModelField $field */
+			foreach ($this->model->getFields() as $field) {
 				if ($field->isAutoincrement()) {
 					$this->values[$field->getName()] = $id;
 					$this->model->dataChanged();
@@ -269,6 +372,9 @@ class ModelData implements Iterator {
 	}
 
 
+	/**
+	 * @throws Exception
+	 */
 	public function delete() {
 		$bdd = Bdd::getInstance();
 		if (!$this->isnew) {
@@ -280,9 +386,16 @@ class ModelData implements Iterator {
 	}
 
 
-	public function getForeign($field, $class = null) {
-		if (! array_key_exists($field, $this->foreign)) {
+	/**
+	 * @param string $field
+	 * @param Model|null $class
+	 * @return mixed
+	 * @throws Exception
+	 */
+	public function getForeign($field, Model $class = null) {
+		if (!array_key_exists($field, $this->foreign)) {
 			if ($class === null)
+				/** @var Model $obj */
 				$obj = $this->model->getForeign($field);
 			else
 				$obj = new $class();

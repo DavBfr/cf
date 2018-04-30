@@ -26,6 +26,11 @@ abstract class AbstractResources {
 
 	protected $tag;
 
+
+	/**
+	 * AbstractResources constructor.
+	 * @param string $tag
+	 */
 	public function __construct($tag = "app.min") {
 		$this->resources = array();
 		$this->added = array();
@@ -33,6 +38,10 @@ abstract class AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return string
+	 */
 	public static function find($filename) {
 		if (($resource = Plugins::find(self::WWW_DIR . DIRECTORY_SEPARATOR . $filename)) !== null)
 			return $resource;
@@ -42,6 +51,11 @@ abstract class AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return string
+	 * @throws \Exception
+	 */
 	public static function web($filename) {
 		$localpath = WWW_DIR . DIRECTORY_SEPARATOR;
 		if (strpos($filename, $localpath) !== false) {
@@ -58,6 +72,9 @@ abstract class AbstractResources {
 	}
 
 
+	/**
+	 * @param string $dir
+	 */
 	public function addDir($dir) {
 		$dirs = array();
 		if (is_dir($dir)) {
@@ -81,6 +98,9 @@ abstract class AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 */
 	public function add($filename) {
 		if (array_key_exists($filename, $this->added))
 			return;
@@ -90,16 +110,27 @@ abstract class AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string $origfilename
+	 */
 	protected function append($filename, $origfilename = null) {
 		$this->resources[] = $filename;
 	}
 
 
+	/**
+	 * @return string[]
+	 */
 	public function getResources() {
 		return array_map(array(__CLASS__, "web"), $this->resources);
 	}
 
 
+	/**
+	 * @param string $ext
+	 * @return string[]
+	 */
 	public function getResourcesByExt($ext) {
 		$l = strlen($ext);
 		$res = array();
@@ -112,11 +143,17 @@ abstract class AbstractResources {
 	}
 
 
+	/**
+	 * @return string[]
+	 */
 	public function getScripts() {
 		return array_map(array(__CLASS__, "web"), $this->getResourcesByExt(".js"));
 	}
 
 
+	/**
+	 * @return string[]
+	 */
 	public function getStylesheets() {
 		return array_map(array(__CLASS__, "web"), $this->getResourcesByExt(".css"));
 	}

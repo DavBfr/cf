@@ -175,7 +175,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 	};
 
 	this.get_fiche = function(id) {
-		if (!id || id=='new') {
+		if (!id || id === 'new') {
 			$scope.id = null;
 			CrudService.getNew(function (data) {
 				$scope.item = data.data;
@@ -220,7 +220,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		NotificationFactory.confirm("Delete the record #" + id + " ?", function () {
 			CrudService.del(id, function () {
 				var path = (new RegExp("^/[^/]+")).exec($route.current.originalPath)[0];
-				if (path == $route.current.originalPath)
+				if (path === $route.current.originalPath)
 					this.get_list();
 				else
 					$scope.go_list();

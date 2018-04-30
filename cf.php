@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -50,6 +51,14 @@ class Plugins {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param int $position
+	 * @param string $dir
+	 * @param string $class_name
+	 * @throws \ReflectionException
+	 * @throws Exception
+	 */
 	public static function add($name, $position = self::PLUGIN, $dir = null, $class_name = null) {
 		if (array_key_exists($name, self::$plugins))
 			return;
@@ -66,11 +75,11 @@ class Plugins {
 
 		if ($dir === null) {
 			$dir = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
-			if (! is_dir($dir))
+			if (!is_dir($dir))
 				$dir = CF_PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
 		}
 
-		if (! is_dir($dir))
+		if (!is_dir($dir))
 			throw new Exception("Plugin $name not found");
 
 		$class_file = $dir . DIRECTORY_SEPARATOR . $class_name . '.plugin.php';
@@ -82,7 +91,7 @@ class Plugins {
 			$plugin = new self($dir, $name);
 		}
 		self::$plugins[$name] = $plugin;
-		switch($position) {
+		switch ($position) {
 			case self::APP:
 				self::$app_list[] = $name;
 				break;
@@ -96,11 +105,19 @@ class Plugins {
 	}
 
 
+	/**
+	 * @throws \ReflectionException
+	 */
 	public static function addApp() {
 		self::add(self::APP_NAME, self::APP, ROOT_DIR, self::APP_PLUGIN);
 	}
 
 
+	/**
+	 * @param string $dir
+	 * @param int $position
+	 * @throws \ReflectionException
+	 */
 	public static function addAll($dir, $position = self::PLUGIN) {
 		if (is_dir($dir)) {
 			if ($dh = opendir($dir)) {
@@ -115,7 +132,11 @@ class Plugins {
 	}
 
 
-	public static function get_plugins($reversed=false) {
+	/**
+	 * @param bool $reversed
+	 * @return string[]
+	 */
+	public static function get_plugins($reversed = false) {
 		if ($reversed)
 			return array_merge(array_reverse(self::$app_list), array_reverse(self::$plugins_list), array_reverse(self::$core_list));
 		else
@@ -123,12 +144,21 @@ class Plugins {
 	}
 
 
+	/**
+	 * @param $name
+	 * @return Plugins
+	 */
 	public static function get($name) {
 		return self::$plugins[$name];
 	}
 
 
-	public static function find($filename, $reversed=true) {
+	/**
+	 * @param string $filename
+	 * @param bool $reversed [optional]
+	 * @return string
+	 */
+	public static function find($filename, $reversed = true) {
 		if (class_exists("MemCache", true)) {
 			$memcached = new MemCache();
 			if ($memcached->offsetExists("plugin." . $filename))
@@ -136,7 +166,7 @@ class Plugins {
 		} else {
 			$memcached = array();
 		}
-		foreach(self::get_plugins($reversed) as $plugin) {
+		foreach (self::get_plugins($reversed) as $plugin) {
 			$resource = self::get($plugin)->getDir() . DIRECTORY_SEPARATOR . $filename;
 			if (file_exists($resource)) {
 				$memcached["plugin." . $filename] = $resource;
@@ -148,9 +178,14 @@ class Plugins {
 	}
 
 
+	/**
+	 * @param string[] $plugins
+	 * @param string $filename
+	 * @return string[]
+	 */
 	public static function findFrom($plugins, $filename) {
 		$files = array();
-		foreach($plugins as $plugin) {
+		foreach ($plugins as $plugin) {
 			$resource = self::get($plugin)->getDir() . DIRECTORY_SEPARATOR . $filename;
 			if (file_exists($resource)) {
 				$files[] = $resource;
@@ -160,22 +195,25 @@ class Plugins {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return string[]
+	 */
 	public static function findAll($filename) {
 		return self::findFrom(self::get_plugins(), $filename);
 	}
 
 
 	/**
-	 * @param string $method_name
-	 * @param mixed $method_arguments
-	 *
+	 * @param string ...$method_name
+	 * @param mixed ...$method_arguments
 	 * @return mixed
 	 */
 	public static function dispatch() {
 		$arguments = func_get_args();
 		$method_name = array_shift($arguments);
 
-		foreach(self::get_plugins() as $plugin) {
+		foreach (self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
 				Logger::debug("Dispatch " . $plugin . "::" . $method_name);
@@ -200,7 +238,7 @@ class Plugins {
 		$plugins = array_shift($arguments);
 		$method_name = array_shift($arguments);
 
-		foreach($plugins as $plugin) {
+		foreach ($plugins as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
 				Logger::debug("Dispatch " . $plugin . "::" . $method_name);
@@ -238,11 +276,18 @@ class Plugins {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getDir() {
 		return $this->dir;
 	}
 
 
+	/**
+	 * @param $class_name
+	 * @return string
+	 */
 	protected function removeNamespace($class_name) {
 		$pos = strrpos($class_name, "\\");
 		if ($pos === false)
@@ -251,6 +296,10 @@ class Plugins {
 	}
 
 
+	/**
+	 * @param string $class_name
+	 * @return bool
+	 */
 	protected function autoload($class_name) {
 		$class_name = $this->removeNamespace($class_name);
 		$class_file = $this->dir . DIRECTORY_SEPARATOR . self::CLASS_DIR . DIRECTORY_SEPARATOR . $class_name . '.class.php';
@@ -263,8 +312,11 @@ class Plugins {
 	}
 
 
+	/**
+	 * @param string $class_name
+	 */
 	public static function spl_autoload($class_name) {
-		foreach(self::get_plugins() as $plugin) {
+		foreach (self::get_plugins() as $plugin) {
 			if (self::get($plugin)->autoload($class_name))
 				return;
 		}
@@ -285,6 +337,12 @@ class Options {
 	private static $options = array(); // name => [description, modified]
 	private static $import = false;
 
+
+	/**
+	 * @param string $key
+	 * @param mixed $value
+	 * @param string $description
+	 */
 	public static function set($key, $value, $description = null) {
 		if (!defined($key)) {
 			self::$options[$key] = array($description, self::$import);
@@ -300,24 +358,40 @@ class Options {
 	}
 
 
+	/**
+	 * @param string $key
+	 * @return mixed
+	 */
 	public static function get($key) {
 		return constant($key);
 	}
 
 
+	/**
+	 * @param string $key
+	 * @return string
+	 */
 	public static function description($key) {
 		return isset(self::$options[$key]) ? self::$options[$key][0] : null;
 	}
 
 
+	/**
+	 * @param string $key
+	 * @return bool
+	 */
 	public static function updated($key) {
 		return isset(self::$options[$key]) ? self::$options[$key][1] : false;
 	}
 
 
+	/**
+	 * @param bool $filter
+	 * @return array
+	 */
 	public static function getAll($filter = false) {
 		$ret = array();
-		foreach(self::$options as $key => $val) {
+		foreach (self::$options as $key => $val) {
 			if (!$filter || $val[1])
 				$ret[$key] = constant($key);
 		}
@@ -325,6 +399,9 @@ class Options {
 	}
 
 
+	/**
+	 * @param string $filename
+	 */
 	public static function import($filename) {
 		self::$import = true;
 		require_once($filename);
@@ -332,6 +409,10 @@ class Options {
 	}
 
 
+	/**
+	 * @param array $values
+	 * @param bool $local
+	 */
 	public static function updateConf($values, $local = true) {
 		if ($local)
 			$conf = fopen(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php", "w");
@@ -340,22 +421,22 @@ class Options {
 		fwrite($conf, "<?php namespace " . __NAMESPACE__ . ";\n\n");
 		$opts = array_merge(self::getAll(true), $values);
 		ksort($opts);
-		foreach($opts as $key => $val) {
+		foreach ($opts as $key => $val) {
 			if (is_bool($val))
 				$val = $val ? "true" : "false";
 			elseif (is_int($val))
-					$val = intval($val);
+				$val = intval($val);
 			elseif (is_string($val))
 				$val = '"' . addslashes($val) . '"';
 			if ($val !== null) {
 				$desc = self::description($key);
 				fwrite($conf, "Options::set(\"$key\", $val");
-				if ($desc !== NULL)
+				if ($desc !== null)
 					if ($local)
 						fwrite($conf, "); // $desc");
 					else
 						fwrite($conf, ', "' . addslashes($desc) . '"');
-				if (!$local || $desc === NULL)
+				if (!$local || $desc === null)
 					fwrite($conf, ");");
 				fwrite($conf, "\n");
 			}
@@ -368,6 +449,11 @@ class Options {
 
 ob_start();
 
+/**
+ * @param string $key
+ * @param mixed $value
+ * @deprecated
+ */
 function configure($key, $value) {
 	Options::set($key, $value);
 }
@@ -425,5 +511,12 @@ if (function_exists('mb_internal_encoding'))
 	mb_internal_encoding('UTF-8');
 
 Plugins::registerAutoload();
-Plugins::add(CORE_PLUGIN, Plugins::CORE);
-Plugins::addApp();
+try {
+	Plugins::add(CORE_PLUGIN, Plugins::CORE);
+	Plugins::addApp();
+} catch (\ReflectionException $e) {
+	die($e->getMessage());
+} catch (Exception $e) {
+	die($e->getMessage());
+}
+

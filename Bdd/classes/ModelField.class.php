@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,38 +37,63 @@ class ModelField {
 	protected $props;
 
 
-	public function __construct($table, $name, $props = array()) {
+	/**
+	 * ModelField constructor.
+	 * @param string $table
+	 * @param string $name
+	 * @param array $props
+	 */
+	public function __construct($table, $name, array $props = array()) {
 		$this->table = $table;
 		$this->name = $name;
 		$this->props = array_merge($this->getDefaults(), $props);
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getTableName() {
 		return $this->table;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getName() {
 		return $this->name;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getFullName() {
 		return $this->table . "." . $this->name;
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getAttributes() {
 		return $this->props;
 	}
 
 
+	/**
+	 * @param $name
+	 * @return mixed
+	 */
 	public function getAttribute($name) {
 		return $this->props[$name];
 	}
 
 
+	/**
+	 * @return array
+	 */
 	protected function getDefaults() {
 		return array(
 			"type" => self::TYPE_INT,
@@ -86,165 +112,256 @@ class ModelField {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function __toString() {
-		return $this->getCaption();
+		return (string)$this->getCaption();
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getEditor() {
 		if ($this->props["editor"] === null) {
-		if($this->isAutoincrement())
-			$this->props["editor"] = "auto";
-		elseif ($this->isSelect())
-			$this->props["editor"] = "select";
-		elseif($this->isBool())
-			$this->props["editor"] = "bool";
-		elseif($this->isInt())
-			$this->props["editor"] = "int";
-		elseif($this->isDecimal())
-			$this->props["editor"] = "num";
-		elseif($this->isDate())
-			$this->props["editor"] = "date";
-		elseif($this->isTime())
-			$this->props["editor"] = "time";
-		elseif($this->isDateTime() || $this->isTimestamp())
-			$this->props["editor"] = "date-time";
+			if ($this->isAutoincrement())
+				$this->props["editor"] = "auto";
+			elseif ($this->isSelect())
+				$this->props["editor"] = "select";
+			elseif ($this->isBool())
+				$this->props["editor"] = "bool";
+			elseif ($this->isInt())
+				$this->props["editor"] = "int";
+			elseif ($this->isDecimal())
+				$this->props["editor"] = "num";
+			elseif ($this->isDate())
+				$this->props["editor"] = "date";
+			elseif ($this->isTime())
+				$this->props["editor"] = "time";
+			elseif ($this->isDateTime() || $this->isTimestamp())
+				$this->props["editor"] = "date-time";
 		}
 		return $this->props["editor"];
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isBool() {
 		return $this->props["type"] == "bool";
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isText() {
 		return $this->props["type"] == self::TYPE_TEXT;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isPassword() {
 		trigger_error('Deprecated: isPassword() is deprecated', E_NOTICE);
 		return $this->props["editor"] == "passwd";
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isEmail() {
 		trigger_error('Deprecated: isEmail() is deprecated', E_NOTICE);
 		return $this->props["editor"] == "email";
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isUrl() {
 		trigger_error('Deprecated: isUrl() is deprecated', E_NOTICE);
 		return $this->props["editor"] == "url";
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isInt() {
 		return $this->props["type"] == self::TYPE_INT;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isDate() {
 		return $this->props["type"] == self::TYPE_DATE;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isTime() {
 		return $this->props["type"] == self::TYPE_TIME;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isDateTime() {
 		return $this->props["type"] == self::TYPE_DATETIME;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isDecimal() {
 		return $this->props["type"] == self::TYPE_DECIMAL;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isTimestamp() {
 		return $this->props["type"] == self::TYPE_TIMESTAMP;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isBlob() {
 		return $this->props["type"] == self::TYPE_BLOB;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isSelect() {
 		return $this->isForeign();
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function inList() {
 		return $this->props["list"];
 	}
 
 
+	/**
+	 * @param bool $value
+	 */
 	public function setInList($value) {
 		$this->props["list"] = (boolean)$value;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isEditable() {
 		return $this->props["edit"];
 	}
 
+
+	/**
+	 * @param bool $value
+	 */
 	public function setEditable($value) {
-		$this->props["edit"] = (boolean)$value;
+		$this->props["edit"] = (bool)$value;
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public function getDefault() {
 		return $this->props["default"];
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getType() {
 		return $this->props["type"];
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function hasNull() {
-		return $this->props["null"];
+		return (bool)$this->props["null"];
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getCaption() {
 		return $this->props["caption"];
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isAutoincrement() {
 		return $this->props["autoincrement"];
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isPrimary() {
 		return $this->props["primary"];
 	}
 
+
+	/**
+	 * @return string[]|null
+	 */
 	public function getForeign() {
 		return $this->props["foreign"];
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isForeign() {
 		return $this->props["foreign"] !== null;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getForeignTable() {
 		return "foreign_" . $this->name;
 	}
 
 
+	/**
+	 * @param mixed $value
+	 * @return bool
+	 * @throws Exception
+	 */
 	public function valid($value) {
 		if ($this->hasNull() && $value === null) {
 			return true;
@@ -271,16 +388,25 @@ class ModelField {
 	}
 
 
+	/**
+	 * @param mixed $value
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function format($value) {
 		$bdd = Bdd::getInstance();
 		return $bdd->formatIn($this->getType(), $value);
 	}
 
 
+	/**
+	 * @param mixed $value
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function formatOut($value) {
 		$bdd = Bdd::getInstance();
 		return $bdd->formatOut($this->getType(), $value);
 	}
-
 
 }

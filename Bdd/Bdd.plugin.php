@@ -22,10 +22,16 @@ Options::set("DBLOGIN", '', "Database Login");
 Options::set("DBPASSWORD", '', "Database password");
 Options::set("CRUD_LIMIT", 30, "Max number of lines in lists");
 
+
 class BddPlugin extends Plugins {
 	const MODEL_DIR = "model";
 	const BASE_MODEL_DIR = "model/base";
 
+
+	/**
+	 * @param string $class_name
+	 * @return bool
+	 */
 	protected function autoload($class_name) {
 		if (parent::autoload($class_name))
 			return true;
@@ -46,6 +52,9 @@ class BddPlugin extends Plugins {
 	}
 
 
+	/**
+	 * @throws \Exception
+	 */
 	public function preupdate() {
 		Cli::pinfo(" * Create base classes");
 		Model::createClassesFromConfig();
@@ -54,6 +63,7 @@ class BddPlugin extends Plugins {
 		$config = Config::getInstance();
 		foreach ($config->get("model", array()) as $table => $columns) {
 			$className = __NAMESPACE__ . "\\" . ucfirst($table) . "Model";
+			/** @var Model $model */
 			$model = new $className();
 			if (!$bdd->tableExists($model->getTableName())) {
 				Cli::pinfo(" * Create table " . $model->getTableName());
@@ -63,6 +73,9 @@ class BddPlugin extends Plugins {
 	}
 
 
+	/**
+	 * @throws \Exception
+	 */
 	public function install() {
 		Cli::pinfo(" * Create database structure");
 		$bdd = Bdd::getInstance();
@@ -71,6 +84,7 @@ class BddPlugin extends Plugins {
 				while (($file = readdir($dh)) !== false) {
 					if (substr($file, -15) == "Model.class.php" && substr($file, 0, 4) != "Base") {
 						$class = __NAMESPACE__ . "\\" . substr($file, 0, -10);
+						/** @var Model $model */
 						$model = new $class();
 						$bdd->dropTable($model->getTableName());
 						$model->createTable();
@@ -82,6 +96,9 @@ class BddPlugin extends Plugins {
 	}
 
 
+	/**
+	 * @param Cli $cli
+	 */
 	public function cli($cli) {
 		$cli->addCommand("model:export", array(__NAMESPACE__ . "\\Model", "export"), "Export database model to sql statements");
 		$cli->addCommand("model:import", array(__NAMESPACE__ . "\\Model", "import"), "Import database model to json format");

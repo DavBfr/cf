@@ -18,7 +18,10 @@
  **/
 
 class TemplateTest extends \PHPUnit\Framework\TestCase {
-    public function testVariables() {
+	/**
+	 * @throws \Exception
+	 */
+	public function testVariables() {
         $tpt = new Template(array("myvar" => "456"));
 
         $this->assertEquals($tpt->get("myvar"), "456");
@@ -27,7 +30,10 @@ class TemplateTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testFilter() {
+	/**
+	 * @throws \Exception
+	 */
+	public function testFilter() {
         $tpt = new Template();
 
         $tpt->set("rawvar", array());
@@ -43,7 +49,10 @@ class TemplateTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testParsing() {
+	/**
+	 * @throws \Exception
+	 */
+	public function testParsing() {
         $tpt = new Template(array("myvar" => "456"));
         $data = $tpt->parse("test.template.php");
 

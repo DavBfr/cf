@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -38,6 +39,11 @@ class Cli {
 	protected $has_colors;
 	private static $instance = null;
 
+
+	/**
+	 * Cli constructor.
+	 * @param array $argv
+	 */
 	public function __construct($argv) {
 		self::$instance = $this;
 
@@ -58,6 +64,9 @@ class Cli {
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getCommand() {
 		if (isset($this->args['input']) && isset($this->args['input'][1]))
 			return $this->args['input'][1];
@@ -65,22 +74,35 @@ class Cli {
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getArguments() {
 		return $this->args;
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param callable $callable
+	 * @param string $help
+	 */
 	public function addCommand($name, $callable, $help) {
 		$this->commands[$name] = array($callable, $help);
 	}
 
 
+	/**
+	 * @param string $command
+	 * @param array $params
+	 * @return bool|null
+	 */
 	public function handle($command, $params) {
 		if (isset($this->commands[$command])) {
 			return call_user_func($this->commands[$command][0], $params);
 		}
 		$found = null;
-		foreach($this->commands as $key => $val) {
+		foreach ($this->commands as $key => $val) {
 			if (strpos($key, $command) !== false) {
 				if ($found === null) {
 					$found = $val;
@@ -99,12 +121,19 @@ class Cli {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param string $desc
+	 */
 	private static function printHelpOption($name, $desc) {
 		self::pcolor(self::ansicrit, "	$name");
 		self::pcolorln(self::ansilog, " : $desc");
 	}
 
 
+	/**
+	 * @param array $args
+	 */
 	public function printHelp($args) {
 		self::pcolorln(self::ansiinfo, "Help " . basename($args["input"][0]) . " <command> [options]");
 		self::pln();
@@ -118,13 +147,16 @@ class Cli {
 	}
 
 
+	/**
+	 * @param array $argv
+	 * @return array
+	 */
 	private function parseArguments($argv) {
 		$_ARG = array();
 		foreach ($argv as $arg) {
 			if (preg_match('#^-{1,2}([a-zA-Z0-9]*)=?(.*)$#', $arg, $matches)) {
 				$key = $matches[1];
-				switch ($matches[2])
-				{
+				switch ($matches[2]) {
 					case '':
 					case 'true':
 					case 'yes':
@@ -147,14 +179,24 @@ class Cli {
 	}
 
 
-	public static function getOption($name, $defaultvalue = false) {
+	/**
+	 * @param string $name
+	 * @param bool $defaultValue
+	 * @return bool
+	 */
+	public static function getOption($name, $defaultValue = false) {
 		if (array_key_exists($name, self::$instance->args)) {
 			return self::$instance->args[$name];
 		}
-		return $defaultvalue;
+		return $defaultValue;
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param string $help
+	 * @return bool
+	 */
 	public static function addSwitch($name, $help) {
 		if (array_key_exists($name, self::$instance->options) || array_key_exists($name, self::$instance->switches)) {
 			self::pfatal("The command line option $name is already registered");
@@ -164,21 +206,35 @@ class Cli {
 	}
 
 
-	public static function addOption($name, $defaultvalue, $help) {
+	/**
+	 * @param string $name
+	 * @param string $defaultValue
+	 * @param string $help
+	 * @return bool
+	 */
+	public static function addOption($name, $defaultValue, $help) {
 		if (array_key_exists($name, self::$instance->options) || array_key_exists($name, self::$instance->switches)) {
 			self::pfatal("The command line option $name is already registered");
 		}
 		self::$instance->options[$name] = $help;
-		return self::getOption($name, $defaultvalue);
+		return self::getOption($name, $defaultValue);
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param string $help
+	 * @return array
+	 */
 	public static function getInputs($name, $help) {
 		self::$instance->inputs[$name] = $help;
 		return array_slice(self::$instance->args["input"], 2);
 	}
 
 
+	/**
+	 *
+	 */
 	public static function enableHelp() {
 		if (!IS_CLI)
 			return;
@@ -186,7 +242,7 @@ class Cli {
 		$help = self::addSwitch("h", "This help");
 		self::addSwitch("v", "Verbose output");
 		$merged = array_merge(array_keys(self::$instance->switches), array_keys(self::$instance->options));
-		foreach(self::$instance->args as $key => $val) {
+		foreach (self::$instance->args as $key => $val) {
 			if ($key != "input" && array_search($key, $merged) === false) {
 				$help = true;
 				self::perr("Command line option -$key=$val doesn't exists");
@@ -198,22 +254,22 @@ class Cli {
 			self::perr("Missing command line arguments");
 		}
 		if ($help !== false) {
-			$helpmsg = "Help " . basename(self::$instance->args["input"][0]) . " " . self::$instance->args["input"][1] . " [options]";
-			foreach(self::$instance->inputs as $key => $val) {
-				$helpmsg .= " <$key>";
+			$helpMsg = "Help " . basename(self::$instance->args["input"][0]) . " " . self::$instance->args["input"][1] . " [options]";
+			foreach (self::$instance->inputs as $key => $val) {
+				$helpMsg .= " <$key>";
 			}
-			self::pcolorln(self::ansiinfo, $helpmsg);
+			self::pcolorln(self::ansiinfo, $helpMsg);
 			self::pln();
 			self::pcolorln(self::ansiinfo, "  " . self::$instance->commands[self::$instance->args["input"][1]][1]);
-			foreach(self::$instance->inputs as $key => $val) {
+			foreach (self::$instance->inputs as $key => $val) {
 				self::printHelpOption($key, $val);
 			}
 			self::pln();
 			self::pcolorln(self::ansiinfo, "Options:");
-			foreach(self::$instance->switches as $key => $val) {
+			foreach (self::$instance->switches as $key => $val) {
 				self::printHelpOption("-" . $key, $val);
 			}
-			foreach(self::$instance->options as $key => $val) {
+			foreach (self::$instance->options as $key => $val) {
 				self::printHelpOption("-" . $key . "=" . strtoupper($key), $val);
 			}
 			Output::finish();
@@ -224,12 +280,20 @@ class Cli {
 	}
 
 
+	/**
+	 * @param $color
+	 * @param $s
+	 */
 	private static function static_output($color, $s) {
 		fwrite(STDOUT, $s);
 		fflush(STDOUT);
 	}
 
 
+	/**
+	 * @param string $color
+	 * @param string $s
+	 */
 	public function output($color, $s) {
 		if ($this->has_colors && $color)
 			fwrite(STDOUT, $color . $s . self::ansiraz);
@@ -239,6 +303,9 @@ class Cli {
 	}
 
 
+	/**
+	 * @param string $s
+	 */
 	public static function pr($s = "") {
 		if (self::$instance)
 			self::$instance->output(false, $s);
@@ -247,11 +314,18 @@ class Cli {
 	}
 
 
+	/**
+	 * @param string $s
+	 */
 	public static function pln($s = "") {
 		self::pr($s . PHP_EOL);
 	}
 
 
+	/**
+	 * @param string $color
+	 * @param string $s
+	 */
 	public static function pcolor($color, $s) {
 		if (self::$instance)
 			self::$instance->output($color, $s);
@@ -260,27 +334,44 @@ class Cli {
 	}
 
 
+	/**
+	 * @param string $color
+	 * @param string $s
+	 */
 	public static function pcolorln($color, $s) {
 		self::pcolor($color, $s . PHP_EOL);
 	}
 
 
+	/**
+	 * @param string $s
+	 */
 	public static function perr($s = "") {
 		self::pcolorln(self::ansierr, $s);
 	}
 
 
+	/**
+	 * @param string $s
+	 */
 	public static function pfatal($s = "") {
 		self::pcolorln(self::ansierr, $s);
 		Output::finish(-1);
 	}
 
 
+	/**
+	 * @param string $s
+	 */
 	public static function pinfo($s = "") {
 		self::pcolorln(self::ansiinfo, $s);
 	}
 
 
+	/**
+	 * @param int $level
+	 * @param string $data
+	 */
 	public static function plog($level, $data) {
 		switch ($level) {
 			case Logger::DEBUG:
@@ -302,17 +393,21 @@ class Cli {
 	}
 
 
+	/**
+	 * @param string $s
+	 * @return bool
+	 */
 	public static function question($s = "") {
 		if (!IS_CLI)
 			return false;
 
 		self::pinfo($s);
 		self::perr("Type 'yes' to continue: ");
-		$handle = fopen ("php://stdin", "r");
+		$handle = fopen("php://stdin", "r");
 		$line = fgets($handle);
-		if(trim($line) != 'yes'){
+		if (trim($line) != 'yes') {
 			self::pfatal("ABORTING!");
-            return false;
+			return false;
 		}
 		self::pln();
 		self::pinfo("Thank you, continuing...");
@@ -320,6 +415,9 @@ class Cli {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function configuration() {
 		$set = self::addSwitch("set", "Set an option");
 		$global = self::addSwitch("global", "Set the option in global configuration");
@@ -344,7 +442,7 @@ class Cli {
 		} else {
 			$opts = Options::getAll();
 			ksort($opts);
-			foreach($opts as $key => $val) {
+			foreach ($opts as $key => $val) {
 				if (!$get || strtoupper($key) == strtoupper($keys[0])) {
 					if (is_bool($val))
 						$val = $val ? "true" : "false";
@@ -355,6 +453,9 @@ class Cli {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function jconfig() {
 		self::enableHelp();
 		$conf = Config::getInstance();
@@ -366,12 +467,18 @@ class Cli {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function version() {
 		self::enableHelp();
 		self::pln(CorePlugin::getBaseline());
 	}
 
 
+	/**
+	 *
+	 */
 	public static function install() {
 		System::setRelativePublish(!self::addSwitch("a", "Generate absolute paths"));
 		self::enableHelp();
@@ -387,6 +494,9 @@ class Cli {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function update() {
 		System::setRelativePublish(!self::addSwitch("a", "Generate absolute paths"));
 		self::enableHelp();
@@ -398,6 +508,9 @@ class Cli {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function clean() {
 		self::enableHelp();
 		self::pinfo("Clean the application cache");
@@ -405,43 +518,50 @@ class Cli {
 	}
 
 
+	/**
+	 * @param Phar $phar
+	 * @param string $dir
+	 */
 	private static function addToPhar($phar, $dir) {
-		$subdirs = array();
+		$subDirs = array();
 		if ($dh = opendir($dir)) {
 			while (($file = readdir($dh)) !== false) {
 				if ($file[0] != "." && $file != "tests") {
 					$filename = $dir . "/" . $file;
 					if (is_dir($filename)) {
-						$subdirs[] = $filename;
+						$subDirs[] = $filename;
 					} else {
-						$relfilename = substr($filename, strlen(CF_DIR) + 1);
-						self::pcolorln(self::ansiwarn, "Add $relfilename");
-						$phar->addFile($filename, $relfilename);
+						$relFilename = substr($filename, strlen(CF_DIR) + 1);
+						self::pcolorln(self::ansiwarn, "Add $relFilename");
+						$phar->addFile($filename, $relFilename);
 					}
 				}
 			}
 			closedir($dh);
 		}
 
-		foreach($subdirs as $filename) {
+		foreach ($subDirs as $filename) {
 			self::addToPhar($phar, $filename);
 		}
 	}
 
 
+	/**
+	 *
+	 */
 	public static function phar() {
 		/* Build with:
 			php --define phar.readonly=0 cf/setup.php core:phar
 		*/
 		self::enableHelp();
-		$pharname = "cf-" . CF_VERSION . ".phar";
-		$pharfile = ROOT_DIR . DIRECTORY_SEPARATOR . $pharname;
-		if (file_exists($pharfile))
-			unlink($pharfile);
+		$pharName = "cf-" . CF_VERSION . ".phar";
+		$pharFile = ROOT_DIR . DIRECTORY_SEPARATOR . $pharName;
+		if (file_exists($pharFile))
+			unlink($pharFile);
 		$phar = new Phar(
-			$pharfile,
+			$pharFile,
 			FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_FILENAME,
-			$pharname
+			$pharName
 		);
 		$phar->startBuffering();
 		$phar->setSignatureAlgorithm(Phar::SHA256);
@@ -449,7 +569,7 @@ class Cli {
 		$phar->setStub($phar->createDefaultStub("setup.php"));
 		$phar->compressFiles(Phar::GZ);
 		$phar->stopBuffering();
-		self::pinfo("Phar archive " . ROOT_DIR . DIRECTORY_SEPARATOR . $pharname . " has been saved.");
+		self::pinfo("Phar archive " . ROOT_DIR . DIRECTORY_SEPARATOR . $pharName . " has been saved.");
 	}
 
 

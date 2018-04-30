@@ -1,6 +1,7 @@
 <?php namespace DavBfr\CF;
+
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +24,15 @@ abstract class Crud extends Rest {
 	const ID = "CRUD_ID_FIELD";
 
 	protected $options;
+	/** @var Model $model */
 	protected $model;
 	protected $limit;
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function preProcess($r) {
 		parent::preProcess($r);
 		$this->model = $this->getModel();
@@ -34,9 +40,16 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @return Model
+	 */
 	abstract protected function getModel();
 
 
+	/**
+	 * @return array
+	 * @throws Exception
+	 */
 	private static function defaultOptions() {
 		return array(
 			"list_title" => Lang::get("core.list"),
@@ -53,6 +66,10 @@ abstract class Crud extends Rest {
 		);
 	}
 
+
+	/**
+	 * @return array
+	 */
 	protected function getOptions() {
 		return array(
 			"list_partial" => array($this->model->getTableName() . "-crud-list.php", "crud-list.php"),
@@ -62,8 +79,8 @@ abstract class Crud extends Rest {
 
 
 	public function getRoutes() {
-		$this->addRoute("/", "GET", "get_list", array("description" => "Return elements in the list", "parameters"=>array(array("name" => "q", "description" => "List filter", "schema" => array("type" => "string"), "in" => "query"), array("name" => "p", "description" => "Page number", "schema" => array("type" => "integer"), "in" => "query"))));
-		$this->addRoute("/count", "GET", "get_count", array("description" => "Return the number of elements in the list", "parameters"=>array(array("name" => "q", "description" => "List filter", "schema" => array("type" => "string"), "in" => "query"))));
+		$this->addRoute("/", "GET", "get_list", array("description" => "Return elements in the list", "parameters" => array(array("name" => "q", "description" => "List filter", "schema" => array("type" => "string"), "in" => "query"), array("name" => "p", "description" => "Page number", "schema" => array("type" => "integer"), "in" => "query"))));
+		$this->addRoute("/count", "GET", "get_count", array("description" => "Return the number of elements in the list", "parameters" => array(array("name" => "q", "description" => "List filter", "schema" => array("type" => "string"), "in" => "query"))));
 		$this->addRoute("/list", "GET", "get_list_partial", array("description" => "Return the listing template"));
 		$this->addRoute("/detail", "GET", "get_detail_partial", array("description" => "Return the editor template"));
 		$this->addRoute("/new", "GET", "get_new", array("description" => "Return default data for a new entry"));
@@ -75,11 +92,20 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	public function getOption($name, $value) {
 		return $this->options[$name];
 	}
 
 
+	/**
+	 * @param Collection $col
+	 * @param ModelField $field
+	 */
 	protected function filterListField($col, $field) {
 		if ($field->isForeign()) {
 			$f = $field->getForeign();
@@ -96,7 +122,12 @@ abstract class Crud extends Rest {
 		}
 	}
 
+
+	/**
+	 * @param Collection $col
+	 */
 	protected function filterList($col) {
+		/** @var ModelField $field */
 		foreach ($this->model->getFields() as $field) {
 			if ($field->inList()) {
 				$this->filterListField($col, $field);
@@ -104,10 +135,19 @@ abstract class Crud extends Rest {
 		}
 	}
 
+
+	/**
+	 * @param Collection $col
+	 * @param ModelField $field
+	 */
 	protected function filterForeign($col, $field) {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function get_foreign($r) {
 		Input::ensureRequest($r, array("name"));
 		$name = $r["name"];
@@ -120,16 +160,16 @@ abstract class Crud extends Rest {
 		$foreign = $field->getForeign();
 		if (is_string($foreign)) {
 			$conf = Config::getInstance();
-			Output::success(array("list"=>$conf->get($foreign)));
+			Output::success(array("list" => $conf->get($foreign)));
 		}
 
 		list($table, $key, $value) = $foreign;
 		$foreignModel = Model::getModel($table);
 		$col = Collection::Query($table)
-		->SelectAs($bdd->quoteIdent($key), $bdd->quoteIdent('key'))
-		->SelectAs($bdd->quoteIdent($value), $bdd->quoteIdent('val'))
-		->orderBy($bdd->quoteIdent($value))
-		->limit($this->options["foreign_limit"]);
+			->SelectAs($bdd->quoteIdent($key), $bdd->quoteIdent('key'))
+			->SelectAs($bdd->quoteIdent($value), $bdd->quoteIdent('val'))
+			->orderBy($bdd->quoteIdent($value))
+			->limit($this->options["foreign_limit"]);
 
 		if (Input::has("q") && strlen(Input::get("q")) > 0) {
 			$col->filter(Input::get("q"));
@@ -149,11 +189,19 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param array $row
+	 * @return array
+	 */
 	protected function list_values($row) {
 		return $row;
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function get_list($r) {
 		$col = Collection::Model($this->model)
 			->SelectAs($this->model->getField($this->model->getPrimaryField())->getFullName(), self::ID)
@@ -165,7 +213,7 @@ abstract class Crud extends Rest {
 		}
 
 		$list = array();
-		foreach($col->getValues(Input::has("p") ? intval(Input::get("p")) : 0) as $row) {
+		foreach ($col->getValues(Input::has("p") ? intval(Input::get("p")) : 0) as $row) {
 			$list[] = $this->list_values($row);
 		}
 
@@ -173,18 +221,30 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function get_list_partial($r) {
 		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
 		$tpt->outputCached($this->options["list_partial"]);
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function get_detail_partial($r) {
 		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
 		$tpt->outputCached($this->options["detail_partial"]);
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function get_count($r) {
 		$col = Collection::Model($this->model);
 		$this->filterList($col);
@@ -200,9 +260,14 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param string $item
+	 * @return array
+	 */
 	protected function getForeigns($item) {
 		$foreigns = array();
-		foreach($this->model->getFields() as $name => $field) {
+		/** @var ModelField $field */
+		foreach ($this->model->getFields() as $name => $field) {
 			if ($field->isForeign())
 				$foreigns[] = $name;
 		}
@@ -210,11 +275,16 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function get_item($r) {
 		Input::ensureRequest($r, array("id"));
 		$id = $r["id"];
 		$item = $this->model->getById($id);
 		$values = array();
+		/** @var ModelField $field */
 		foreach ($this->model->getFields() as $field) {
 			if ($field->isEditable() && !$field->isBlob()) {
 				$name = $field->getName();
@@ -228,6 +298,10 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function get_new($r) {
 		$item = $this->model->newRow();
 
@@ -237,6 +311,10 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function delete_item($r) {
 		ErrorHandler::RaiseExceptionOnError();
 		try {
@@ -251,10 +329,17 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param array $post
+	 */
 	protected function fixValues(& $post) {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function new_item($r) {
 		ErrorHandler::RaiseExceptionOnError();
 		try {
@@ -271,6 +356,10 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws Exception
+	 */
 	protected function update_item($r) {
 		ErrorHandler::RaiseExceptionOnError();
 		try {
@@ -289,6 +378,9 @@ abstract class Crud extends Rest {
 	}
 
 
+	/**
+	 * @throws Exception
+	 */
 	public static function create() {
 		$create_tpt = Cli::addSwitch("t", "Create templates");
 		$models = Cli::getInputs("models", "Model names to create");
@@ -300,7 +392,7 @@ abstract class Crud extends Rest {
 		$ctrl = WWW_DIR . "/app/crud";
 		System::ensureDir($ctrl);
 
-		foreach($models as $model) {
+		foreach ($models as $model) {
 			$className = ucfirst($model) . "Rest";
 			$modelClass = ucfirst($model) . "Model";
 			Cli::pinfo(" * " . $className);
@@ -327,7 +419,7 @@ abstract class Crud extends Rest {
 			if ($create_tpt) {
 				$templates = Plugins::get(Plugins::APP_NAME)->getDir() . DIRECTORY_SEPARATOR . Template::TEMPLATES_DIR;
 				System::ensureDir($templates);
-				$afields = $config->get("model." .     $model);
+				$afields = $config->get("model." . $model);
 				$fields = array();
 				foreach ($afields as $name => $prop) {
 					$fields[$name] = new ModelField($model, $name, $prop);

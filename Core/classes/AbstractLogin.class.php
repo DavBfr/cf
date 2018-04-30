@@ -23,6 +23,10 @@ abstract class AbstractLogin extends Rest {
 	const apiid = "apiid";
 	const logged_api = "logged_api";
 
+
+	/**
+	 *
+	 */
 	protected function getRoutes() {
 		$this->addRoute("/", "POST", "doLogin");
 		$this->addRoute("/api", "GET", "doApiLogin");
@@ -32,12 +36,20 @@ abstract class AbstractLogin extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function logout($r) {
 		Session::delete();
 		Output::success(array("message" => Lang::get("core.disconnected")));
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function check($r) {
 		$user = Session::isLogged();
 		$api = Session::isLoggedApi();
@@ -61,11 +73,19 @@ abstract class AbstractLogin extends Rest {
 	}
 
 
+	/**
+	 * @param int $userid
+	 * @return array
+	 */
 	protected function getUserData($userid) {
 		return array();
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function user($r) {
 		$user = Session::isLogged();
 		if (Session::Has(Session::rights_key)) {
@@ -87,6 +107,10 @@ abstract class AbstractLogin extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function doLogin($r) {
 		$post = $this->jsonpost();
 		Input::ensureRequest($post, array("username", "password"));
@@ -107,6 +131,10 @@ abstract class AbstractLogin extends Rest {
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function doApiLogin($r) {
 		Input::ensureRequest($_REQUEST, array("token"));
 
@@ -118,8 +146,19 @@ abstract class AbstractLogin extends Rest {
 		ErrorHandler::error(401);
 	}
 
+
+	/**
+	 * @param string $username
+	 * @param string $password
+	 * @return bool
+	 */
 	abstract protected function login($username, $password);
 
+
+	/**
+	 * @param string $token
+	 * @return bool
+	 */
 	abstract protected function apiLogin($token);
 
 }

@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -27,12 +28,22 @@ class MemCache implements \arrayaccess {
 	private $lifetime;
 	private $apc;
 
+
+	/**
+	 * MemCache constructor.
+	 * @param int $lifetime
+	 */
 	public function __construct($lifetime = MEMCACHE_LIFETIME) {
 		$this->lifetime = $lifetime;
 		$this->apc = MEMCACHE_ENABLED && function_exists('apc_store') && ini_get('apc.enabled') && !DEBUG;
 	}
 
 
+	/**
+	 * @param string $offset
+	 * @param mixed $value
+	 * @throws Exception
+	 */
 	public function offsetSet($offset, $value) {
 		if (is_null($offset))
 			throw new Exception("MemCache offset cannot be null");
@@ -44,6 +55,10 @@ class MemCache implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param string $offset
+	 * @return bool
+	 */
 	public function offsetExists($offset) {
 		if (isset(self::$data[$offset]))
 			return true;
@@ -53,6 +68,9 @@ class MemCache implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param string $offset
+	 */
 	public function offsetUnset($offset) {
 		unset(self::$data[$offset]);
 		if ($this->apc)
@@ -60,6 +78,10 @@ class MemCache implements \arrayaccess {
 	}
 
 
+	/**
+	 * @param string $offset
+	 * @return mixed
+	 */
 	public function offsetGet($offset) {
 		if (isset(self::$data[$offset]))
 			return self::$data[$offset];

@@ -31,7 +31,9 @@ if (!IS_CLI)
 $logger = Logger::getInstance();
 $logger->setLevel(Logger::WARNING);
 
+/** @noinspection PhpUnhandledExceptionInspection */
 Plugins::add("Skel");
+/** @noinspection PhpUnhandledExceptionInspection */
 CorePlugin::loadConfig();
 
 $cli = new Cli($_SERVER['argv']);

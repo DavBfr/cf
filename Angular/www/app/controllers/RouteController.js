@@ -43,7 +43,7 @@ app.controller('RouteController', function($scope, $route, $location, $http, $ti
 
 		$scope.$on('$routeChangeSuccess', function(event, data) {
 			for (menuid in $scope.menu) {
-				if ($scope.menu[menuid].menu == data.menu) {
+				if ($scope.menu[menuid].menu === data.menu) {
 					$scope.menu[menuid].active = "active";
 				} else {
 					$scope.menu[menuid].active = "";

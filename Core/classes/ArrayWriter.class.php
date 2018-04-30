@@ -19,19 +19,34 @@
 
 class ArrayWriter {
 
+	/**
+	 * @param array $array
+	 * @param string $filename
+	 */
 	public static function toFile($array, $filename) {
 		file_put_contents($filename, "<?php\nreturn " . self::toString($array) . ";");
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return array
+	 */
 	public static function fromFile($filename) {
 		return include $filename;
 	}
 
 
+	/**
+	 * @param array $array
+	 * @param int $indent
+	 * @param string $indentchar
+	 * @return string
+	 */
 	public static function toString($array, $indent = 2, $indentchar = "\t") {
 		return var_export($array, true);
 
+		/** @noinspection PhpUnreachableStatementInspection */
 		if (!is_array($array)) {
 			return self::quote($array);
 		}
@@ -46,6 +61,10 @@ class ArrayWriter {
 	}
 
 
+	/**
+	 * @param string $val
+	 * @return string
+	 */
 	public static function quote($val) {
 		if (is_int($val))
 			return $val;

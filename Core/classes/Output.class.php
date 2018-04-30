@@ -20,6 +20,9 @@
 class Output {
 
 
+	/**
+	 * @param int $code
+	 */
 	public static function finish($code = 0) {
 		if ($code == 0) {
 			Logger::debug("Response time: " . (microtime(true) - START_TIME));
@@ -30,6 +33,9 @@ class Output {
 	}
 
 
+	/**
+	 * @param array $object
+	 */
 	public static function json($object) {
 		if (JSON_HEADER)
 			header("Content-Type: text/json");
@@ -48,16 +54,27 @@ class Output {
 	}
 
 
+	/**
+	 * @param array $object
+	 */
 	public static function success($object = array()) {
 		self::json($object);
 	}
 
 
+	/**
+	 * @param string $message
+	 * @param int $code
+	 * @throws \Exception
+	 */
 	public static function error($message, $code = 400) {
 		ErrorHandler::error($code, $message, json_encode(array("error" => $message)), 3, true);
 	}
 
 
+	/**
+	 * @param string $url
+	 */
 	public static function redirect($url) {
 		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 		header("$protocol 302 Redirect");
@@ -66,6 +83,12 @@ class Output {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string $data
+	 * @param string $type
+	 * @param bool $inline
+	 */
 	public static function file($filename, $data, $type = "application/binary", $inline = false) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $type);
@@ -83,6 +106,10 @@ class Output {
 	}
 
 
+	/**
+	 * @param string $message
+	 * @throws \Exception
+	 */
 	public static function debug($message = "") {
 		if (!DEBUG)
 			return;

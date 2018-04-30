@@ -22,12 +22,24 @@ class Cache {
 	private $filename_cache; // Cached file name created from $filename
 
 
+	/**
+	 * Cache constructor.
+	 * @param string $filename
+	 * @param string $filename_cache
+	 */
 	public function __construct($filename, $filename_cache) {
 		$this->filename = $filename;
 		$this->filename_cache = $filename_cache;
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string $path
+	 * @param int $len
+	 * @param string|null $ext
+	 * @return string
+	 */
 	public static function MakeCacheName($filename, $path, $len, $ext = null) {
 		if ($ext === null) {
 			if (($dot = strrpos($filename, ".")) !== false)
@@ -45,21 +57,41 @@ class Cache {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string $path
+	 * @param int $len
+	 * @param string|null $ext
+	 * @return Cache
+	 */
 	public static function Create($filename, $path, $len = 3, $ext = null) {
 		return new self($filename, self::MakeCacheName($filename, $path, $len, $ext));
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string|null $ext
+	 * @return Cache
+	 */
 	public static function Priv($filename, $ext = null) {
 		return self::Create($filename, CACHE_DIR, 0, $ext);
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @param string|null $ext
+	 * @return Cache
+	 */
 	public static function Pub($filename, $ext = null) {
 		return self::Create($filename, WWW_CACHE_DIR, 0, $ext);
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isWritable() {
 		if (is_file($this->filename_cache) && is_writable($this->filename_cache))
 			return true;
@@ -68,14 +100,21 @@ class Cache {
 	}
 
 
+	/**
+	 * @return bool|string
+	 */
 	public function getContents() {
 		return file_get_contents($this->filename_cache);
 	}
 
 
+	/**
+	 * @param string $value
+	 * @throws \Exception
+	 */
 	public function setContents($value) {
 		System::ensureDir(dirname($this->filename_cache));
-		if (! $this->isWritable()) {
+		if (!$this->isWritable()) {
 			Logger::Error($this->filename_cache . " is not writable");
 			return;
 		}
@@ -85,15 +124,24 @@ class Cache {
 	}
 
 
+	/**
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getArray() {
 		try {
 			return Input::jsonDecode(file_get_contents($this->filename_cache));
 		} catch (\Exception $e) {
 			ErrorHandler::error(500, null, "Error in " . $this->filename_cache . ": " . $e);
+			die();
 		}
 	}
 
 
+	/**
+	 * @param array $value
+	 * @throws \Exception
+	 */
 	public function setArray($value) {
 		System::ensureDir(dirname($this->filename_cache));
 
@@ -101,6 +149,10 @@ class Cache {
 	}
 
 
+	/**
+	 * @return bool|resource
+	 * @throws \Exception
+	 */
 	public function openWrite() {
 		System::ensureDir(dirname($this->filename_cache));
 		Logger::Debug("Write cache $this->filename_cache");
@@ -108,6 +160,9 @@ class Cache {
 	}
 
 
+	/**
+	 *
+	 */
 	public function delete() {
 		if (file_exists($this->filename_cache)) {
 			unlink($this->filename_cache);
@@ -115,18 +170,25 @@ class Cache {
 	}
 
 
+	/**
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function getFilename() {
 		System::ensureDir(dirname($this->filename_cache));
 		return $this->filename_cache;
 	}
 
 
+	/**
+	 *
+	 */
 	public function outputIfCached() {
 		if ($this->exists()) {
 			$filetime = filemtime($this->filename_cache);
-			header("Date: " . gmdate("D, d M Y H:i:s", time())." GMT");
-			header("Last-Modified: ".gmdate("D, d M Y H:i:s", $filetime)." GMT");
-			header("Expires: " . gmdate("D, d M Y H:i:s", time() + CACHE_TIME)." GMT");
+			header("Date: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
+			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $filetime) . " GMT");
+			header("Expires: " . gmdate("D, d M Y H:i:s", time() + CACHE_TIME) . " GMT");
 			header("Cache-Control: private, max-age=" . CACHE_TIME);
 			$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
 
@@ -142,8 +204,9 @@ class Cache {
 
 
 	/**
-	* Return true if the cache file is to be (re)created
-	**/
+	 * Return true if the cache file is to be (re)created
+	 * @return bool
+	 */
 	public function check() {
 		$exists = $this->exists();
 		if (!is_file($this->filename) && $exists)
@@ -153,11 +216,17 @@ class Cache {
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function exists() {
 		return CACHE_ENABLED && is_file($this->filename_cache);
 	}
 
 
+	/**
+	 *
+	 */
 	public function symlink() {
 		if (!file_exists($this->filename_cache)) {
 			System::symlink($this->filename, $this->filename_cache);

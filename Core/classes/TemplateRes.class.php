@@ -1,6 +1,6 @@
 <?php namespace DavBfr\CF;
 /**
- * Copyright (C) 2013-2015 David PHAM-VAN
+ * Copyright (C) 2013-2018 David PHAM-VAN
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,10 @@
  **/
 
 class TemplateRes extends Template {
+	/**
+	 * TemplateRes constructor.
+	 * @param array $params
+	 */
 	public function __construct($params = array()) {
 		$conf = Config::getInstance();
 
@@ -25,10 +29,10 @@ class TemplateRes extends Template {
 
 		Plugins::dispatchAll("resources", $resources);
 
-		foreach($conf->get("scripts", array()) as $script) {
+		foreach ($conf->get("scripts", array()) as $script) {
 			$resources->add($script);
 		}
-		foreach(Plugins::findAll("www/app") as $dir) {
+		foreach (Plugins::findAll("www/app") as $dir) {
 			$resources->addDir($dir);
 		}
 

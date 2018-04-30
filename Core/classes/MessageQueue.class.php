@@ -29,6 +29,10 @@ class MessageQueue {
 	private $mode = 0600;
 
 
+	/**
+	 * MessageQueue constructor.
+	 * @param int $queue_id
+	 */
 	public function __construct($queue_id = MESSAGE_QUEUE) {
 		$this->queue_id = $queue_id;
 		Logger::debug("Open MessageQueue #$queue_id");
@@ -37,6 +41,9 @@ class MessageQueue {
 	}
 
 
+	/**
+	 *
+	 */
 	public function delete() {
 		msg_remove_queue($this->queue);
 	}
@@ -46,7 +53,8 @@ class MessageQueue {
 	 * @param int $type Message type for filtering
 	 * @param mixed $message json serializable message
 	 *
-	 * @return null
+	 * @return void
+	 * @throws \Exception
 	 */
 	public function send($type, $message) {
 		$errorcode = null;
@@ -62,6 +70,8 @@ class MessageQueue {
 	 *                     return immediately if = 0, if -1: wait indefinitively
 	 *
 	 * @return array msg: array message, type: message type
+	 * @throws MqTimeoutException
+	 * @throws \Exception
 	 */
 	public function receive($type = 0, $timeout = 30) {
 		$errorcode = null;
@@ -69,7 +79,8 @@ class MessageQueue {
 		$msg = null;
 		$flags = 0;
 		if ($timeout > 0) {
-			pcntl_signal(SIGALRM, function() { }, false);
+			pcntl_signal(SIGALRM, function () {
+			}, false);
 			pcntl_alarm($timeout);
 		} elseif ($timeout == 0) {
 			$flags = MSG_IPC_NOWAIT;
@@ -95,11 +106,11 @@ class MessageQueue {
 	 * @param int $timeout if > 0 raise exception if no this time arrive before a message
 	 *                     return immediately if = 0, if -1: wait indefinitively
 	 *
-	 * @return none
+	 * @throws \Exception
 	 */
 	public function dispatch($type = 0, $timeout = 30) {
 		try {
-			while(true) {
+			while (true) {
 				$msg = $this->receive($type, $timeout);
 				Plugins::dispatchAll("processMessage", $msg["type"], $msg["msg"]);
 			}
@@ -108,10 +119,13 @@ class MessageQueue {
 	}
 
 
+	/**
+	 *
+	 */
 	public static function process() {
-		$queue_id = (int)Cli::addOption("queue", MESSAGE_QUEUE, "Message Queue ID (".MESSAGE_QUEUE.")");
+		$queue_id = (int)Cli::addOption("queue", MESSAGE_QUEUE, "Message Queue ID (" . MESSAGE_QUEUE . ")");
 		$timeout = (int)Cli::addOption("timeout", 0, "Time to wait");
-		$delete = (int)Cli::addSwitch("delete", 0, "Delete the queue when finished");
+		$delete = (int)Cli::addSwitch("delete", "Delete the queue when finished");
 		Cli::enableHelp();
 
 		try {

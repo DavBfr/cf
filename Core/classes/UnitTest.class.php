@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2016 David PHAM-VAN
  *
@@ -28,17 +29,26 @@ use ReflectionClass;
 
 class UnitTest implements TestListener {
 	const TESTS_DIR = "tests";
+	private $curplugin;
+	private $cursuite = "";
+	private $curtest = "";
+	private $dot = false;
+	private $flushed = false;
+	private $count = 0;
 
 
+	/**
+	 * UnitTest constructor.
+	 * @param string $name
+	 */
 	public function __construct($name) {
 		$this->curplugin = $name;
-		$this->cursuite = "";
-		$this->curtest = "";
-		$this->dot = false;
-		$this->flushed = false;
-		$this->count = 0;
 	}
 
+
+	/**
+	 *
+	 */
 	private function flushError() {
 		if ($this->dot) {
 			Cli::pcolorln(Cli::ansiinfo, "]");
@@ -50,6 +60,11 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @param Test $test
+	 * @param Exception $e
+	 * @param int $time
+	 */
 	public function addError(Test $test, Exception $e, $time) {
 		$this->flushError();
 		Cli::pcolor(Cli::ansiwarn, "       Exception: ");
@@ -60,21 +75,21 @@ class UnitTest implements TestListener {
 		Cli::pcolorln(Cli::ansierr, $e->getLine());
 
 		$n = 0;
-		foreach($e->getTrace() as $item) {
+		foreach ($e->getTrace() as $item) {
 			if ($n++ < 2) continue;
 
 			if (!array_key_exists("file", $item))
 				break;
 
 			Cli::pr("         ");
-			if(array_key_exists("class", $item) && $item["class"] != "") {
+			if (array_key_exists("class", $item) && $item["class"] != "") {
 				Cli::pcolor(Cli::ansicrit, $item["class"] . "->");
 			}
 			Cli::pcolor(Cli::ansicrit, $item["function"] . "();");
 			Cli::pcolor(Cli::ansicrit, " in ");
 			Cli::pcolor(Cli::ansierr, $item["file"]);
 
-			if(array_key_exists("line", $item)) {
+			if (array_key_exists("line", $item)) {
 				Cli::pcolor(Cli::ansicrit, " line ");
 				Cli::pcolor(Cli::ansierr, $item["line"]);
 			}
@@ -83,6 +98,11 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @param Test $test
+	 * @param Warning $e
+	 * @param int $time
+	 */
 	public function addWarning(Test $test, Warning $e, $time) {
 		$this->flushError();
 		Cli::pcolor(Cli::ansiwarn, "       Warning: ");
@@ -99,6 +119,11 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @param Test $test
+	 * @param AssertionFailedError $e
+	 * @param int $time
+	 */
 	public function addFailure(Test $test, AssertionFailedError $e, $time) {
 		$this->flushError();
 		Cli::pcolor(Cli::ansiwarn, "       Failure: ");
@@ -115,6 +140,11 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @param Test $test
+	 * @param Exception $e
+	 * @param int $time
+	 */
 	public function addIncompleteTest(Test $test, Exception $e, $time) {
 		$this->flushError();
 		Cli::pcolor(Cli::ansiwarn, "       Incomplete: ");
@@ -122,6 +152,11 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @param Test $test
+	 * @param Exception $e
+	 * @param int $time
+	 */
 	public function addRiskyTest(Test $test, Exception $e, $time) {
 		$this->flushError();
 		Cli::pcolor(Cli::ansiwarn, "       Risky: ");
@@ -129,6 +164,11 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @param Test $test
+	 * @param Exception $e
+	 * @param int $time
+	 */
 	public function addSkippedTest(Test $test, Exception $e, $time) {
 		$this->flushError();
 		Cli::pcolor(Cli::ansiwarn, "       Skipped: ");
@@ -136,21 +176,34 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @param TestSuite $suite
+	 */
 	public function startTestSuite(TestSuite $suite) {
 		$this->cursuite = $suite->getName();
 	}
 
 
+	/**
+	 * @param TestSuite $suite
+	 */
 	public function endTestSuite(TestSuite $suite) {
 		$this->cursuite = "";
 	}
 
 
+	/**
+	 * @param Test $test
+	 */
 	public function startTest(Test $test) {
 		$this->curtest = $test->getName();
 	}
 
 
+	/**
+	 * @param Test $test
+	 * @param int $time
+	 */
 	public function endTest(Test $test, $time) {
 		if ($this->curtest != "") {
 			if ($this->count++ >= 40) {
@@ -171,19 +224,22 @@ class UnitTest implements TestListener {
 	}
 
 
+	/**
+	 * @throws \ReflectionException
+	 */
 	public static function runtests() {
 		Cli::pinfo("Running tests");
 		ErrorHandler::unregister();
 
 		// Create Suite
-		foreach(Plugins::get_plugins() as $name) {
+		foreach (Plugins::get_plugins() as $name) {
 			$result = new TestResult();
 			$listner = new self($name);
 			$result->addListener($listner);
 			$plugin = Plugins::get($name);
 			$dir = $plugin->getDir() . DIRECTORY_SEPARATOR . self::TESTS_DIR;
 			if (is_dir($dir)) {
-				foreach(glob($dir . DIRECTORY_SEPARATOR . "*.test.php") as $file) {
+				foreach (glob($dir . DIRECTORY_SEPARATOR . "*.test.php") as $file) {
 					require_once($file);
 					$testclassname = __NAMESPACE__ . "\\" . substr(basename($file), 0, -9) . "Test";
 					$suite = new TestSuite(new ReflectionClass($testclassname));

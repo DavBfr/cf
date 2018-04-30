@@ -19,12 +19,18 @@
 
 class BootstrapPlugin extends Plugins {
 
+	/**
+	 *
+	 */
 	public function update() {
 		Cli::pinfo(" * install Bootstrap");
 		System::publish($this->getDir() . "/www/vendor/fonts");
 	}
 
 
+	/**
+	 * @param Resources $res
+	 */
 	public function resources($res) {
 		$res->add("jquery/jquery.js");
 		$res->add("bootstrap/bootstrap.js");

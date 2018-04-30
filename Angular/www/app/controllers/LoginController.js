@@ -21,11 +21,11 @@ app.service('LoginService', function($http, NotificationFactory) {
 
 	this.getRights = function() {
 		return cf_options.rights;
-	}
+	};
 
 	this.setRights = function(rights) {
 		cf_options.rights = rights;
-	}
+	};
 
 	this.hasRight = function(right) {
 		return jQuery.inArray(right, cf_options.rights) >= 0;
@@ -33,7 +33,7 @@ app.service('LoginService', function($http, NotificationFactory) {
 
 	this.getUser = function() {
 		return cf_options.user;
-	}
+	};
 
 	this.logout = function(onsuccess) {
 		$http.get(cf_options.rest_path + "/login/logout").then(function(response) {
@@ -74,7 +74,7 @@ app.service('LoginService', function($http, NotificationFactory) {
 	};
 
 	this.getUserInfos = function(onsuccess) {
-		if (userdata == null || userdata.user != cf_options.user) {
+		if (userdata == null || userdata.user !== cf_options.user) {
 			$http.get(cf_options.rest_path + "/login/user").then(function(response) {
 				cf_options.rights = response.data.rights;
 				cf_options.user = response.data.user;

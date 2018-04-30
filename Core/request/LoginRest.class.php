@@ -19,18 +19,28 @@
 
 class LoginRest extends Rest {
 
+	/**
+	 *
+	 */
 	protected function getRoutes() {
 		$this->addRoute("/logout", "GET", "logout");
 		$this->addRoute("/check", "GET", "check");
 	}
 
 
+	/**
+	 * @param array $r
+	 * @throws \Exception
+	 */
 	protected function logout($r) {
 		Session::delete();
 		Output::success();
 	}
 
 
+	/**
+	 * @param $r
+	 */
 	protected function check($r) {
 		Output::success(array("user" => null, "api" => null, "next" => Session::nextCheck()));
 	}

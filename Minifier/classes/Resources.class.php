@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2015 David PHAM-VAN
  *
@@ -21,6 +22,11 @@ use JShrink\Minifier;
 
 class Resources extends AbstractResources {
 
+	/**
+	 * @param string $filename
+	 * @param string $origfilename
+	 * @throws \Exception
+	 */
 	protected function append($filename, $origfilename = null) {
 		if (substr($filename, -5) == ".less") {
 			$script = Cache::Pub($filename, ".css");
@@ -36,6 +42,10 @@ class Resources extends AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return bool
+	 */
 	private function isMin($filename) {
 		if (($dot = strrpos($filename, ".")) !== false)
 			$type = substr($filename, $dot + 1);
@@ -50,6 +60,10 @@ class Resources extends AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return string
+	 */
 	private function min($filename) {
 		if (($dot = strrpos($filename, ".")) !== false)
 			$type = substr($filename, $dot + 1);
@@ -64,6 +78,10 @@ class Resources extends AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return bool|string
+	 */
 	private function hasMin($filename) {
 		$filename_min = $this->min($filename);
 		if (file_exists($filename_min)) {
@@ -74,6 +92,11 @@ class Resources extends AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return bool|string
+	 * @throws \Exception
+	 */
 	protected function minifyJavascript($filename) {
 		if ($this->isMin($filename)) {
 			return file_get_contents($filename);
@@ -99,6 +122,11 @@ class Resources extends AbstractResources {
 	}
 
 
+	/**
+	 * @param string $filename
+	 * @return bool|string
+	 * @throws \Exception
+	 */
 	protected function minifyStylesheet($filename) {
 		if ($this->isMin($filename)) {
 			return file_get_contents($filename);
@@ -126,17 +154,21 @@ class Resources extends AbstractResources {
 	}
 
 
+	/**
+	 * @return string[]
+	 * @throws \Exception
+	 */
 	public function getScripts() {
 		$res = $this->getResourcesByExt(".js");
 		$output = Cache::Pub($this->tag . ".js");
-		if (! MINIFY_JSCSS) {
+		if (!MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}
 
 		if ($output->check()) {
 			$out = $output->openWrite();
-			foreach($res as $item) {
+			foreach ($res as $item) {
 				fwrite($out, $this->minifyJavascript($item) . "\n");
 			}
 			fclose($out);
@@ -145,17 +177,21 @@ class Resources extends AbstractResources {
 	}
 
 
+	/**
+	 * @return string[]
+	 * @throws \Exception
+	 */
 	public function getStylesheets() {
 		$res = $this->getResourcesByExt(".css");
 		$output = Cache::Pub($this->tag . ".css");
-		if (! MINIFY_JSCSS) {
+		if (!MINIFY_JSCSS) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}
 
 		if ($output->check()) {
 			$out = $output->openWrite();
-			foreach($res as $item) {
+			foreach ($res as $item) {
 				fwrite($out, $this->minifyStylesheet($item) . "\n");
 			}
 			fclose($out);

@@ -31,18 +31,27 @@ abstract class Rest {
 	protected $mp = null;
 
 
+	/**
+	 * Rest constructor.
+	 */
 	public function __construct() {
 		$this->getRoutes();
 	}
 
 
+	/**
+	 * @param string $path
+	 * @param string $method
+	 * @param callable $callback
+	 * @param array $openapi
+	 */
 	protected function addRoute($path, $method, $callback, $openapi = array()) {
 		$this->list[] = array($path, $method, $callback, $openapi);
 
 		if (strpos($path, ":") !== false) {
 			$vars = array();
 			$aPath = explode("/", $path);
-			foreach($aPath as $key => $item) {
+			foreach ($aPath as $key => $item) {
 				if (substr($item, 0, 1) == ":") {
 					$vars[] = substr($item, 1);
 					$aPath[$key] = "([^/]+)";
@@ -58,9 +67,16 @@ abstract class Rest {
 	}
 
 
+	/**
+	 *
+	 */
 	abstract protected function getRoutes();
 
 
+	/**
+	 * @return array
+	 * @throws \Exception
+	 */
 	protected function jsonpost() {
 		if ($this->jsonpost_data === null) {
 			$this->jsonpost_data = Input::decodeJsonPost();
@@ -69,20 +85,36 @@ abstract class Rest {
 	}
 
 
+	/**
+	 * @param string $mp
+	 * @return bool
+	 */
 	protected function preCheck($mp) {
 		return true;
 	}
 
 
+	/**
+	 * @param array $r
+	 */
 	protected function preProcess($r) {
 	}
 
 
+	/**
+	 * @param string $method
+	 * @throws \Exception
+	 */
 	protected function processNotFound($method) {
 		ErrorHandler::error(404, null, get_class($this) . "::" . $method);
 	}
 
 
+	/**
+	 * @param string $method
+	 * @param string $path
+	 * @throws \Exception
+	 */
 	public function handleRequest($method, $path) {
 		if ($path == "")
 			$path = "/";
@@ -99,18 +131,18 @@ abstract class Rest {
 				}
 				$this->preProcess(array());
 				call_user_func(array($this, $this->routes[$this->mp]), array());
-			} catch(\Exception $e) {
+			} catch (\Exception $e) {
 				ErrorHandler::getInstance()->exceptionHandler($e);
 			}
 			ErrorHandler::error(204);
 		} else {
-			foreach($this->complex_routes as $cPath => $route) {
+			foreach ($this->complex_routes as $cPath => $route) {
 				list($m, $p, $v, $c) = $route;
 				if ($m == $method) {
 
 					if (preg_match($p, $path, $matches) != false) {
 						$pa = array();
-						foreach($v as $i => $k) {
+						foreach ($v as $i => $k) {
 							$pa[$k] = $matches[$i + 1];
 						}
 						$this->mp = $cPath;
@@ -121,7 +153,7 @@ abstract class Rest {
 							}
 							$this->preProcess($pa);
 							call_user_func(array($this, $c), $pa);
-						} catch(\Exception $e) {
+						} catch (\Exception $e) {
 							ErrorHandler::getInstance()->exceptionHandler($e);
 						}
 						ErrorHandler::error(204);
@@ -133,6 +165,11 @@ abstract class Rest {
 	}
 
 
+	/**
+	 * @param string $method
+	 * @param string $path
+	 * @throws \Exception
+	 */
 	public static function handle($method = null, $path = null) {
 		if ($path == null) {
 			$path = @$_SERVER["PATH_INFO"];
@@ -147,7 +184,7 @@ abstract class Rest {
 
 		if ($path == "")
 			$path = "index";
-		
+
 		if (preg_match(self::REQUEST_PREFIX, $path, $matches) != false) {
 			$prefix = $matches[0];
 			$path = substr($path, strlen($prefix));
@@ -176,12 +213,17 @@ abstract class Rest {
 
 		require_once($request_file);
 		$class_name = __NAMESPACE__ . "\\" . $request;
+		/** @var Rest $instance */
 		$instance = new $class_name();
 		$instance->handleRequest($method, $next_path);
 		ErrorHandler::error(204);
 	}
 
 
+	/**
+	 * @return array
+	 * @throws \ReflectionException
+	 */
 	public function buildApi() {
 		$classname = explode('\\', get_class($this));
 		$tag = substr(array_pop($classname), 0, -4);
@@ -191,7 +233,7 @@ abstract class Rest {
 		// $request = ucwords($request);
 		// $request = str_replace(" ", "", $request) . "Rest";
 		$prefix = "/" . strtolower($tag);
-		
+
 		$class = new \ReflectionClass($this);
 		$path = basename(dirname($class->getFileName()));
 		if (preg_match("|v\d+|", $path, $matches) != false) {
@@ -199,14 +241,14 @@ abstract class Rest {
 		}
 
 		$paths = array();
-		foreach($this->list as $route) {
+		foreach ($this->list as $route) {
 			list($path, $method, $callback, $openapi) = $route;
 			$path = $prefix . $path;
 			$vars = array();
 
 			if (strpos($path, ":") !== false) {
 				$aPath = explode("/", $path);
-				foreach($aPath as $key => $item) {
+				foreach ($aPath as $key => $item) {
 					if (substr($item, 0, 1) == ":") {
 						$item = substr($item, 1);
 						$vars[] = array(
@@ -222,7 +264,7 @@ abstract class Rest {
 				$path = implode("/", $aPath);
 			}
 
-			if (! array_key_exists($path, $paths))
+			if (!array_key_exists($path, $paths))
 				$paths[$path] = array();
 
 			$paths[$path][strtolower($method)] = array_merge(array(
@@ -244,6 +286,10 @@ abstract class Rest {
 	}
 
 
+	/**
+	 * @return array
+	 * @throws \ReflectionException
+	 */
 	public static function getOpenApi() {
 		$config = Config::getInstance();
 		$authors = $config->get("composer.authors");
@@ -268,15 +314,16 @@ abstract class Rest {
 		);
 
 		$paths = array();
-		foreach(Plugins::get_plugins() as $plugin) {
+		foreach (Plugins::get_plugins() as $plugin) {
 			$request = Plugins::get($plugin)->getDir() . DIRECTORY_SEPARATOR . Rest::REQUEST_DIR;
 			$files = System::globRec($request . DIRECTORY_SEPARATOR . "*Rest.class.php");
-			foreach($files as $file) {
-				$cn = __NAMESPACE__ . "\\" .substr(basename($file), 0, -10);
+			foreach ($files as $file) {
+				$cn = __NAMESPACE__ . "\\" . substr(basename($file), 0, -10);
 				try {
 					if (!class_exists($cn, false)) {
 						require_once($file);
 					}
+					/** @var Rest $req */
 					$req = new $cn();
 				} catch (\Exception $e) {
 					continue;

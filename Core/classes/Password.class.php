@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
- /**
+/**
  * Based on Portable PHP password hashing framework.
  *
  * Version 0.5 / genuine.
@@ -29,7 +29,7 @@
  *
  * The homepage URL for this framework is:
  *
- *	http://www.openwall.com/phpass/
+ *  http://www.openwall.com/phpass/
  **/
 
 use Exception;
@@ -47,6 +47,9 @@ class Password {
 	private $random_state;
 
 
+	/**
+	 * Password constructor.
+	 */
 	public function __construct() {
 		$iteration_count_log2 = PASSWORD_ITERATION_COUNT;
 		$portable_hashes = PASSWORD_PORTABLE;
@@ -66,10 +69,14 @@ class Password {
 	}
 
 
+	/**
+	 * @param int $count
+	 * @return string
+	 */
 	public function getRandomBytes($count) {
 		$output = '';
 		if (@is_readable('/dev/urandom') &&
-		($fh = @fopen('/dev/urandom', 'rb'))) {
+			($fh = @fopen('/dev/urandom', 'rb'))) {
 			$output = fread($fh, $count);
 			fclose($fh);
 		}
@@ -87,6 +94,11 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $input
+	 * @param int $count
+	 * @return string
+	 */
 	private function encode64($input, $count) {
 		$output = '';
 		$i = 0;
@@ -114,6 +126,10 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $input
+	 * @return string
+	 */
 	private function gensalt_private($input) {
 		$output = '$P$';
 		$output .= $this->itoa64[min($this->iteration_count_log2 + ((PHP_VERSION >= '5') ? 5 : 3), 30)];
@@ -123,6 +139,11 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $password
+	 * @param $setting
+	 * @return string
+	 */
 	private function crypt_private($password, $setting) {
 		$output = '*0';
 		if (substr($setting, 0, 2) === $output)
@@ -168,6 +189,10 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $input
+	 * @return string
+	 */
 	private function gensalt_extended($input) {
 		$count_log2 = min($this->iteration_count_log2 + 8, 24);
 		# This should be odd to not reveal weak DES keys, and the
@@ -186,6 +211,10 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $input
+	 * @return string
+	 */
 	private function gensalt_blowfish($input) {
 		# This one needs to use a different order of characters and a
 		# different encoding scheme from the one in encode64() above.
@@ -227,6 +256,10 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $password
+	 * @return string
+	 */
 	public function hash($password) {
 		if (function_exists('password_hash'))
 			return password_hash($password, PASSWORD_DEFAULT);
@@ -261,11 +294,16 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $password
+	 * @param string $stored_hash
+	 * @return bool
+	 */
 	public function check($password, $stored_hash) {
 		if (function_exists('password_verify')) {
 			if (password_verify($password, $stored_hash))
 				return true;
-			if (! PASSWORD_PHPASS)
+			if (!PASSWORD_PHPASS)
 				return false;
 		}
 
@@ -281,6 +319,10 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $user
+	 * @throws Exception
+	 */
 	public function sanitizeUser($user) {
 		/* Sanity-check the username, don't rely on our use of prepared statements
 		* alone to prevent attacks on the SQL server via malicious usernames. */
@@ -289,6 +331,10 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $pass
+	 * @throws Exception
+	 */
 	public function sanitizePass($pass) {
 		/* Don't let them spend more of our CPU time than we were willing to.
 		* Besides, bcrypt happens to use the first 72 characters only anyway. */
@@ -297,6 +343,14 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $newpass
+	 * @param string $oldpass
+	 * @param string $user
+	 * @param string $aux
+	 * @param int $minlen
+	 * @return bool|string
+	 */
 	protected function pwqcheckLite($newpass, $oldpass = '', $user = '', $aux = '', $minlen = 7) {
 		/* Some really trivial and obviously-insufficient password strength checks -
 		* we ought to use the pwqcheck(1) program instead. */
@@ -312,6 +366,14 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $newpass
+	 * @param string $oldpass
+	 * @param string $user
+	 * @param string $aux
+	 * @param string $args
+	 * @return bool|string
+	 */
 	protected function pwqcheck($newpass, $oldpass = '', $user = '', $aux = '', $args = '') {
 		$descriptorspec = array(
 			0 => array('pipe', 'r'),
@@ -372,6 +434,14 @@ class Password {
 	}
 
 
+	/**
+	 * @param string $newpass
+	 * @param string $oldpass
+	 * @param string $user
+	 * @param string $aux
+	 * @param int $minlen
+	 * @return bool|string
+	 */
 	public function strengthCheck($newpass, $oldpass = '', $user = '', $aux = '', $minlen = 7) {
 		$n0 = $minlen;
 		$n1 = intval(ceil($minlen * 4 / 5));
