@@ -96,3 +96,7 @@
 		<a data-ng-click="setPage(page + 1)" href="">&raquo;</a>
 	</li>
 </ul>
+
+<div data-ng-hide="count == 0" >
+	<?php $this->tr("core.total_records") ?> {{count}}
+</div>

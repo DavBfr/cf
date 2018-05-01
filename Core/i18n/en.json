@@ -29,6 +29,7 @@
 		"enter_value": "please enter a value",
 		"enter_valid_value": "please enter a valid value",
 		"fields_not_equal": "the values are not the same",
-		"disconnected": "Successfully disconnected"
+		"disconnected": "Successfully disconnected",
+		"total_records": "Number of records:"
 	}
 }
