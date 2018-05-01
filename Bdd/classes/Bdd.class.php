@@ -240,7 +240,7 @@ class Bdd {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -250,7 +250,7 @@ class Bdd {
 	 * @param bool $distinct
 	 * @return string
 	 */
-	public function getQueryString(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryString(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		return $this->helper->getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 	}
 
@@ -260,7 +260,7 @@ class Bdd {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -271,7 +271,7 @@ class Bdd {
 	 * @return BddCursorHelper
 	 * @throws \Exception
 	 */
-	public function getQueryValues(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryValues(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		return $this->helper->getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 	}
 
@@ -281,7 +281,7 @@ class Bdd {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -292,7 +292,7 @@ class Bdd {
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getQueryValuesArray(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryValuesArray(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		return $this->helper->getQueryValuesArray($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 	}
 
@@ -301,7 +301,7 @@ class Bdd {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $group
 	 * @param array $params
@@ -309,7 +309,7 @@ class Bdd {
 	 * @return int
 	 * @throws \Exception
 	 */
-	public function getQueryCount(array $tables, array $joint, array $where, array $filter, array $filter_fields, array $group, array $params, $distinct) {
+	public function getQueryCount(array $tables, array $joint, array $where, $filter, array $filter_fields, array $group, array $params, $distinct) {
 		return $this->helper->getQueryCount($tables, $joint, $where, $filter, $filter_fields, $group, $params, $distinct);
 	}
 

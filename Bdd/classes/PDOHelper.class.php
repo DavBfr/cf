@@ -221,7 +221,7 @@ class PDOHelper extends BddHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -231,7 +231,7 @@ class PDOHelper extends BddHelper {
 	 * @param bool $distinct
 	 * @return string
 	 */
-	public function getQueryString(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryString(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		$query = "SELECT " . ($distinct ? "DISTINCT " : "");
 
 		if (count($fields) == 0)
@@ -295,7 +295,7 @@ class PDOHelper extends BddHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -306,7 +306,7 @@ class PDOHelper extends BddHelper {
 	 * @return PDOStatementHelper
 	 * @throws Exception
 	 */
-	public function getQueryValues(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryValues(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		$sql = $this->getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 		return new PDOStatementHelper($this, $this->query($sql, $params));
 	}
@@ -317,7 +317,7 @@ class PDOHelper extends BddHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -328,7 +328,7 @@ class PDOHelper extends BddHelper {
 	 * @return array
 	 * @throws Exception
 	 */
-	public function getQueryValuesArray(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryValuesArray(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		$collection = array();
 		$result = $this->getQueryValues($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 		foreach ($result as $row) {
@@ -342,7 +342,7 @@ class PDOHelper extends BddHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $group
 	 * @param array $params
@@ -350,7 +350,7 @@ class PDOHelper extends BddHelper {
 	 * @return int
 	 * @throws Exception
 	 */
-	public function getQueryCount(array $tables, array $joint, array $where, array $filter, array $filter_fields, array $group, array $params, $distinct) {
+	public function getQueryCount(array $tables, array $joint, array $where, $filter, array $filter_fields, array $group, array $params, $distinct) {
 		$sql = $this->getQueryString(array("COUNT(*)"), $tables, $joint, $where, $filter, $filter_fields, array(), $group, $params, null, 0, $distinct);
 		$values = $this->query($sql, $params);
 		$count = $values->fetch(PDO::FETCH_NUM);

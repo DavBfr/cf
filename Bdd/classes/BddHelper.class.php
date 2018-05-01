@@ -74,7 +74,7 @@ abstract class BddHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -84,7 +84,7 @@ abstract class BddHelper {
 	 * @param bool $distinct
 	 * @return string
 	 */
-	abstract public function getQueryString(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
+	abstract public function getQueryString(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
 
 
 	/**
@@ -92,7 +92,7 @@ abstract class BddHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -102,7 +102,7 @@ abstract class BddHelper {
 	 * @param bool $distinct
 	 * @return BddCursorHelper
 	 */
-	abstract public function getQueryValues(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
+	abstract public function getQueryValues(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
 
 
 	/**
@@ -110,7 +110,7 @@ abstract class BddHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -120,21 +120,21 @@ abstract class BddHelper {
 	 * @param bool $distinct
 	 * @return array
 	 */
-	abstract public function getQueryValuesArray(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
+	abstract public function getQueryValuesArray(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct);
 
 
 	/**
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $group
 	 * @param array $params
 	 * @param bool $distinct
 	 * @return int
 	 */
-	abstract public function getQueryCount(array $tables, array $joint, array $where, array $filter, array $filter_fields, array $group, array $params, $distinct);
+	abstract public function getQueryCount(array $tables, array $joint, array $where, $filter, array $filter_fields, array $group, array $params, $distinct);
 
 
 	/**

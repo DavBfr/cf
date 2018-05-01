@@ -138,7 +138,7 @@ class PgsqlHelper extends PDOHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -148,7 +148,7 @@ class PgsqlHelper extends PDOHelper {
 	 * @param $distinct
 	 * @return string
 	 */
-	public function getQueryString(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryString(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		$query = "SELECT " . ($distinct ? "DISTINCT " : "");
 
 		if (count($fields) == 0)

@@ -19,19 +19,19 @@
 
 class Collection {
 	private $bdd;
-	private $fields;
-	private $tables;
-	private $joint;
-	private $where;
-	private $filter;
-	private $filter_fields;
-	private $order;
-	private $group;
-	private $params;
-	private $limit;
-	private $distinct;
+	private $fields = array();
+	private $tables = array();
+	private $joint = array();
+	private $where = array();
+	private $filter = null;
+	private $filter_fields = array();
+	private $order = array();
+	private $group = array();
+	private $params = array();
+	private $limit = null;
+	private $distinct = false;
 	/** @var Model $model */
-	private $model;
+	private $model = null;
 
 
 	/**
@@ -44,19 +44,6 @@ class Collection {
 			$this->bdd = Bdd::getInstance();
 		else
 			$this->bdd = $bdd;
-
-		$this->fields = array();
-		$this->tables = array();
-		$this->joint = array();
-		$this->where = array();
-		$this->filter = array();
-		$this->filter_fields = array();
-		$this->order = array();
-		$this->group = array();
-		$this->params = array();
-		$this->limit = null;
-		$this->distinct = false;
-		$this->model = null;
 	}
 
 

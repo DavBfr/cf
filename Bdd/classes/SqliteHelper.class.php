@@ -114,7 +114,7 @@ class SqliteHelper extends PDOHelper {
 	 * @param array $tables
 	 * @param array $joint
 	 * @param array $where
-	 * @param array $filter
+	 * @param string $filter
 	 * @param array $filter_fields
 	 * @param array $order
 	 * @param array $group
@@ -125,7 +125,7 @@ class SqliteHelper extends PDOHelper {
 	 * @return PDOStatementHelper|SqliteStatementHelper
 	 * @throws \Exception
 	 */
-	public function getQueryValues(array $fields, array $tables, array $joint, array $where, array $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
+	public function getQueryValues(array $fields, array $tables, array $joint, array $where, $filter, array $filter_fields, array $order, array $group, array $params, $limit, $pos, $distinct) {
 		$sql = $this->getQueryString($fields, $tables, $joint, $where, $filter, $filter_fields, $order, $group, $params, $limit, $pos, $distinct);
 		return new SqliteStatementHelper($this, $this->query($sql, $params));
 	}
