@@ -23,6 +23,7 @@ class MqTimeoutException extends \Exception {
 
 
 class MessageQueue {
+	private const call = 34958;
 	private static $instance = null;
 
 	private $queue;
@@ -80,6 +81,18 @@ class MessageQueue {
 
 
 	/**
+	 * @param callable $callable
+	 * @param mixed ...$args
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function call($callable, ...$args) {
+		$this->send(self::call, json_encode(array("callable" => $callable, "args" => $args)));
+	}
+
+
+	/**
 	 * @param int $type Message type for filtering
 	 * @param int $timeout if > 0 raise exception if no this time arrive before a message
 	 *                     return immediately if = 0, if -1: wait indefinitively
@@ -127,7 +140,12 @@ class MessageQueue {
 		try {
 			while (true) {
 				$msg = $this->receive($type, $timeout);
-				Plugins::dispatchAll("processMessage", $msg["type"], $msg["msg"]);
+				if ($msg["type"] == self::call) {
+					$fnc = Input::jsonDecode($msg["msg"]);
+					call_user_func_array($fnc["callable"], $fnc["args"]);
+				} else {
+					Plugins::dispatchAll("processMessage", $msg["type"], $msg["msg"]);
+				}
 			}
 		} catch (MqTimeoutException $e) {
 		}
