@@ -1,4 +1,4 @@
-if (typeof app != 'undefined') {
+if (typeof app !== 'undefined') {
 
 app.service('<?php echo $this->out("umodel") ?>Service', function ($http) {
 	 angular.extend(this, new CrudService($http, '<?php echo $this->out("model") ?>'));
