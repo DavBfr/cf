@@ -20,8 +20,9 @@
 
 use Exception;
 use Iterator;
+use ArrayAccess;
 
-class ModelData implements Iterator {
+class ModelData implements Iterator, ArrayAccess {
 
 	/** @var Model $model */
 	private $model;
@@ -323,6 +324,47 @@ class ModelData implements Iterator {
 	 */
 	public function __isset($field) {
 		return $this->has($field);
+	}
+
+
+	/**
+	 * Whether a offset exists
+	 * @param string $offset
+	 * @return boolean true on success or false on failure.
+	 */
+	public function offsetExists($offset) {
+		return $this->has($offset);
+	}
+
+
+	/**
+	 * Offset to retrieve
+	 * @param string $offset
+	 * @return mixed
+	 */
+	public function offsetGet($offset) {
+		return $this->get($offset);
+	}
+
+
+	/**
+	 * Offset to set
+	 * @param string $offset
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function offsetSet($offset, $value) {
+		$this->set($offset, $value);
+	}
+
+
+	/**
+	 * Offset to unset
+	 * @param string $offset
+	 * @return void
+	 */
+	public function offsetUnset($offset) {
+		$this->set($offset, null);
 	}
 
 
