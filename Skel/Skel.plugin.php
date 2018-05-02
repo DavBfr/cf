@@ -34,7 +34,7 @@ class SkelPlugin extends Plugins {
 	 */
 	protected function updateFiles() {
 		Cli::pinfo("Update Files");
-		foreach (array("composer.json", "index.php", "setup") as $file) {
+		foreach (array("composer.json", "index.php", "setup", "CFApp.plugin.php") as $file) {
 			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
 			foreach (Options::getAll() as $key => $val) {
