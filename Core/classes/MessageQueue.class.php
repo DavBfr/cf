@@ -23,21 +23,36 @@ class MqTimeoutException extends \Exception {
 
 
 class MessageQueue {
+	private static $instance = null;
+
 	private $queue;
 	private $queue_id;
 	private $max_size = 2048;
-	private $mode = 0600;
+	private $mode;
 
 
 	/**
 	 * MessageQueue constructor.
 	 * @param int $queue_id
 	 */
-	public function __construct($queue_id = MESSAGE_QUEUE) {
+	public function __construct($queue_id = MESSAGE_QUEUE, $mode = 0600) {
 		$this->queue_id = $queue_id;
+		$this->mode = $mode;
 		Logger::debug("Open MessageQueue #$queue_id");
-		$this->queue = msg_get_queue($this->queue_id);
+		$this->queue = msg_get_queue($this->queue_id, $this->mode);
 		// msg_stat_queue($this->queue);
+	}
+
+
+	/**
+	 * @return MessageQueue
+	 */
+	public static function getInstance() {
+		if (is_null(self::$instance)) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 
