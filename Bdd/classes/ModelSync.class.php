@@ -102,6 +102,15 @@ abstract class ModelSync extends RestApi {
 
 	/**
 	 * @param array $r
+	 * @return array
+	 */
+	protected function syncEnd(array $r) {
+		return array();
+	}
+
+
+	/**
+	 * @param array $r
 	 * @throws \Exception
 	 */
 	protected function doSync($r) {
@@ -178,7 +187,7 @@ abstract class ModelSync extends RestApi {
 			unset($deleted[$item[$id]]);
 		}
 
-		Output::success(array("items" => $items, "deleted" => $deleted));
+		Output::success(array_merge(array("items" => $items, "deleted" => $deleted), $this->syncEnd($r)));
 	}
 
 }
