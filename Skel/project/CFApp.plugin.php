@@ -19,7 +19,11 @@ class CFAppPlugin extends Plugins {
 	}
 
 	public function run() {
-		system("php -S 127.0.0.1:3000 -t " . WWW_DIR);
+		$address = Cli::addOption('address', "127.0.0.1", 'Address to listen to');
+		$port = Cli::addOption('port', "3000", 'Port to listen to');
+		Cli::enableHelp();
+		system("php -S $address:$port -t " . WWW_DIR . " 1>&2");
+
 	}
 
 	public function install() {
