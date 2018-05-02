@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2016 David PHAM-VAN
  *
@@ -22,6 +23,19 @@ use lessc_formatter_compressed;
 
 class Less extends lessc {
 	private $origdir = null;
+
+
+	public function __construct($fname = null) {
+		parent::__construct($fname);
+		$this->registerFunction("media", function ($arg) {
+			$file = Resources::find($arg[2][0]);
+			if ($file !== null) {
+				return Resources::web($file);
+			}
+
+			return '';
+		});
+	}
 
 
 	public function setOriginalDir($dir) {
