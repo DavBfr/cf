@@ -160,7 +160,7 @@ class CorePlugin extends Plugins {
 			"title" => $conf->get("title", "CF " . CF_VERSION),
 			"description" => $conf->get("description", null),
 			"favicon" => $conf->get("favicon", null),
-			"baseline" => $conf->get("baseline", self::getBaseline()),
+			"baseline" => $conf->get("baseline", $conf->get("baseline", self::getBaseline())),
 		));
 
 		foreach (Plugins::dispatchAll("index", $tpt) as $index) {
