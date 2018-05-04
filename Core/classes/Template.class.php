@@ -89,7 +89,7 @@ class Template {
 		include($template);
 		$content = ob_get_contents();
 		ob_end_clean();
-		return $content;
+		return $this->squareStache($content);
 	}
 
 
@@ -247,6 +247,8 @@ class Template {
 				return Lang::get($value);
 			case 'esc':
 				return htmlspecialchars($value);
+			case 'json':
+				return json_encode($value);
 			case 'st':
 				return strip_tags($value);
 			case 'int':
@@ -365,5 +367,48 @@ class Template {
 
 		echo json_encode($options);
 	}
+
+
+	protected function squareStache($input) {
+		$re = '/\[\[ *([\w\d_\-\.\/]+) *(\| *([\w\d_]*) *)?]]/';
+
+		if (preg_match_all($re, $input, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+			foreach (array_reverse($matches) as $match) {
+				$key = $match[1][0];
+				if (count($match) >= 3)
+					$filter = $match[3][0];
+				else
+					$filter = 'raw';
+
+				switch ($filter) {
+					case 'media':
+						$val = $this->media($key);
+						break;
+					case 'tr':
+						$val = $this->get($key, $filter);
+						break;
+					case 'insert':
+						if (substr($key, strrpos($key, ".")) == '.php')
+							$nsclass = __CLASS__;
+						else
+							$nsclass = (new \ReflectionClass($this))->getName();
+						$tpt = new $nsclass($this->params);
+						$val = $tpt->parse($key);
+						break;
+					default:
+						if ($this->has($key))
+							$val = $this->get($key, $filter);
+						else
+							$val = $this->config($key, $filter);
+				}
+
+				$input = substr_replace($input, $val, $match[0][1], strlen($match[0][0]));
+
+			}
+		}
+
+		return $input;
+	}
+
 
 }
