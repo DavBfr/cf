@@ -50,7 +50,7 @@ class Cli {
 		while (ob_get_level())
 			ob_end_clean();
 
-		$this->has_colors = posix_isatty(STDOUT);
+		$this->has_colors = defined('STDOUT') ? posix_isatty(STDOUT) : false;
 		$this->args = $this->parseArguments($argv);
 		$logger = Logger::getInstance();
 		if (array_key_exists("v", $this->args))
