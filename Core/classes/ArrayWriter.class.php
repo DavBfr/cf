@@ -72,7 +72,7 @@ class ArrayWriter {
 		if (is_bool($val))
 			return $val ? "true" : "false";
 
-		return "'" . preg_quote((string)$val, "'") . "'";
+		return "'" . str_replace(array('\\', '\\\\'), array('\'', '\\\''), $val) . "'";
 	}
 
 }
