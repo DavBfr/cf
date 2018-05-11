@@ -214,9 +214,9 @@ class Session {
 		if (self::hasSession() && self::hasRight("logged_api"))
 			return true;
 
-		$headers = array_change_key_case(getallheaders(), CASE_LOWER);
-		if (array_key_exists(API_TOKEN_HEADER, $headers)) {
-			$token = $headers[API_TOKEN_HEADER];
+		$header = 'HTTP_' . strtoupper(str_replace('-', '_', API_TOKEN_HEADER));
+		if (array_key_exists($header, $_SERVER)) {
+			$token = $_SERVER[$header];
 			return Plugins::dispatch("token_login", $token) === true;
 		}
 
@@ -279,12 +279,11 @@ class Session {
 		if (DEBUG)
 			return true;
 
-		$headers = array_change_key_case(getallheaders(), CASE_LOWER);
-
-		if (!array_key_exists(XSRF_HEADER, $headers))
+		$header = 'HTTP_' . strtoupper(str_replace('-', '_', XSRF_HEADER));
+		if (!array_key_exists($header, $_SERVER))
 			return false;
 
-		return Session::Get(self::xsrf_token) == $headers[XSRF_HEADER];
+		return Session::Get(self::xsrf_token) == $_SERVER[$header];
 	}
 
 
