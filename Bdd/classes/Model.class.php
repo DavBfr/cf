@@ -145,7 +145,8 @@ abstract class Model {
 			$filename = BddPlugin::BASE_MODEL_DIR . "/" . $baseClassName . ".class.php";
 			Cli::pinfo("   * $baseClassName");
 			$f = fopen($filename, "w");
-			fwrite($f, "<?php namespace " . __NAMESPACE__ . ";\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($bdd->updateTableName($table)) . ";\n");
+			$tn = $bdd->updateTableName($table);
+			fwrite($f, "<?php namespace " . __NAMESPACE__ . ";\n\nabstract class $baseClassName extends Model {\n\tconst TABLE = " . ArrayWriter::quote($tn) . ";\n");
 			$new_columns = array();
 			$new_names = array();
 			foreach ($columns as $name => $params) {
@@ -158,6 +159,7 @@ abstract class Model {
 			$colstr = ArrayWriter::toString($new_columns, 4);
 			foreach ($new_columns as $name => $params) {
 				fwrite($f, "\tconst " . strtoupper($new_names[$name]) . " = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : ModelField::TYPE_AUTO) . "\n");
+				fwrite($f, "\tconst f_" . strtoupper($new_names[$name]) . " = " . ArrayWriter::quote($bdd->quoteIdent($tn) . "." . $bdd->quoteIdent($name)) . ";\n");
 				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($new_names[$name]), $colstr);
 			}
 
