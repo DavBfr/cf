@@ -228,6 +228,17 @@ class Bdd {
 
 
 	/**
+	 * @param $string
+	 * @param array $params
+	 * @return bool|\PDOStatement
+	 * @throws \Exception
+	 */
+	public function query($string, $params = array()) {
+		return $this->helper->query($string, $params);
+	}
+
+
+	/**
 	 * @return array
 	 */
 	protected function getParams() {
