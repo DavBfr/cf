@@ -23,7 +23,7 @@ class MqTimeoutException extends \Exception {
 
 
 class MessageQueue {
-	private const call = 34958;
+	const call = 34958;
 	private static $instance = null;
 
 	private $queue;
@@ -62,6 +62,14 @@ class MessageQueue {
 	 */
 	public function delete() {
 		msg_remove_queue($this->queue);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function stat() {
+		return msg_stat_queue($this->queue);
 	}
 
 
