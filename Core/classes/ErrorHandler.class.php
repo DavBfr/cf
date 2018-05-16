@@ -112,6 +112,7 @@ class ErrorHandler {
 	 */
 	protected function formatErrorBody($code, $message, $body, $backtrace = array(), $log = array()) {
 		$baseline = CorePlugin::getBaseline();
+
 		if ($message === null) {
 			if (isset(self::$messagecode[$code]))
 				$message = self::$messagecode[$code];
@@ -124,7 +125,9 @@ class ErrorHandler {
 			$backtrace = array();
 		}
 
-		if (Template::findTemplate(ERROR_TEMPLATE) && !IS_CLI) {
+		$http = array_key_exists("HTTP_ACCEPT", $_SERVER) && strpos($_SERVER["HTTP_ACCEPT"], "text/html") !== false;
+
+		if (!IS_CLI && $http && Template::findTemplate(ERROR_TEMPLATE)) {
 			$tpt = new TemplateRes(array(
 				"code" => $code,
 				"message" => $message,
