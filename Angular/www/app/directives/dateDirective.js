@@ -16,14 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-app.directive("tsToDate", function() {
+app.directive("tsToDate", function () {
 	return {
 		require: "ngModel",
-		link: function(scope, element, attrs, ctrl) {
-			scope.$watch(attrs.ngModel, function(newValue, oldValue) {
-				// console.log("DATE newValue", newValue, "oldValue", oldValue, "model", attrs.ngModel);
+		link: function (scope, element, attrs, ctrl) {
+			ctrl.$parsers.push(function (inputValue) {
+				return new Date(inputValue + 'T12:00:00');
+			});
+			scope.$watch(attrs.ngModel, function (newValue, oldValue) {
 				if (Number.isInteger(newValue)) {
-					ctrl.$setViewValue(new Date(newValue * 1000).toISOString().slice(0, 10));
+					const dv = new Date(newValue * 1000);
+					let lz = function (n) {
+						return n > 9 ? n.toString() : '0' + n.toString();
+					};
+					ctrl.$setViewValue(dv.getFullYear() + "-" + lz(dv.getMonth() + 1) + "-" + lz(dv.getDate()));
 					ctrl.$render();
 				}
 				return newValue;
@@ -32,14 +38,21 @@ app.directive("tsToDate", function() {
 	};
 });
 
-app.directive("tsToTime", function() {
+app.directive("tsToTime", function () {
 	return {
 		require: "ngModel",
-		link: function(scope, element, attrs, ctrl) {
-			scope.$watch(attrs.ngModel, function(newValue, oldValue) {
-				console.log("TIME newValue", newValue, "oldValue", oldValue, "model", attrs.ngModel);
+		link: function (scope, element, attrs, ctrl) {
+			ctrl.$parsers.push(function (inputValue) {
+				return new Date('1970-01-01T' + inputValue);
+			});
+			scope.$watch(attrs.ngModel, function (newValue, oldValue) {
 				if (Number.isInteger(newValue)) {
-					ctrl.$setViewValue(new Date(newValue * 1000).toISOString().slice(11, 16));
+					const dv = new Date(newValue * 1000);
+					let lz = function (n) {
+						return n > 9 ? n.toString() : '0' + n.toString();
+					};
+					ctrl.$setViewValue(lz(dv.getHours()) + ":" + lz(dv.getMinutes()));
+
 					ctrl.$render();
 				}
 				return newValue;
@@ -48,14 +61,21 @@ app.directive("tsToTime", function() {
 	};
 });
 
-app.directive("tsToDatetime", function() {
+app.directive("tsToDatetime", function () {
 	return {
 		require: "ngModel",
-		link: function(scope, element, attrs, ctrl) {
-			scope.$watch(attrs.ngModel, function(newValue, oldValue) {
-				console.log("DATETIME newValue", newValue, "oldValue", oldValue, "model", attrs.ngModel);
+		link: function (scope, element, attrs, ctrl) {
+			ctrl.$parsers.push(function (inputValue) {
+				return new Date(inputValue);
+			});
+			scope.$watch(attrs.ngModel, function (newValue, oldValue) {
 				if (Number.isInteger(newValue)) {
-					ctrl.$setViewValue(new Date(newValue * 1000).toISOString());
+					const dv = new Date(newValue * 1000);
+					let lz = function (n) {
+						return n > 9 ? n.toString() : '0' + n.toString();
+					};
+					ctrl.$setViewValue(dv.getFullYear() + "-" + lz(dv.getMonth() + 1) + "-" + lz(dv.getDate()) + "T" +
+						lz(dv.getHours()) + ":" + lz(dv.getMinutes()));
 					ctrl.$render();
 				}
 				return newValue;

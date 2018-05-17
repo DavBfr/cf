@@ -261,15 +261,15 @@ abstract class BddHelper {
 				break;
 			case ModelField::TYPE_TIME:
 				if ($value instanceof DateTime)
-					$value = $value->format("h:i:s");
+					$value = $value->format("H:i:s");
 				elseif (is_int($value) || $value == strval(intval($value)))
-					$value = date("h:i:s", intval($value));
+					$value = date("H:i:s", intval($value));
 				break;
 			case ModelField::TYPE_DATETIME:
 				if ($value instanceof DateTime)
-					$value = $value->format("Y-m-d h:i:s");
+					$value = $value->format("Y-m-d H:i:s");
 				elseif (is_int($value) || $value == strval(intval($value)))
-					$value = date("Y-m-d h:i:s", intval($value));
+					$value = date("Y-m-d H:i:s", intval($value));
 				break;
 		}
 		return $value;
@@ -303,10 +303,10 @@ abstract class BddHelper {
 				}
 			case ModelField::TYPE_DATE:
 				if ($value instanceof DateTime)
-					return $value->getTimestamp() + 43200;
+					return $value->getTimestamp();
 				try {
 					$value = new DateTime($value);
-					return $value->getTimestamp() + 43200;
+					return $value->getTimestamp();
 				} catch (Exception $e) {
 					Logger::Error("Date {$value} invalid: " . $e->getMessage());
 					return $value + 43200;
