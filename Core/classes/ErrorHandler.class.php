@@ -203,6 +203,10 @@ class ErrorHandler {
 
 		if ($code >= 500) {
 			Logger::critical("[$code] $message: $body");
+		} else if ($code >= 400) {
+			Logger::error("[$code] $message: $body");
+		} else if ($code >= 300) {
+			Logger::warning("[$code] $message: $body");
 		} else {
 			Logger::info("[$code] $message: $body");
 		}

@@ -37,7 +37,7 @@ class Logger {
 	);
 
 	private static $clevels = array(
-		self::DEBUG => "info",
+		self::DEBUG => "debug",
 		self::INFO => "info",
 		self::WARNING => "warn",
 		self::ERROR => "error",
@@ -117,7 +117,6 @@ class Logger {
 	protected function logToChrome($data, $level) {
 		// https://craig.is/writing/chrome-logger
 		$backtrace = debug_backtrace(false);
-		$level = 2;
 
 		$backtrace_message = 'unknown';
 		if (isset($backtrace[$level]['file']) && isset($backtrace[$level]['line'])) {
