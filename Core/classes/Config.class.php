@@ -79,6 +79,7 @@ class Config implements \arrayaccess {
 			$data = Input::jsonDecode(file_get_contents($filename));
 		} catch (\Exception $e) {
 			ErrorHandler::error(500, null, "Error in $filename: $e");
+			die();
 		}
 
 		if ($subkey !== null) {
@@ -112,6 +113,7 @@ class Config implements \arrayaccess {
 			$data = Input::jsonDecode(file_get_contents($filename));
 		} catch (\Exception $e) {
 			ErrorHandler::error(500, null, "Error in $filename: $e");
+			die();
 		}
 
 		$this->data[$key] = $data;

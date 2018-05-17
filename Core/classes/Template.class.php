@@ -369,6 +369,12 @@ class Template {
 	}
 
 
+	/**
+	 * @param $input
+	 * @return mixed
+	 * @throws \ReflectionException
+	 * @throws \Exception
+	 */
 	protected function squareStache($input) {
 		$re = '/\[\[ *([\w\d_\-\.\/]+) *(\| *([\w\d_]*) *)?]]/';
 
@@ -392,6 +398,7 @@ class Template {
 							$nsclass = __CLASS__;
 						else
 							$nsclass = (new \ReflectionClass($this))->getName();
+						/** @var Template $tpt */
 						$tpt = new $nsclass($this->params);
 						$val = $tpt->parse($key);
 						break;

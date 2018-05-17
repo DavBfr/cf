@@ -341,6 +341,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * Offset to retrieve
 	 * @param string $offset
 	 * @return mixed
+	 * @throws Exception
 	 */
 	public function offsetGet($offset) {
 		return $this->get($offset);
@@ -352,6 +353,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @param string $offset
 	 * @param mixed $value
 	 * @return void
+	 * @throws Exception
 	 */
 	public function offsetSet($offset, $value) {
 		$this->set($offset, $value);
@@ -362,6 +364,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * Offset to unset
 	 * @param string $offset
 	 * @return void
+	 * @throws Exception
 	 */
 	public function offsetUnset($offset) {
 		$this->set($offset, null);

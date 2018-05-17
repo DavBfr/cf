@@ -19,6 +19,10 @@
 
 class Mailer extends \PHPMailer {
 
+	/**
+	 * Mailer constructor.
+	 * @throws \phpmailerException
+	 */
 	public function __construct() {
 		parent::__construct(false);
 		$this->IsSMTP();

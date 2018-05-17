@@ -35,6 +35,7 @@ class MessageQueue {
 	/**
 	 * MessageQueue constructor.
 	 * @param int $queue_id
+	 * @param int $mode
 	 */
 	public function __construct($queue_id = MESSAGE_QUEUE, $mode = 0600) {
 		$this->queue_id = $queue_id;

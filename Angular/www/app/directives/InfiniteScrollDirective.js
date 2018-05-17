@@ -19,7 +19,7 @@
 app.directive('infiniteScroll', ['$rootScope', '$window', '$timeout', function($rootScope, $window, $timeout) {
 	return {
 		link: function(scope, elem, attrs) {
-			var checkWhenEnabled, handler, scrollDistance, scrollEnabled;
+			let checkWhenEnabled, handler, scrollDistance, scrollEnabled;
 			$window = angular.element($window);
 			scrollDistance = 0;
 			if (attrs.infiniteScrollDistance != null) {
@@ -39,7 +39,7 @@ app.directive('infiniteScroll', ['$rootScope', '$window', '$timeout', function($
 				});
 			}
 			handler = function() {
-				var elementBottom, remaining, shouldScroll, windowBottom;
+				let elementBottom, remaining, shouldScroll, windowBottom;
 				windowBottom = $window.height() + $window.scrollTop();
 				elementBottom = elem.offset().top + elem.height();
 				remaining = elementBottom - windowBottom;
