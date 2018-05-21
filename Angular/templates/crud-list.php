@@ -2,6 +2,8 @@
 	<h1><?php $this->out("list_title") ?></h1>
 </div>
 
+<?php $this->insert('pagination.php'); ?>
+
 <form class="form-inline" data-role="form">
 	<?php if ($this->get("can_filter")): ?>
 	<div class="form-group">
@@ -19,6 +21,9 @@
 	<?php endif ?>
 	<?php if ($this->has("buttons_top")) $this->out("buttons_top"); ?>
 </form>
+
+
+<div class="clearfix"></div>
 
 <div data-ng-hide="!loading" class="panel panel-default">
 	<div class="panel-body">
@@ -85,17 +90,8 @@
 </table>
 </div>
 
-<ul data-ng-hide="pages <= 1" class="pagination pull-right">
-	<li data-ng-class="page == 0?'disabled':''">
-		<a data-ng-click="setPage(page - 1)" href="">&laquo;</a>
-	</li>
-	<li data-ng-class="$index == page?'active':''" data-ng-repeat="i in getPages() track by $index">
-		<a data-ng-click="setPage($index)" href="">{{$index+1}}</a>
-	</li>
-	<li data-ng-class="page == pages -1?'disabled':''">
-		<a data-ng-click="setPage(page + 1)" href="">&raquo;</a>
-	</li>
-</ul>
+
+<?php $this->insert('pagination.php'); ?>
 
 <div data-ng-hide="count == 0" >
 	<?php $this->tr("core.total_records") ?> {{count}}

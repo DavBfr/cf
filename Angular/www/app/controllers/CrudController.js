@@ -151,7 +151,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		$scope.filter = "";
 		$scope.pages = 0;
 		$scope.count = 0;
-		$scope.page = 0;
+		$scope.page = null;
 		$scope.loading = true;
 	};
 
@@ -258,7 +258,24 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 	}.bind(this);
 
 	$scope.getPages = function () {
-		return new Array($scope.pages);
+		const max = 7;
+		const hmax = Math.floor(max / 2);
+
+		if ($scope.pages < max || $scope.page < hmax) {
+			let list = new Array(Math.min($scope.pages, max));
+			for (let i = 0; i < list.length; i++) list[i] = i;
+			return list;
+		}
+
+		let list = new Array(max);
+
+		if ($scope.page + hmax > $scope.pages) {
+			for (let i = 0; i < list.length; i++) list[i] = $scope.pages - max + i;
+			return list;
+		}
+
+		for (let i = 0; i < list.length; i++) list[i] = i + $scope.page - hmax;
+		return list;
 	};
 
 	$scope.setPage = function (num) {
@@ -266,6 +283,8 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 			num = 0;
 		if (num > $scope.pages - 1)
 			num = $scope.pages - 1;
+
+		if (num === $scope.page) return;
 
 		$scope.loading = true;
 

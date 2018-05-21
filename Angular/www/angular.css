@@ -3,3 +3,14 @@
 	right: 10px;
 	z-index: 1000;
 }
+
+.crud-pagination {
+	margin: 0 !important;
+}
+
+.crud-pagination > li > a, .crud-pagination > li > span {
+	padding-left: 0;
+	padding-right: 0;
+	min-width: 3em;
+	text-align: center;
+}
