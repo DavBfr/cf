@@ -206,6 +206,22 @@ class Template {
 
 
 	/**
+	 * @param string $filename
+	 * @param string $default
+	 * @return string
+	 * @throws \Exception
+	 */
+	public function image64($filename, $default = null) {
+		$file = Resources::find($filename);
+		if ($file !== null) {
+			$mime = mime_content_type($file);
+			return 'data:'.$mime.';base64,' . base64_encode(file_get_contents($file));
+		}
+		return $default;
+	}
+
+
+	/**
 	 * @return string
 	 */
 	public function all() {
@@ -397,6 +413,9 @@ class Template {
 				switch ($filter) {
 					case 'media':
 						$val = $this->media($key);
+						break;
+					case 'image64':
+						$val = $this->image64($key);
 						break;
 					case 'tr':
 						$val = $this->get($key, $filter);
