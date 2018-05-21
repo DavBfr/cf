@@ -30,6 +30,9 @@
 		"enter_valid_value": "please enter a valid value",
 		"fields_not_equal": "the values are not the same",
 		"disconnected": "Successfully disconnected",
-		"total_records": "Number of records:"
+		"total_records": "Number of records:",
+		"datetime": "m-d-Y g:i a",
+		"date": "m-d-Y",
+		"time":  "g:i a"
 	}
 }

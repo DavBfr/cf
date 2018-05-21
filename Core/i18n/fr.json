@@ -30,6 +30,9 @@
 		"enter_valid_value": "veuillez entrer une valeur valide",
 		"fields_not_equal": "les valeurs ne sont pas identiques",
 		"disconnected": "Vous êtes maintenant déconnecté",
-		"total_records": "Nombre de fiches :"
+		"total_records": "Nombre de fiches :",
+		"datetime": "d/m/Y H:i",
+		"date": "d/m/Y",
+		"time":  "H:i"
 	}
 }
