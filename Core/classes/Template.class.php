@@ -225,7 +225,7 @@ class Template {
 		$ret = "<pre>";
 		$ret .= "&lt;ul>\n";
 		foreach ($this->params as $key => $value) {
-			$ret .= "  &ltli>$key = &lt?php echo \$this->get(\"$key\") ?>&lt/li>\n";
+			$ret .= "  &ltli>$key = [[ $key ]]&lt/li>\n";
 		}
 		$ret .= "&lt/ul>";
 		$ret .= "</pre>";
@@ -251,6 +251,14 @@ class Template {
 				return json_encode($value);
 			case 'st':
 				return strip_tags($value);
+			case 'ucwords':
+				return ucwords($value);
+			case 'ucfirst':
+				return ucfirst($value);
+			case 'uc':
+				return strtoupper($value);
+			case 'lc':
+				return strtolower($value);
 			case 'int':
 				return number_format($value, 0, ',', ' ');
 			default:
@@ -392,6 +400,15 @@ class Template {
 						break;
 					case 'tr':
 						$val = $this->get($key, $filter);
+						break;
+					case 'date':
+						$val = date(Lang::get('core.date', $key === 'now' ? time() : $this->get($key)));
+						break;
+					case 'time':
+						$val = date(Lang::get('core.time', $key === 'now' ? time() : $this->get($key)));
+						break;
+					case 'datetime':
+						$val = date(Lang::get('core.datetime', $key === 'now' ? time() : $this->get($key)));
 						break;
 					case 'insert':
 						if (substr($key, strrpos($key, ".")) == '.php')
