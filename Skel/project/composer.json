@@ -19,10 +19,10 @@
 	},
 	"scripts": {
 		"post-install-cmd": [
-			"php vendor/bin/setup.php install"
+			"./setup install"
 		],
 		"post-update-cmd": [
-			"php vendor/bin/setup.php update"
+			"./setup update"
 		]
 	},
 	"config": {
