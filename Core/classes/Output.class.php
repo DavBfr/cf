@@ -28,7 +28,10 @@ class Output {
 			Logger::debug("Response time: " . (microtime(true) - START_TIME));
 		}
 
-		error_clear_last();
+		if (function_exists('error_clear_last')) {
+			error_clear_last();
+		}
+
 		exit($code);
 	}
 
