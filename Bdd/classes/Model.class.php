@@ -160,7 +160,6 @@ abstract class Model {
 			foreach ($new_columns as $name => $params) {
 				fwrite($f, "\tconst " . strtoupper($new_names[$name]) . " = " . ArrayWriter::quote($name) . "; // " . (array_key_exists("type", $params) ? $params["type"] : ModelField::TYPE_AUTO) . "\n");
 				fwrite($f, "\tconst f_" . strtoupper($new_names[$name]) . " = " . ArrayWriter::quote($bdd->quoteIdent($tn) . "." . $bdd->quoteIdent($name)) . ";\n");
-				$colstr = str_replace(ArrayWriter::quote($name), "self::" . strtoupper($new_names[$name]), $colstr);
 			}
 
 			fwrite($f, "\n\n\tprotected function getTable() {\n");
