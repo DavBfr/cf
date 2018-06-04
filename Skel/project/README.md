@@ -5,7 +5,7 @@ Requirements
 ------------
 
 This software require PHP version 5.3 or up with the php command-line
-program available to run istallation scripts.
+program available to run installation scripts.
 
 You may also need Internet access to be able to download dependencies.
 
