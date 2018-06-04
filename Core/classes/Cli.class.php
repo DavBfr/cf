@@ -36,6 +36,7 @@ class Cli {
 	protected $options;
 	protected $switches;
 	protected $inputs;
+	protected $inputs_offset;
 	protected $has_colors;
 	private static $instance = null;
 
@@ -60,6 +61,7 @@ class Cli {
 		$this->options = array();
 		$this->switches = array();
 		$this->inputs = array();
+		$this->inputs_offset = 2;
 		$this->addCommand("help", array($this, "printHelp"), "Help messages");
 	}
 
@@ -224,11 +226,24 @@ class Cli {
 	/**
 	 * @param string $name
 	 * @param string $help
+	 * @param bool $optional
+	 * @param int|null $count
 	 * @return array
 	 */
-	public static function getInputs($name, $help) {
-		self::$instance->inputs[$name] = $help;
-		return array_slice(self::$instance->args["input"], 2);
+	public static function getInputs($name, $help, $optional = false, $count = null) {
+		if (self::$instance->inputs_offset === false) {
+			ErrorHandler::error(500, 'Impossible to have input parameter after catch-all input', $name);
+		}
+
+		self::$instance->inputs[$name] = array($optional, $count, self::$instance->inputs_offset, $help);
+		$ret = array_slice(self::$instance->args["input"], self::$instance->inputs_offset, $count);
+
+		if ($count !== null)
+			self::$instance->inputs_offset += $count;
+		else
+			self::$instance->inputs_offset = false;
+
+		return $ret;
 	}
 
 
@@ -249,23 +264,34 @@ class Cli {
 				break;
 			}
 		}
-		if (!$help && count(self::$instance->inputs) > 0 && count(self::$instance->args["input"]) == 2) {
-			$help = true;
-			self::perr("Missing command line arguments");
+		if (!$help) {
+			foreach (self::$instance->inputs as $name => $val) {
+				if (!$val[0] && count(self::$instance->args["input"]) < $val[2] + ($val[1] === null ? 1 : $val[1])) {
+					$help = true;
+					self::perr("Missing command line arguments");
+					break;
+				}
+			}
 		}
 		if ($help !== false) {
 			$helpMsg = "Help " . basename(self::$instance->args["input"][0]) . " " . self::$instance->args["input"][1] . " [options]";
 			foreach (self::$instance->inputs as $key => $val) {
-				$helpMsg .= " <$key>";
+				$o = $val[0] ? '[' : '<';
+				$c = $val[0] ? ']' : '>';
+				if ($val[1] !== null)
+					$helpMsg .= str_repeat(" $o$key$c", $val[1]);
+				else
+					$helpMsg .= " $o$key...$c";
 			}
+
 			self::pcolorln(self::ansiinfo, $helpMsg);
 			self::pln();
 			self::pcolorln(self::ansiinfo, "  " . self::$instance->commands[self::$instance->args["input"][1]][1]);
 			foreach (self::$instance->inputs as $key => $val) {
-				self::printHelpOption($key, $val);
+				self::printHelpOption($key, $val[3]);
 			}
 			self::pln();
-			self::pcolorln(self::ansiinfo, "Options:");
+			self::pcolorln(self::ansiinfo, "  Options:");
 			foreach (self::$instance->switches as $key => $val) {
 				self::printHelpOption("-" . $key, $val);
 			}

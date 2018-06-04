@@ -56,10 +56,26 @@ class Bdd {
 	 * @throws \Exception
 	 */
 	public static function export() {
+		$models = Cli::getInputs("models", "Model names export", true);
+		$list = Cli::addSwitch("list", "List all model names");
 		Cli::enableHelp();
-		Cli::pr("{");
+
 		$first_model = true;
-		foreach (Model::getModels() as $class) {
+
+		if ($list) {
+			Cli::pr("[");
+			foreach (Model::getModels() as $class) {
+				if (!$first_model)
+					Cli::pr(",");
+				$first_model = false;
+				Cli::pr(json_encode($class));
+			}
+			Cli::pln("]");
+			return;
+		}
+
+		Cli::pr("{");
+		foreach (count($models) > 0 ? $models : Model::getModels() as $class) {
 			if (!$first_model)
 				Cli::pln(",");
 			$first_model = false;
