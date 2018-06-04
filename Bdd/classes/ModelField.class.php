@@ -142,6 +142,10 @@ class ModelField {
 			elseif ($this->isDateTime() || $this->isTimestamp())
 				$this->props["editor"] = "date-time";
 		}
+
+		if ($this->props["editor"] == 'password')
+			return 'passwd';
+
 		return $this->props["editor"];
 	}
 
