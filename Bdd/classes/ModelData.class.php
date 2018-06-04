@@ -188,6 +188,15 @@ class ModelData implements Iterator, ArrayAccess {
 		return $this->isempty;
 	}
 
+	/**
+	 * @param string $field
+	 * @return mixed
+	 * @throws Exception
+	 */
+	public function raw($field) {
+		return $this->values[$field];
+	}
+
 
 	/**
 	 * @param string $field
