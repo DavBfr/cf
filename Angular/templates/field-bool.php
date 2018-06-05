@@ -1,5 +1,5 @@
 <?php $field = $this->get("field") ?>
-<div class="form-group" data-ng-class="{'has-error': form.<?php echo $field->getName() ?>.$invalid}">
+<div class="form-group" data-ng-class="{'has-error': <?php echo $field->hasNull() ? "false" : "item." . $field->getName() . " === null" ?>}">
 	<label class="col-sm-2 control-label" for="<?php echo $field->getName() ?>"><?php echo $field->getCaption() ?></label>
 	<div class="col-sm-10">
 		<div class="btn-group" data-toggle="buttons">
