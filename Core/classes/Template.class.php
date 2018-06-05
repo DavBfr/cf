@@ -215,7 +215,7 @@ class Template {
 		$file = Resources::find($filename);
 		if ($file !== null) {
 			$mime = mime_content_type($file);
-			return 'data:'.$mime.';base64,' . base64_encode(file_get_contents($file));
+			return 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file));
 		}
 		return $default;
 	}
@@ -361,6 +361,8 @@ class Template {
 		}
 
 		$options = array();
+		$options["check"] = Session::nextCheck();
+
 		foreach (Options::getAll() as $key => $val) {
 			if (in_array($key, $keys)) {
 				$options[strtolower($key)] = $val;

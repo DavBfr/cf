@@ -17,7 +17,7 @@
  **/
 
 app.controller('RouteController', function ($scope, $route, $location, $http, $timeout, LoginService) {
-	let timeout = 20000;
+	let timeout = cf_options.check * 1000 + 1000;
 	let timeoutHandler = null;
 	init();
 

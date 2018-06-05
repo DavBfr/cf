@@ -17,7 +17,7 @@
  **/
 
 app.service('LoginService', function ($http, NotificationFactory) {
-	var userdata = null;
+	let userData = null;
 
 	this.getRights = function () {
 		return cf_options.rights;
@@ -35,25 +35,25 @@ app.service('LoginService', function ($http, NotificationFactory) {
 		return cf_options.user;
 	};
 
-	this.logout = function (onsuccess) {
+	this.logout = function (onSuccess) {
 		$http.get(cf_options.rest_path + "/login/logout").then(function (response) {
 			cf_options.rights = [];
 			cf_options.user = null;
-			onsuccess && onsuccess(response.data.message);
+			onSuccess && onSuccess(response.data.message);
 		}, function (response) {
 			if (!restError(response))
 				NotificationFactory.error(response.data);
 		})
 	};
 
-	this.login = function (username, password, onsuccess) {
+	this.login = function (username, password, onSuccess) {
 		$http.post(cf_options.rest_path + "/login", {
 			username: username,
 			password: password
 		}).then(function (response) {
 			cf_options.rights = response.data.rights;
 			cf_options.user = response.data.user;
-			onsuccess && onsuccess(response.data.rights, response.data.message);
+			onSuccess && onSuccess(response.data.rights, response.data.message);
 		}, function (response) {
 			if (!restError(response))
 				NotificationFactory.error(response.data);
@@ -68,28 +68,27 @@ app.service('LoginService', function ($http, NotificationFactory) {
 		}, function (response) {
 			cf_options.rights = [];
 			cf_options.user = null;
-			if (!restError(response))
-				callback && callback(false, [], null);
+			callback && callback(false, [], null);
 		})
 	};
 
-	this.getUserInfos = function (onsuccess) {
-		if (userdata == null || userdata.user !== cf_options.user) {
+	this.getUserInfos = function (onSuccess) {
+		if (userData == null || userData.user !== cf_options.user) {
 			$http.get(cf_options.rest_path + "/login/user").then(function (response) {
 				cf_options.rights = response.data.rights;
 				cf_options.user = response.data.user;
-				userdata = response.data;
-				onsuccess && onsuccess(response.data);
+				userData = response.data;
+				onSuccess && onSuccess(response.data);
 			}, restError);
 		} else {
-			onsuccess && onsuccess(userdata);
+			onSuccess && onSuccess(userData);
 		}
 	};
 
 });
 
 
-app.controller('LoginController', function ($scope, $location, $http, LoginService, NotificationFactory) {
+app.controller('LoginController', function ($scope, $location, $http, LoginService) {
 	init();
 
 	function init() {
