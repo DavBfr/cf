@@ -447,8 +447,6 @@ class Options {
 }
 
 
-ob_start();
-
 /**
  * @param string $key
  * @param mixed $value
@@ -458,9 +456,10 @@ function configure($key, $value) {
 	Options::set($key, $value);
 }
 
+ob_start();
 define("URL_SEPARATOR", "/");
 define("START_TIME", microtime(true));
-Options::set("CF_VERSION", "2.2");
+Options::set("CF_VERSION", "2.4");
 if (defined("ROOT_DIR")) {
 	Options::set("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 } else {
@@ -519,4 +518,3 @@ try {
 } catch (Exception $e) {
 	die($e->getMessage());
 }
-
