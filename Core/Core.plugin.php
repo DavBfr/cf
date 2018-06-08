@@ -24,26 +24,26 @@ Options::set("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www", "Public webpages
 
 Options::set("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data", "Data directory");
 Options::set("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]), "Root directory under which the current script is executing");
-Options::set("ALLOW_DOCUMENT_ROOT", true);
+Options::set("ALLOW_DOCUMENT_ROOT", true, "Allow direct resources access from document root");
 if (substr(WWW_DIR, 0, strlen(DOCUMENT_ROOT)) == DOCUMENT_ROOT)
 	Options::set("WWW_PATH", str_replace(DOCUMENT_ROOT, '', WWW_DIR), "Website relative URL");
 else
 	Options::set("WWW_PATH", "www", "Website relative url");
 Options::set("INDEX_PATH", WWW_PATH . "/index.php", "Main webpage URL");
 Options::set("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/api" : INDEX_PATH, "Jaon Rest API URL");
-Options::set("MEMCACHE_PREFIX", "CF");
-Options::set("MEMCACHE_LIFETIME", 10800);
-Options::set("MEMCACHE_ENABLED", false, "Enable memory cache");
 Options::set("CACHE_ENABLED", !DEBUG, "Enable caching");
 Options::set("CACHE_TIME", 86400, "Cache expire time");
 Options::set("MESSAGE_QUEUE", 92873, "Message Queue ID");
-Options::set("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"));
+Options::set("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"), "The browser asked for a Json document");
 Options::set("SESSION_NAME", "CF", "Cookie Name seen in the User Agent");
 Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"), "Cookie Life Time");
 Options::set("SESSION_REGENERATE", SESSION_TIMEOUT, "Time to regenerate the cookie");
 Options::set("SESSION_PATH", ini_get("session.cookie_path"), "Cookie path");
 Options::set("SESSION_DOMAIN", ini_get("session.cookie_domain"), "Cookie domain name");
 Options::set("SESSION_SAME_SITE", "strict", "Cookie same site policy");
+Options::set("MEMCACHE_PREFIX", SESSION_NAME, "Memory cache variable prefix to use");
+Options::set("MEMCACHE_LIFETIME", 10800, "Memory cache time to live");
+Options::set("MEMCACHE_ENABLED", false, "Enable memory cache");
 Options::set("API_TOKEN_HEADER", "cf-token", "Api token name");
 Options::set("ERROR_TEMPLATE", "error.php", "Error template");
 Options::set("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache", "Cache directory");
@@ -51,11 +51,8 @@ Options::set("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache", "Public C
 Options::set("LANG_DEFAULT", "en_US", "Default language");
 Options::set("LANG_AUTOLOAD", true, "Load locale file automatically");
 Options::set("LANG_AUTODETECT", true, "Try to autodetect user language");
-Options::set("CF_URL", "https://github.com/DavBfr/cf");
-Options::set("CF_AUTHOR", "David PHAM-VAN");
-Options::set("CF_EMAIL", "dev.nfet.net@gmail.com");
-Options::set("XSRF_TOKEN", "XSRF-TOKEN");
-Options::set("XSRF_HEADER", "x-xsrf-token");
+Options::set("XSRF_TOKEN", "XSRF-TOKEN", "Name of the XSRF cookie");
+Options::set("XSRF_HEADER", "x-xsrf-token", "Name of the XSRF header to use");
 
 
 class CorePlugin extends Plugins {

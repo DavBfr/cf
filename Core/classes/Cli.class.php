@@ -229,6 +229,7 @@ class Cli {
 	 * @param bool $optional
 	 * @param int|null $count
 	 * @return array
+	 * @throws \Exception
 	 */
 	public static function getInputs($name, $help, $optional = false, $count = null) {
 		if (self::$instance->inputs_offset === false) {
@@ -443,6 +444,7 @@ class Cli {
 
 	/**
 	 *
+	 * @throws \Exception
 	 */
 	public static function configuration() {
 		$set = self::addSwitch("set", "Set an option");

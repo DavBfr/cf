@@ -459,11 +459,15 @@ function configure($key, $value) {
 ob_start();
 define("URL_SEPARATOR", "/");
 define("START_TIME", microtime(true));
-Options::set("CF_VERSION", "2.4");
+define("CF_VERSION", "2.4");
+define("CF_URL", "https://github.com/DavBfr/cf");
+define("CF_AUTHOR", "David PHAM-VAN");
+define("CF_EMAIL", "dev.nfet.net@gmail.com");
+
 if (defined("ROOT_DIR")) {
-	Options::set("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
+	define("INIT_CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config");
 } else {
-	Options::set("INIT_CONFIG_DIR", dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "config");
+	define("INIT_CONFIG_DIR", dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "config");
 }
 
 if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.local.php")) {
@@ -474,7 +478,7 @@ if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
 	Options::import(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
 }
 
-Options::set("MINIMUM_PHP_VERSION", "5.4.0");
+Options::set("MINIMUM_PHP_VERSION", "5.4.0", "Minimum PHP version supported");
 if (version_compare(MINIMUM_PHP_VERSION, PHP_VERSION, '>'))
 	die("PHP " . MINIMUM_PHP_VERSION . " required." . PHP_EOL);
 
@@ -491,8 +495,8 @@ Options::set("FORCE_HTTPS", false, "Use https by default");
 Options::set("USE_STS", false, "Use Strict Transport Security header");
 Options::set("DEFAULT_TIMEZONE", "UTC", "Server timezone");
 Options::set("DEBUG", false, "For development only");
-Options::set("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
-Options::set("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
+define("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
+define("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
 
 if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	if (USE_STS) {
