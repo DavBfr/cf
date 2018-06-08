@@ -88,23 +88,77 @@ class Output {
 
 	/**
 	 * @param string $filename
-	 * @param string $data
+	 * @param string|null $data
 	 * @param string $type
 	 * @param bool $inline
+	 * @param bool $cache
 	 */
-	public static function file($filename, $data, $type = "application/binary", $inline = false) {
+	public static function file($filename, $data = null, $type = "application/binary", $inline = false, $cache = false) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $type);
-		header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . $filename . '"');
+		header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . basename($filename) . '"');
 		header('Content-Transfer-Encoding: binary');
-		header('Expires: 0');
-		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		header('Pragma: public');
+
+		self::fileCache($filename, $data, $cache);
+	}
+
+
+	/**
+	 * @param string $filename
+	 * @param string|null $data
+	 * @param bool $cache
+	 */
+	public static function fileCache($filename, $data = null, $cache = false) {
+		if (DEBUG) $cache = false;
 
 		while (ob_get_length())
 			ob_end_clean();
 
-		echo $data;
+		if ($cache) {
+			if ($data === null) {
+				$filetime = filemtime($filename);
+				$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
+				$etag_header = false;
+				$etag = '';
+			} else {
+				$if_modified_since = false;
+				$filetime = 0;
+				$etag = sha1($data);
+				$etag_header = isset($_SERVER['HTTP_IF_NONE_MMATCH']) ? $_SERVER['HTTP_IF_NONE_MMATCH'] : false;
+			}
+
+			header_remove("Pragma");
+			header("Expires: " . gmdate("D, d M Y H:i:s", time() + CACHE_TIME) . " GMT");
+
+			if (($if_modified_since && strtotime($if_modified_since) == $filetime || ($etag_header && $etag_header == $etag))) {
+				header_remove("Cache-Control");
+				header('HTTP/1.1 304 Not Modified');
+			} else {
+				header("Cache-Control: immutable, only-if-cached, public");
+
+				if ($data === null) {
+					header("Content-Length: " . filesize($filename));
+					header("Last-Modified: " . gmdate("D, d M Y H:i:s", $filetime) . " GMT");
+
+					readfile($filename);
+				} else {
+					header("Etag: $etag");
+
+					echo $data;
+				}
+			}
+		} else {
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Pragma: no-cache');
+
+			if ($data === null) {
+				readfile($filename);
+			} else {
+				echo $data;
+			}
+		}
+
 		self::finish();
 	}
 

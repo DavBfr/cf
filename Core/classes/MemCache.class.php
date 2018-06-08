@@ -21,7 +21,7 @@
 use Exception;
 
 
-class MemCache implements \arrayaccess {
+class MemCache implements \ArrayAccess {
 
 	private static $data = array();
 

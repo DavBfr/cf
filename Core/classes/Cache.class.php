@@ -185,20 +185,7 @@ class Cache {
 	 */
 	public function outputIfCached() {
 		if ($this->exists()) {
-			$filetime = filemtime($this->filename_cache);
-			header("Date: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
-			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $filetime) . " GMT");
-			header("Expires: " . gmdate("D, d M Y H:i:s", time() + CACHE_TIME) . " GMT");
-			header("Cache-Control: private, max-age=" . CACHE_TIME);
-			$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
-
-			if ($if_modified_since && strtotime($if_modified_since) == $filetime) {
-				header('HTTP/1.1 304 Not Modified');
-			} else {
-				echo $this->getContents();
-			}
-
-			Output::finish();
+			Output::fileCache($this->filename_cache, null, true);
 		}
 	}
 
