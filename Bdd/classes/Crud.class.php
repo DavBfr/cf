@@ -133,6 +133,10 @@ abstract class Crud extends Rest {
 				$this->filterListField($col, $field);
 			}
 		}
+
+		if (Input::has("q") && strlen(Input::get("q")) > 0) {
+			$col->filter(Input::get("q"));
+		}
 	}
 
 
@@ -208,10 +212,6 @@ abstract class Crud extends Rest {
 			->limit($this->options["limit"]);
 		$this->filterList($col);
 
-		if (Input::has("q") && strlen(Input::get("q")) > 0) {
-			$col->filter(Input::get("q"));
-		}
-
 		$list = array();
 		foreach ($col->getValues(Input::has("p") ? intval(Input::get("p")) : 0) as $row) {
 			$list[] = $this->list_values($row);
@@ -248,9 +248,6 @@ abstract class Crud extends Rest {
 	protected function get_count($r) {
 		$col = Collection::Model($this->model);
 		$this->filterList($col);
-		if (Input::has("q") && strlen(Input::get("q")) > 0) {
-			$col->filter(Input::get("q"));
-		}
 		$count = $col->getCount();
 		Output::success(array(
 			'count' => intVal($count),

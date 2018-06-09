@@ -84,7 +84,6 @@ class Input {
 		}
 
 		$data = trim($data);
-		$data = htmlentities($data, ENT_QUOTES, "UTF-8");
 		$data = preg_replace('/\\x00/', '', preg_replace('/\\\0/', '', $data));
 		return $data;
 	}

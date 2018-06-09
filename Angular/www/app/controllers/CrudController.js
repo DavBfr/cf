@@ -33,8 +33,10 @@ function CrudService($http, service) {
 			return;
 		}
 		if (filter === undefined)
-			filter = "";
-		$http.get(service_url + "?p=" + page + "&q=" + filter).then(function (response) {
+			filter = {};
+
+		filter.p = page;
+		$http.get(service_url, {params: filter}).then(function (response) {
 			if (response.status !== 200) {
 				if (!restError(response))
 					onerror && onerror(response.data, response.status);
@@ -48,8 +50,8 @@ function CrudService($http, service) {
 
 	this.get_count = function (filter, onsuccess, onerror) {
 		if (filter === undefined)
-			filter = "";
-		$http.get(service_url + "/count?q=" + filter).then(function (response) {
+			filter = {};
+		$http.get(service_url + "/count", {params: filter}).then(function (response) {
 			if (response.status !== 200) {
 				if (!restError(response))
 					onerror && onerror(response.data, response.status);
@@ -148,7 +150,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		$scope.list = [];
 		$scope.item = {};
 		$scope.foreign = {};
-		$scope.filter = "";
+		$scope.filter = CrudService.filter || {};
 		$scope.pages = 0;
 		$scope.count = 0;
 		$scope.page = null;
@@ -181,12 +183,14 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 				$scope.item = data.data;
 				if (data.foreigns) {
 					for (let item in data.foreigns) {
-						let name = data.foreigns[item];
-						(function (name_) {
-							CrudService.getForeign(name, function (data) {
-								$scope.foreign[name_] = data.list;
-							});
-						})(name);
+						if (data.foreigns.hasOwnProperty(item)) {
+							let name = data.foreigns[item];
+							(function (name_) {
+								CrudService.getForeign(name, function (data) {
+									$scope.foreign[name_] = data.list;
+								});
+							})(name);
+						}
 					}
 				}
 				$scope.loading = false;
@@ -200,12 +204,14 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 				$scope.item = data.data;
 				if (data.foreigns) {
 					for (let item in data.foreigns) {
-						let name = data.foreigns[item];
-						(function (name_) {
-							CrudService.getForeign(name, function (data) {
-								$scope.foreign[name_] = data.list;
-							});
-						})(name);
+						if (data.foreigns.hasOwnProperty(item)) {
+							let name = data.foreigns[item];
+							(function (name_) {
+								CrudService.getForeign(name, function (data) {
+									$scope.foreign[name_] = data.list;
+								});
+							})(name);
+						}
 					}
 				}
 				$scope.loading = false;
@@ -235,8 +241,10 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 	$scope.save = function (id, data) {
 		$scope.loading = true;
 		for (let item in data) {
-			if (data[item] instanceof Date) {
-				data[item] = data[item].getTime() / 1000;
+			if (data.hasOwnProperty(item)) {
+				if (data[item] instanceof Date) {
+					data[item] = data[item].getTime() / 1000;
+				}
 			}
 		}
 		if (id) {
@@ -293,6 +301,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 			$('html,body').scrollTop(0);
 			$scope.list = data;
 			CrudService.page = $scope.page;
+			CrudService.filter = $scope.filter;
 			$scope.loading = false;
 		}, function (data) {
 			$scope.loading = false;
@@ -301,6 +310,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 	};
 
 	$scope.Search = function () {
+		$scope.page = -1;
 		this.get_list();
 	}.bind(this);
 }
