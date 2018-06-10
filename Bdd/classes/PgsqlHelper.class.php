@@ -75,6 +75,12 @@ class PgsqlHelper extends PDOHelper {
 				$ctype .= " NOT NULL";
 			if ($column->isPrimary())
 				$ctype .= " PRIMARY KEY";
+			$default = $column->getDefault();
+			if ($default !== null) {
+				if (is_bool($default)) $default = intval($default);
+				if (is_string($default)) $default = $this->quote($default);
+				$ctype .= " DEFAULT " . $default;
+			}
 			$columns[$column->getName()] = $ctype;
 		}
 		return $columns;

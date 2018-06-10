@@ -21,6 +21,7 @@ Options::set("DBNAME", 'sqlite:' . DATA_DIR . '/db.sqlite', "Database name");
 Options::set("DBLOGIN", '', "Database Login");
 Options::set("DBPASSWORD", '', "Database password");
 Options::set("CRUD_LIMIT", 30, "Max number of lines in lists");
+Options::set("DATABASE_ALTER", true, "Allow to alter the database schema");
 
 
 class BddPlugin extends Plugins {
@@ -68,6 +69,9 @@ class BddPlugin extends Plugins {
 			if (!$bdd->tableExists($model->getTableName())) {
 				Cli::pinfo(" * Create table " . $model->getTableName());
 				$model->createTable();
+			} else if (DATABASE_ALTER) {
+				Cli::pinfo(" * Update table " . $model->getTableName());
+				$model->alterTable();
 			}
 		}
 	}

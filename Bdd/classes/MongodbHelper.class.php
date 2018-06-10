@@ -27,7 +27,7 @@
 
 use Exception;
 use MongoClient;
-use MongoID;
+use MongoId;
 
 
 class MongodbHelper extends BddHelper {
@@ -44,7 +44,7 @@ class MongodbHelper extends BddHelper {
 	 */
 	public function __construct($dsn, $login, $password) {
 		try {
-			Logger::Debug("connect to ($dsn)");
+			Logger::debug("connect to ($dsn)");
 			$this->mongo = new MongoClient($dsn);
 			$dbname = basename($dsn);
 			$this->db = $this->mongo->selectDB($dbname);
@@ -88,7 +88,7 @@ class MongodbHelper extends BddHelper {
 	 * @throws Exception
 	 */
 	public function insert($table, array $fields) {
-		Logger::Debug("Insert $table", $fields);
+		Logger::debug("Insert $table", $fields);
 		$collection = $this->db->selectCollection($table);
 		$collection->insert($fields);
 		return (string)$fields["_id"];
@@ -104,7 +104,7 @@ class MongodbHelper extends BddHelper {
 	 * @throws Exception
 	 */
 	public function update($table, array $fields, $key) {
-		Logger::Debug("Update $table", $fields, "$key");
+		Logger::debug("Update $table", $fields, "$key");
 		$criteria = array();
 		if (isset($fields["_id"])) {
 			$fields["_id"] = new MongoID($fields["_id"]);
@@ -116,7 +116,7 @@ class MongodbHelper extends BddHelper {
 			}
 		}
 		$collection = $this->db->selectCollection($table);
-		Logger::Debug("Update criteria", $criteria, "values", $fields, $key);
+		Logger::debug("Update criteria", $criteria, "values", $fields, $key);
 		$collection->update($criteria, $fields);
 		return true;
 	}
@@ -132,7 +132,7 @@ class MongodbHelper extends BddHelper {
 	 * @throws Exception
 	 */
 	public function delete($table, $key, $value) {
-		Logger::Debug("Delete $table, $key, $value");
+		Logger::debug("Delete $table, $key, $value");
 		$collection = $this->db->selectCollection($table);
 		if ($key == "_id") {
 			$value = new MongoID($value);
@@ -156,7 +156,7 @@ class MongodbHelper extends BddHelper {
 	 * @return array
 	 */
 	protected function buildTableColumns($table_structure) {
-		Logger::Debug("buildTableColumns($table_structure)");
+		Logger::debug("buildTableColumns($table_structure)");
 		return array();
 	}
 
@@ -176,7 +176,7 @@ class MongodbHelper extends BddHelper {
 	 * @throws Exception
 	 */
 	public function dropTable($name) {
-		Logger::Debug("dropTable($name)");
+		Logger::debug("dropTable($name)");
 		$collection = $this->db->selectCollection($name);
 		$collection->drop();
 		return true;
@@ -186,26 +186,48 @@ class MongodbHelper extends BddHelper {
 	/**
 	 * @param string $name
 	 * @param array $table_structure
-	 * @return bool|string
+	 * @return string
 	 */
 	public function createTableQuery($name, array $table_structure) {
-		return false;
+		return null;
 	}
 
 
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 */
 	public function createTable($name, array $table_structure) {
-		Logger::Debug("createTable($name, " . json_encode($table_structure) . ")");
+		Logger::debug("createTable($name, " . json_encode($table_structure) . ")");
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 * @return string[]
+	 */
+	public function alterTableQuery($name, array $table_structure) {
+		return array();
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 */
+	public function alterTable($name, array $table_structure) {
 	}
 
 
 	public function getTables() {
-		Logger::Debug("getTables");
+		Logger::debug("getTables");
 		return $this->db->getCollectionNames();
 	}
 
 
 	public function getTableInfo($name) {
-		Logger::Debug("getTableInfo ($name)");
+		Logger::debug("getTableInfo ($name)");
 		return false;
 	}
 
@@ -440,7 +462,6 @@ class MongodbHelper extends BddHelper {
 
 		return $gridFS->storeBytes($value, $metadata);
 	}
-
 }
 
 

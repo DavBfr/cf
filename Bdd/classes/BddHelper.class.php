@@ -169,9 +169,23 @@ abstract class BddHelper {
 	/**
 	 * @param string $name
 	 * @param array $table_structure
-	 * @return mixed
+	 * @return string[]
+	 */
+	abstract public function alterTableQuery($name, array $table_structure);
+
+
+	/**
+	 * @param string $name
+	 * @param array $table_structure
 	 */
 	abstract public function createTable($name, array $table_structure);
+
+
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 */
+	abstract public function alterTable($name, array $table_structure);
 
 
 	/**
@@ -298,7 +312,7 @@ abstract class BddHelper {
 					$value = new DateTime($value);
 					return $value->getTimestamp();
 				} catch (Exception $e) {
-					Logger::Error("Date {$value} invalid: " . $e->getMessage());
+					Logger::error("Date {$value} invalid: " . $e->getMessage());
 					return $value;
 				}
 			case ModelField::TYPE_DATE:
@@ -308,7 +322,7 @@ abstract class BddHelper {
 					$value = new DateTime($value);
 					return $value->getTimestamp();
 				} catch (Exception $e) {
-					Logger::Error("Date {$value} invalid: " . $e->getMessage());
+					Logger::error("Date {$value} invalid: " . $e->getMessage());
 					return $value + 43200;
 				}
 		}

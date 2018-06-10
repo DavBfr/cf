@@ -234,14 +234,21 @@ abstract class Model {
 
 
 	/**
-	 * @return mixed
 	 * @throws Exception
 	 */
 	public function createTable() {
 		$bdd = Bdd::getInstance();
-		return $bdd->createTable($this->table, $this->fields);
+		$bdd->createTable($this->table, $this->fields);
 	}
 
+
+	/**
+	 * @throws Exception
+	 */
+	public function alterTable() {
+		$bdd = Bdd::getInstance();
+		$bdd->alterTable($this->table, $this->fields);
+	}
 
 	/**
 	 * @return ModelData

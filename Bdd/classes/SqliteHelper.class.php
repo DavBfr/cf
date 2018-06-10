@@ -48,6 +48,12 @@ class SqliteHelper extends PDOHelper {
 			if ($column->isAutoincrement()) {
 				$ctype .= " AUTOINCREMENT";
 			}
+			$default = $column->getDefault();
+			if ($default !== null) {
+				if (is_bool($default)) $default = intval($default);
+				if (is_string($default)) $default = $this->quote($default);
+				$ctype .= " DEFAULT " . $default;
+			}
 			$columns[$column->getName()] = $ctype;
 		}
 		return $columns;
@@ -100,6 +106,13 @@ class SqliteHelper extends PDOHelper {
 				$field["null"] = $row["notnull"] == 0;
 				$field["primary"] = $row["pk"] == 1;
 				$field["default"] = $row["dflt_value"];
+				if ($field["default"] !== null) {
+					if ($field["type"] == ModelField::TYPE_INT) {
+						$field["default"] = intval($field["default"]);
+					} else {
+						$field["default"] = stripslashes(substr($field["default"], 1, -1));
+					}
+				}
 				$field["autoincrement"] = $auto && $field["primary"];
 				$fields[$row["name"]] = $field;
 			}

@@ -59,6 +59,12 @@ class MysqlHelper extends PDOHelper {
 			if ($column->isAutoincrement()) {
 				$ctype .= " AUTO_INCREMENT";
 			}
+			$default = $column->getDefault();
+			if ($default !== null) {
+				if (is_bool($default)) $default = intval($default);
+				if (is_string($default)) $default = $this->quote($default);
+				$ctype .= " DEFAULT " . $default;
+			}
 			$columns[$column->getName()] = $ctype;
 		}
 		return $columns;

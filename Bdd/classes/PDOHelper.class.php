@@ -116,7 +116,7 @@ class PDOHelper extends BddHelper {
 	 * @throws Exception
 	 */
 	public function query($sql, $params = array()) {
-		Logger::Debug("Query ${sql} ", $params);
+		Logger::debug("Query ${sql} ", $params);
 		$response = $this->pdo->prepare($sql);
 		if ($response === false) {
 			$error = $this->pdo->errorInfo();
@@ -190,12 +190,105 @@ class PDOHelper extends BddHelper {
 
 	/**
 	 * @param string $name
+	 * @param array $table_structure array of ModelField
+	 * @return string[]
+	 * @throws Exception
+	 */
+	public function alterTableQuery($name, array $table_structure) {
+		$sql = array();
+		$actual_structure = $this->getTableInfo($name);
+
+		$alter = false;
+		foreach ($actual_structure as $field => $actual_field) {
+			$actual = new ModelField($name, $field, $actual_field);
+
+			if (!array_key_exists($field, $table_structure)) {
+				Logger::warning("     $field not found in structure");
+				$alter = true;
+				break;
+			}
+
+			$target = $table_structure[$field];
+			if ($this->getDbType($actual->getType()) != $this->getDbType($target->getType()) ||
+				$actual->hasNull() != $target->hasNull() ||
+				$actual->isPrimary() != $target->isPrimary() ||
+				$actual->isAutoincrement() != $target->isAutoincrement() ||
+				$actual->getDefault() != $target->getDefault()) {
+				Logger::warning("     $field different in structure");
+				Logger::debug("Type:", $this->getDbType($actual->getType()), $this->getDbType($target->getType()));
+				Logger::debug("Null:", $actual->hasNull(), $target->hasNull());
+				Logger::debug("Primary:", $actual->isPrimary(), $target->isPrimary());
+				Logger::debug("Autoincrement:", $actual->isAutoincrement(), $target->isAutoincrement());
+				Logger::debug("Default:", $actual->getDefault(), $target->getDefault());
+				$alter = true;
+				break;
+			}
+		}
+
+		foreach ($table_structure as $field => $target) {
+			if (!array_key_exists($field, $actual_structure)) {
+				Logger::warning("     $field not found in database");
+				$alter = true;
+				break;
+			}
+		}
+
+		if ($alter) {
+			$tmpname = "__{$name}_alter_PDO";
+			$sql[] = $this->createTableQuery($tmpname, $table_structure);
+
+			$fields = array();
+			foreach ($table_structure as $key => $structure) {
+				if (array_key_exists($key, $actual_structure)) {
+					$fields[] = $this->quoteIdent($key);
+				} else {
+					$default = $structure->getDefault();
+					if ($default === null && $structure->hasNull()) {
+						$fields[] = 'NULL';
+					} elseif ($default === null) {
+						switch ($structure->getType()) {
+							case ModelField::TYPE_INT:
+								$fields[] = 0;
+								break;
+							default:
+								$fields[] = $this->quote('');
+								break;
+						}
+					} else {
+						$fields[] = is_numeric($default) ? $default : $this->quote($default);
+					}
+				}
+			}
+
+			$fields = implode(", ", $fields);
+			$sql[] = "INSERT INTO " . $this->quoteIdent($tmpname) . " SELECT $fields FROM " . $this->quoteIdent($name);
+			$sql[] = "DROP TABLE " . $this->quoteIdent($name);
+			$sql[] = "ALTER TABLE " . $this->quoteIdent($tmpname) . " RENAME TO " . $this->quoteIdent($name);
+		}
+
+		return $sql;
+	}
+
+
+	/**
+	 * @param string $name
 	 * @param array $table_structure
-	 * @return mixed|void
 	 * @throws Exception
 	 */
 	public function createTable($name, array $table_structure) {
 		$this->query($this->createTableQuery($name, $table_structure));
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 * @throws Exception
+	 */
+	public function alterTable($name, array $table_structure) {
+		foreach ($this->alterTableQuery($name, $table_structure) as $sql) {
+			$this->query($sql);
+		}
 	}
 
 
@@ -354,7 +447,7 @@ class PDOHelper extends BddHelper {
 		$sql = $this->getQueryString(array("COUNT(*)"), $tables, $joint, $where, $filter, $filter_fields, array(), $group, $params, null, 0, $distinct);
 		$values = $this->query($sql, $params);
 		$count = $values->fetch(PDO::FETCH_NUM);
-		return intVal($count[0]);
+		return intval($count[0]);
 	}
 
 

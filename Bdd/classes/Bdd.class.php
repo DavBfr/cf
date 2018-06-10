@@ -30,7 +30,7 @@ class Bdd {
 	 */
 	private function __construct() {
 		$this->driver = substr(DBNAME, 0, strpos(DBNAME, ":"));
-		$helper = __NAMESPACE__ . "\\" . ucFirst($this->driver) . "Helper";
+		$helper = __NAMESPACE__ . "\\" . ucfirst($this->driver) . "Helper";
 		if (class_exists($helper, true)) {
 			$this->helper = new $helper(DBNAME, DBLOGIN, DBPASSWORD);
 		} else {
@@ -117,10 +117,9 @@ class Bdd {
 
 
 	/**
-	 * @param $args
 	 * @throws \Exception
 	 */
-	public static function cliImport($args) {
+	public static function cliImport() {
 		$files = Cli::getInputs("files", "file names to import");
 		Cli::enableHelp();
 		$bdd = self::getInstance();
@@ -373,11 +372,20 @@ class Bdd {
 	/**
 	 * @param string $name
 	 * @param array $table_structure
-	 * @return mixed
 	 * @throws \Exception
 	 */
 	public function createTable($name, array $table_structure) {
-		return $this->helper->createTable($name, $table_structure);
+		$this->helper->createTable($name, $table_structure);
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param array $table_structure
+	 * @throws \Exception
+	 */
+	public function alterTable($name, array $table_structure) {
+		$this->helper->alterTable($name, $table_structure);
 	}
 
 
