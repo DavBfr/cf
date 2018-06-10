@@ -39,7 +39,7 @@ function restError(response) {
 		}
 	}
 
-	if (response.status === 401) {// Unauthorized
+	if (response.status === 401 && cf_options.user !== false) {// Unauthorized
 		let injector = angular.element(document).injector();
 		let LoginService = injector.get('LoginService');
 		LoginService.check((next) => {
