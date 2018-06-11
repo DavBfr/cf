@@ -93,7 +93,6 @@ class System {
 			array_shift($arTo);
 		}
 		$p = array();
-		Logger::Debug(print_r($arFrom, true));
 		if (count($arFrom) > 0)
 			$p = array_fill(0, count($arFrom), '..');
 		$p = array_merge($p, $arTo);
