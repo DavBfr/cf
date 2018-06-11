@@ -84,10 +84,10 @@ class SqliteHelper extends PDOHelper {
 	 */
 	public function getTableInfo($name) {
 		$auto = false;
-		$res = $this->query("select count(*) from sqlite_sequence where name=" . $this->quote($name));
+		$res = $this->query("select count(*) FROM sqlite_master WHERE tbl_name=" . $this->quote($name) . " AND sql LIKE '%AUTOINCREMENT%'");
 		if ($res !== false) {
 			$row = $res->fetch(PDO::FETCH_NUM);
-			if ($row[0] == 1)
+			if ($row[0] > 0)
 				$auto = true;
 		}
 

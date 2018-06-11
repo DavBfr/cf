@@ -250,6 +250,9 @@ class PDOHelper extends BddHelper {
 							case ModelField::TYPE_INT:
 								$fields[] = 0;
 								break;
+							case ModelField::TYPE_TIMESTAMP:
+								$fields[] = time();
+								break;
 							default:
 								$fields[] = $this->quote('');
 								break;
@@ -286,7 +289,16 @@ class PDOHelper extends BddHelper {
 	 * @throws Exception
 	 */
 	public function alterTable($name, array $table_structure) {
-		foreach ($this->alterTableQuery($name, $table_structure) as $sql) {
+		$queries = $this->alterTableQuery($name, $table_structure);
+		if (count($queries) == 0) return;
+
+		Cli::perr("The table '$name' has been modified.");
+		Cli::pinfo("the following SQL statements have to be executed on the server:");
+		Cli::pln(implode(";\n", $queries) . ";");
+
+		Cli::question("Do you want to perform the change to the table '$name'?");
+
+		foreach ($queries as $sql) {
 			$this->query($sql);
 		}
 	}
