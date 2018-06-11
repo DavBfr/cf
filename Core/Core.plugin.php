@@ -80,7 +80,7 @@ class CorePlugin extends Plugins {
 			}
 		} else {
 			$cache = Cache::Priv(self::config, ".php");
-			if ($cache->check()) {
+			if (IS_CLI || $cache->check()) {
 				if (file_exists(ROOT_DIR . "/composer.json")) {
 					$conf->append(ROOT_DIR . "/composer.json", false, "composer");
 				}
