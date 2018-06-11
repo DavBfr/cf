@@ -2,26 +2,22 @@
 <div class="container-fluid">
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-			<span class="sr-only"><?php $this->tr("core.toggle_navigation") ?></span>
+			<span class="sr-only">[[ core.toggle_navigation | tr ]]</span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="#/"><?php $this->out("title") ?></a>
+		<a class="navbar-brand" href="#/">[[ title ]]</a>
 	</div>
 
 	<div class="collapse navbar-collapse navbar-ex1-collapse">
 		<ul class="nav navbar-nav">
-			<li data-ng-cloak data-ng-repeat="item in menu" class="{{item.active}}"><a href="#{{item.path}}">{{item.title}}</a></li>
+			<li data-ng-cloak data-ng-repeat="item in menu" class="{{ item.active }}"><a href="#{{ item.path }}">{{ item.title }}</a></li>
 		</ul>
 
-		<?php if (\DavbFr\CF\Session::isLogged()): ?>
 		<ul class="nav navbar-nav navbar-right">
-			<li>
-				<a href="javascript:void(0)" data-ng-click="logout()"><?php $this->tr("core.logout") ?></a>
-			</li>
+			<?php $this->insert("navbar-top-right.php"); ?>
 		</ul>
-	<?php endif; ?>
 	</div>
 </div>
 </nav>
