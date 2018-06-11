@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-class Config implements \arrayaccess {
+class Config implements \ArrayAccess {
 	private static $instance = null;
 	private $data;
 

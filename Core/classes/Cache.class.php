@@ -115,11 +115,11 @@ class Cache {
 	public function setContents($value) {
 		System::ensureDir(dirname($this->filename_cache));
 		if (!$this->isWritable()) {
-			Logger::Error($this->filename_cache . " is not writable");
+			Logger::error($this->filename_cache . " is not writable");
 			return;
 		}
 
-		Logger::Debug("Write cache $this->filename_cache");
+		Logger::debug("Write cache $this->filename_cache");
 		file_put_contents($this->filename_cache, $value);
 	}
 
@@ -155,7 +155,7 @@ class Cache {
 	 */
 	public function openWrite() {
 		System::ensureDir(dirname($this->filename_cache));
-		Logger::Debug("Write cache $this->filename_cache");
+		Logger::debug("Write cache $this->filename_cache");
 		return fopen($this->filename_cache, "w");
 	}
 
