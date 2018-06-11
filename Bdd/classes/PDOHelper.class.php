@@ -292,11 +292,13 @@ class PDOHelper extends BddHelper {
 		$queries = $this->alterTableQuery($name, $table_structure);
 		if (count($queries) == 0) return;
 
-		Cli::perr("The table '$name' has been modified.");
-		Cli::pinfo("the following SQL statements have to be executed on the server:");
-		Cli::pln(implode(";\n", $queries) . ";");
+		if (DATABASE_ALTER_CONFIRMATION) {
+			Cli::perr("The table '$name' has been modified.");
+			Cli::pinfo("the following SQL statements have to be executed on the server:");
+			Cli::pln(implode(";\n", $queries) . ";");
 
-		Cli::question("Do you want to perform the change to the table '$name'?");
+			Cli::question("Do you want to perform the change to the table '$name'?");
+		}
 
 		foreach ($queries as $sql) {
 			$this->query($sql);

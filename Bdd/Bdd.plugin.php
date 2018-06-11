@@ -22,6 +22,7 @@ Options::set("DBLOGIN", '', "Database Login");
 Options::set("DBPASSWORD", '', "Database password");
 Options::set("CRUD_LIMIT", 30, "Max number of lines in lists");
 Options::set("DATABASE_ALTER", true, "Allow to alter the database schema");
+Options::set("DATABASE_ALTER_CONFIRMATION", true, "Interactively confirm any table structure change");
 
 
 class BddPlugin extends Plugins {
