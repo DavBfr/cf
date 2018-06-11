@@ -369,15 +369,20 @@ class Template {
 			}
 		}
 
-		if (Session::Has(Session::rights_key)) {
-			$options["rights"] = Session::Get(Session::rights_key);
+		if (Session::hasSession()) {
+			if (Session::Has(Session::rights_key)) {
+				$options["rights"] = Session::Get(Session::rights_key);
+			} else {
+				$options["rights"] = array();
+			}
+
+			if (Session::Has(AbstractLogin::userid)) {
+				$options["user"] = Session::Get(AbstractLogin::userid);
+			} else {
+				$options["user"] = false;
+			}
 		} else {
 			$options["rights"] = array();
-		}
-
-		if (Session::Has(AbstractLogin::userid)) {
-			$options["user"] = Session::Get(AbstractLogin::userid);
-		} else {
 			$options["user"] = false;
 		}
 
