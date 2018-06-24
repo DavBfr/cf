@@ -151,6 +151,10 @@ class SqliteStatementHelper extends PDOStatementHelper {
 	 * @return string
 	 */
 	protected function convertType($meta) {
+		if (!array_key_exists("sqlite:decl_type", $meta)) {
+			return parent::convertType($meta);
+		}
+
 		switch ($meta["sqlite:decl_type"]) {
 			case "NUMBER":
 				return ModelField::TYPE_DECIMAL;
