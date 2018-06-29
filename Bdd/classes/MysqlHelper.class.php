@@ -105,6 +105,7 @@ class MysqlHelper extends PDOHelper {
 				elseif (strpos($row["Type"], "time") !== false) $field["type"] = ModelField::TYPE_TIME;
 				elseif (strpos($row["Type"], "date") !== false) $field["type"] = ModelField::TYPE_DATE;
 				elseif (strpos($row["Type"], "timestamp") !== false) $field["type"] = ModelField::TYPE_TIMESTAMP;
+				elseif (strpos($row["Type"], "decimal") !== false) $field["type"] = ModelField::TYPE_DECIMAL;
 				else $field["type"] = $row["Type"];
 
 				$field["null"] = $row["Null"] == "YES";

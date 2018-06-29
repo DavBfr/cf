@@ -117,10 +117,11 @@ class PgsqlHelper extends PDOHelper {
 				if (strpos($row["data_type"], "int") !== false) $field["type"] = ModelField::TYPE_INT;
 				elseif (strpos($row["data_type"], "text") !== false) $field["type"] = ModelField::TYPE_TEXT;
 				elseif (strpos($row["data_type"], "varchar") !== false) $field["type"] = ModelField::TYPE_TEXT;
-				elseif (strpos($row["Type"], "datetime") !== false) $field["type"] = ModelField::TYPE_DATETIME;
-				elseif (strpos($row["Type"], "time") !== false) $field["type"] = ModelField::TYPE_TIME;
+				elseif (strpos($row["data_type"], "datetime") !== false) $field["type"] = ModelField::TYPE_DATETIME;
+				elseif (strpos($row["data_type"], "time") !== false) $field["type"] = ModelField::TYPE_TIME;
 				elseif (strpos($row["data_type"], "date") !== false) $field["type"] = ModelField::TYPE_DATE;
 				elseif (strpos($row["data_type"], "timestamp") !== false) $field["type"] = ModelField::TYPE_TIMESTAMP;
+				elseif (strpos($row["data_type"], "decimal") !== false) $field["type"] = ModelField::TYPE_DECIMAL;
 				else $field["type"] = $row["data_type"];
 
 				$field["null"] = $row["is_nullable"] == "YES";
