@@ -226,10 +226,12 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		NotificationFactory.confirm("Delete the record #" + id + " ?", function () {
 			CrudService.del(id, function () {
 				let path = (new RegExp("^/[^/]+")).exec($route.current.originalPath)[0];
-				if (path === $route.current.originalPath)
+				if (path === $route.current.originalPath) {
+					$scope.page = -1;
 					this.get_list();
-				else
+				} else {
 					$scope.go_list();
+				}
 				NotificationFactory.success("Record #" + id + " deleted");
 			}.bind(this), function (data) {
 				NotificationFactory.error(data);
