@@ -37,7 +37,7 @@ class SkelPlugin extends Plugins {
 		foreach (array("composer.json", "index.php", "setup", "CFApp.plugin.php") as $file) {
 			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
-			foreach (Options::getAll() as $key => $val) {
+			foreach (array_merge(get_defined_constants(), Options::getAll()) as $key => $val) {
 				$content = str_replace("@$key@", $val, $content);
 			}
 			$content = str_replace("@DATE@", date("r"), $content);
