@@ -17,6 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
+
+/**
+ * Class ModelSync
+ * @package DavBfr\CF
+ *
+ * Receives a list of update from the client as a json data:
+ * {
+ *   delete: [id, id, id, ...],
+ *   updated: [{field_set}, {field_set}, ...],
+ *   new: [{field_set}, {field_set}, ...]
+ * }
+ *
+ * if bidirectional it will send back the locally updated data
+ * {
+ *   items: [{field_set}, {field_set}, ...],
+ *   deleted: [id, id, id, ...],
+ * }
+ *
+ * if the index is new, the item will be added to items and the old will be in deleted
+ * so the client must delete first.
+ */
+
 abstract class ModelSync extends RestApi {
 	/** @var Model $model */
 	protected $model;
@@ -145,6 +167,9 @@ abstract class ModelSync extends RestApi {
 	 */
 	protected function onInsert($entry, array $values) {
 		$entry->setValues($values);
+		if ($this->options['update_field'] != null) {
+			$entry->set($this->options['update_field'], time());
+		}
 		$entry->save();
 	}
 
@@ -156,6 +181,9 @@ abstract class ModelSync extends RestApi {
 	 */
 	protected function onUpdate($entry, array $values) {
 		$entry->setValues($values);
+		if ($this->options['update_field'] != null) {
+			$entry->set($this->options['update_field'], time());
+		}
 		$entry->save();
 	}
 
@@ -175,6 +203,8 @@ abstract class ModelSync extends RestApi {
 	 */
 	protected function doSync($r) {
 		Input::ensureRequest($r, array(), array("lastsync"));
+
+		$sync = time();
 
 		if (!array_key_exists("lastsync", $r))
 			$r["lastsync"] = 0;
@@ -212,13 +242,15 @@ abstract class ModelSync extends RestApi {
 					$oldId = $item[$id];
 					unset($item[$id]);
 					if ($this->options['update_field'] != null) {
-						$item[$this->options['update_field']] = time();
+						$item[$this->options['update_field']] = $sync;
 					}
 					if ($entry->isNew()) {
 						if (!$this->options['can_insert'])
 							continue;
 						$this->onInsert($entry, $item);
-						$deleted[] = $oldId;
+						if ($this->options["bidirectional"]) {
+							$deleted[] = $oldId;
+						}
 					} else {
 						$this->onUpdate($entry, $item);
 						$updated[] = intval($entry->get($id));
@@ -231,10 +263,12 @@ abstract class ModelSync extends RestApi {
 					$this->mapKeys($item);
 					$this->filterValues($item);
 					$entry = $this->model->newRow();
-					$deleted[] = $item[$id];
+					if ($this->options["bidirectional"]) {
+						$deleted[] = $item[$id];
+					}
 					unset($item[$id]);
 					if ($this->options['update_field'] != null) {
-						$item[$this->options['update_field']] = time();
+						$item[$this->options['update_field']] = $sync;
 					}
 					$this->onInsert($entry, $item);
 				}
@@ -255,7 +289,7 @@ abstract class ModelSync extends RestApi {
 			}
 		} else $items = null;
 
-		Output::success(array_merge(array("items" => $items, "deleted" => $deleted), $this->syncEnd($r)));
+		Output::success(array_merge(array("items" => $items, "deleted" => $deleted, "sync" => $sync), $this->syncEnd($r)));
 	}
 
 }
