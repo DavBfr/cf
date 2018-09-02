@@ -16,7 +16,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
-
 class Output {
 
 
@@ -38,8 +37,9 @@ class Output {
 
 	/**
 	 * @param array $object
+	 * @param bool $cache
 	 */
-	public static function json($object) {
+	public static function json($object, $cache = false) {
 		if (JSON_HEADER)
 			header("Content-Type: text/json");
 		else
@@ -50,18 +50,20 @@ class Output {
 		if (DEBUG && is_array($object) && strlen($content) > 0) {
 			$object["__debug__"] = $content;
 		}
-		echo json_encode($object);
+		$data = json_encode($object);
 		if (DEBUG)
-			echo "\n";
-		self::finish();
+			$data .= "\n";
+
+		self::fileCache(null, $data, $cache);
 	}
 
 
 	/**
 	 * @param array $object
+	 * @param bool $cache
 	 */
-	public static function success($object = array()) {
-		self::json($object);
+	public static function success($object = array(), $cache = false) {
+		self::json($object, $cache);
 	}
 
 
@@ -134,7 +136,7 @@ class Output {
 				header_remove("Cache-Control");
 				header('HTTP/1.1 304 Not Modified');
 			} else {
-				header("Cache-Control: immutable, only-if-cached, public");
+				header("Cache-Control: immutable, only-if-cached, public, max-age=" . CACHE_TIME . ', stale-if-error=' . (CACHE_TIME * 2));
 
 				if ($data === null) {
 					header("Content-Length: " . filesize($filename));
@@ -149,7 +151,7 @@ class Output {
 			}
 		} else {
 			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0, no-store');
 			header('Pragma: no-cache');
 
 			if ($data === null) {

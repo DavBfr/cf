@@ -182,8 +182,10 @@ class Template {
 		if ($contentMin !== null)
 			$content = $contentMin;
 
-		if ($this->caching)
+		if ($this->caching) {
 			$cache->setContents($content);
+			$cache->outputIfCached();
+		}
 
 		echo $content;
 		Output::finish();
