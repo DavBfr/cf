@@ -70,9 +70,12 @@ class Session {
 	 */
 	public static function delete() {
 		self::getInstance();
-		session_unset();
-		session_destroy();
-		session_write_close();
+
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			session_unset();
+			session_destroy();
+			session_write_close();
+		}
 		self::$instance = null;
 
 		if (ini_get("session.use_cookies")) {
