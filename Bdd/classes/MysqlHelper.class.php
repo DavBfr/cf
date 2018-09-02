@@ -128,6 +128,8 @@ class MysqlHelper extends PDOHelper {
 		switch ($type) {
 			case ModelField::TYPE_BLOB:
 				return "LONGBLOB";
+			case ModelField::TYPE_DECIMAL:
+				return "DECIMAL(20,8)";
 			default:
 				return parent::getDbType($type);
 		}
