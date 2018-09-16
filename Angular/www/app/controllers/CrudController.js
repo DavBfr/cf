@@ -181,6 +181,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 			$scope.id = null;
 			CrudService.getNew(function (data) {
 				$scope.item = data.data;
+				$scope.extra = data.extra;
 				if (data.foreigns) {
 					for (let item in data.foreigns) {
 						if (data.foreigns.hasOwnProperty(item)) {
@@ -202,6 +203,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 			CrudService.getOne(id, function (data) {
 				$scope.id = id;
 				$scope.item = data.data;
+				$scope.extra = data.extra;
 				if (data.foreigns) {
 					for (let item in data.foreigns) {
 						if (data.foreigns.hasOwnProperty(item)) {

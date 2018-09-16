@@ -282,6 +282,15 @@ abstract class Crud extends Rest {
 
 
 	/**
+	 * @param ModelData $item
+	 * @return array
+	 */
+	protected function getExtra($item) {
+		return array();
+	}
+
+
+	/**
 	 * @param array $r
 	 * @throws Exception
 	 */
@@ -300,7 +309,7 @@ abstract class Crud extends Rest {
 
 		$foreigns = $this->getForeigns($item);
 
-		Output::success(array(self::ID => $id, "foreigns" => $foreigns, "data" => $values));
+		Output::success(array(self::ID => $id, "foreigns" => $foreigns, "data" => $values, "extra" => $this->getExtra($item)));
 	}
 
 
@@ -313,7 +322,7 @@ abstract class Crud extends Rest {
 
 		$foreigns = $this->getForeigns($item);
 
-		Output::success(array(self::ID => null, "foreigns" => $foreigns, "data" => $item->getValues()));
+		Output::success(array(self::ID => null, "foreigns" => $foreigns, "data" => $item->getValues(), "extra" => $this->getExtra($item)));
 	}
 
 
