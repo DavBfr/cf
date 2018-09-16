@@ -269,7 +269,7 @@ class ModelField {
 	 * @param bool $value
 	 */
 	public function setInList($value) {
-		$this->props["list"] = (boolean)$value;
+		$this->props["list"] = (bool)$value;
 	}
 
 
