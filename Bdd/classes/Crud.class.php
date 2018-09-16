@@ -129,7 +129,7 @@ abstract class Crud extends Rest {
 	 */
 	protected function filterList($col) {
 		/** @var ModelField $field */
-		foreach ($this->model->getFields() as $field) {
+		foreach ($this->getFields() as $field) {
 			if ($field->inList()) {
 				$this->filterListField($col, $field);
 			}
@@ -223,11 +223,19 @@ abstract class Crud extends Rest {
 
 
 	/**
+	 * @return ModelField[]
+	 */
+	protected function getFields() {
+		return $this->model->getFields();
+	}
+
+
+	/**
 	 * @param array $r
 	 * @throws Exception
 	 */
 	protected function get_list_partial($r) {
-		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
+		$tpt = new Template(array_merge($this->options, array("model" => $this->getFields())));
 		$tpt->outputCached($this->options["list_partial"]);
 	}
 
@@ -237,7 +245,7 @@ abstract class Crud extends Rest {
 	 * @throws Exception
 	 */
 	protected function get_detail_partial($r) {
-		$tpt = new Template(array_merge($this->options, array("model" => $this->model->getFields())));
+		$tpt = new Template(array_merge($this->options, array("model" => $this->getFields())));
 		$tpt->outputCached($this->options["detail_partial"]);
 	}
 
@@ -265,7 +273,7 @@ abstract class Crud extends Rest {
 	protected function getForeigns($item) {
 		$foreigns = array();
 		/** @var ModelField $field */
-		foreach ($this->model->getFields() as $name => $field) {
+		foreach ($this->getFields() as $name => $field) {
 			if ($field->isForeign())
 				$foreigns[] = $name;
 		}
@@ -283,7 +291,7 @@ abstract class Crud extends Rest {
 		$item = $this->model->getById($id);
 		$values = array();
 		/** @var ModelField $field */
-		foreach ($this->model->getFields() as $field) {
+		foreach ($this->getFields() as $field) {
 			if ($field->isEditable() && !$field->isBlob()) {
 				$name = $field->getName();
 				$values[$name] = $item->get($name);
