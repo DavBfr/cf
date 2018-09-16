@@ -5,15 +5,15 @@
 <?php $this->insert('pagination.php'); ?>
 
 <form class="form-inline" data-role="form">
-	<?php if ($this->get("can_filter")): ?>
-	<div class="form-group">
-		<label class="sr-only" for="filter"><?php $this->tr("core.filter") ?></label>
-		<div class="input-group">
-			<div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
-			<input type="search" class="form-control" id="filter" placeholder="<?php $this->tr("core.filter") ?>" data-ng-model="filter.q" data-ng-change="Search()">
-		</div>
-	</div>
-	<?php endif ?>
+	<?php
+	if ($this->get("can_filter")) {
+		if (self::findTemplate("crud-list-filter-" . $this->get("table") . ".php")) {
+			$this->insertNew("crud-list-filter-" . $this->get("table") . ".php");
+		} else {
+			$this->insertNew("crud-list-filter.php");
+		}
+	}
+	?>
 	<?php if ($this->get("can_create")): ?>
 	<button data-ng-click="go_detail('new')" type="button" class="btn btn-default">
 		<span class="glyphicon glyphicon-plus"></span> <?php $this->tr("core.new") ?>

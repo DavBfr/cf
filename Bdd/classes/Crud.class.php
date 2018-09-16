@@ -74,6 +74,7 @@ abstract class Crud extends Rest {
 		return array(
 			"list_partial" => array($this->model->getTableName() . "-crud-list.php", "crud-list.php"),
 			"detail_partial" => array($this->model->getTableName() . "-crud-detail.php", "crud-detail.php"),
+			"table" => $this->model->getTableName(),
 		);
 	}
 
