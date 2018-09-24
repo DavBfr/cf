@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"require": {
 		"php": ">=5.2.0",
-		"davbfr/cf": "*",
+		"davbfr/cf": "*"
 	},
 	"authors": [{
 		"name": "@CF_AUTHOR@",
@@ -16,7 +16,7 @@
 	}],
 	"autoload": {
 		"classmap": [
-			"@NAME@.plugin.php",
+			"@NAME@.plugin.php"
 		]
 	}
 }
