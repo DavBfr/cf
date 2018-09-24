@@ -8,7 +8,17 @@
 		"php": ">=5.3.0",
 		"phpmailer/phpmailer": "~5.2",
 		"leafo/lessphp": "0.4.0",
-		"tedivm/jshrink": "~1.0"
+		"tedivm/jshrink": "~1.0",
+		"ext-json": "*",
+		"ext-PDO": "*",
+		"ext-mbstring": "*",
+		"ext-posix": "*",
+		"ext-fileinfo": "*"
+	},
+	"suggest": {
+		"ext-sysvmsg": "For Queue/Message",
+		"ext-mongo": "For MongoDB support",
+		"ext-apc": "For MamCache backed by APC"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~6"
