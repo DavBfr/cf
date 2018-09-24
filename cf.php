@@ -205,14 +205,11 @@ class Plugins {
 
 
 	/**
-	 * @param string ...$method_name
-	 * @param mixed ...$method_arguments
+	 * @param string $method_name
+	 * @param array $arguments
 	 * @return mixed
 	 */
-	public static function dispatch() {
-		$arguments = func_get_args();
-		$method_name = array_shift($arguments);
-
+	public static function dispatch($method_name, ...$arguments) {
 		foreach (self::get_plugins() as $plugin) {
 			$class = self::get($plugin);
 			if (method_exists($class, $method_name)) {
@@ -228,15 +225,11 @@ class Plugins {
 	/**
 	 * @param array $plugins
 	 * @param string $method_name
-	 * @param mixed $method_arguments
-	 *
+	 * @param array $arguments
 	 * @return array
 	 */
-	public static function dispatchTo() {
+	public static function dispatchTo(array $plugins, $method_name, ...$arguments) {
 		$results = array();
-		$arguments = func_get_args();
-		$plugins = array_shift($arguments);
-		$method_name = array_shift($arguments);
 
 		foreach ($plugins as $plugin) {
 			$class = self::get($plugin);
@@ -251,26 +244,20 @@ class Plugins {
 
 
 	/**
-	 * @param string $method_name
-	 * @param mixed $method_arguments
-	 *
+	 * @param array $arguments
 	 * @return array
 	 */
-	public static function dispatchAll() {
-		$arguments = func_get_args();
+	public static function dispatchAll(...$arguments) {
 		array_unshift($arguments, self::get_plugins());
 		return call_user_func_array(array(__CLASS__, "dispatchTo"), $arguments);
 	}
 
 
 	/**
-	 * @param string $method_name
-	 * @param mixed $method_arguments
-	 *
+	 * @param array $arguments
 	 * @return array
 	 */
-	public static function dispatchAllReversed() {
-		$arguments = func_get_args();
+	public static function dispatchAllReversed(...$arguments) {
 		array_unshift($arguments, array_reverse(self::get_plugins()));
 		return call_user_func_array(array(__CLASS__, "dispatchTo"), $arguments);
 	}
@@ -478,7 +465,7 @@ if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
 	Options::import(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php");
 }
 
-Options::set("MINIMUM_PHP_VERSION", "5.4.0", "Minimum PHP version supported");
+Options::set("MINIMUM_PHP_VERSION", "7.0.0", "Minimum PHP version supported");
 if (version_compare(MINIMUM_PHP_VERSION, PHP_VERSION, '>'))
 	die("PHP " . MINIMUM_PHP_VERSION . " required." . PHP_EOL);
 

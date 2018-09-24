@@ -21,6 +21,7 @@ class TemplateRes extends Template {
 	/**
 	 * TemplateRes constructor.
 	 * @param array $params
+	 * @throws \Exception
 	 */
 	public function __construct($params = array()) {
 		$conf = Config::getInstance();
