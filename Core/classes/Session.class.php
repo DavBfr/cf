@@ -75,22 +75,28 @@ class Session {
 			session_unset();
 			session_destroy();
 			session_write_close();
+			if (ini_get("session.use_cookies")) {
+				header_remove('Set-Cookie');
+			}
 		}
 		self::$instance = null;
 
-		if (ini_get("session.use_cookies")) {
+		if (isset($_COOKIE[SESSION_NAME])) {
 			$params = session_get_cookie_params();
 			setcookie(session_name(), '', time() - 42000,
 				$params["path"], $params["domain"],
 				$params["secure"], $params["httponly"]
 			);
+			unset($_COOKIE[SESSION_NAME]);
+		}
+
+		if (isset($_COOKIE[XSRF_TOKEN])) {
 			setcookie(XSRF_TOKEN, '', time() - 42000,
 				$params["path"], $params["domain"],
 				$params["secure"], $params["httponly"]
 			);
+			unset($_COOKIE[XSRF_TOKEN]);
 		}
-
-		unset($_COOKIE[SESSION_NAME]);
 	}
 
 
