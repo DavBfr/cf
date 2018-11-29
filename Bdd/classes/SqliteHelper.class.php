@@ -102,7 +102,7 @@ class SqliteHelper extends PDOHelper {
 				elseif (strpos(strtoupper($row["type"]), "TIME") !== false) $field["type"] = ModelField::TYPE_TIME;
 				elseif (strpos(strtoupper($row["type"]), "DATE") !== false) $field["type"] = ModelField::TYPE_DATE;
 				elseif (strpos(strtoupper($row["type"]), "NUMBER") !== false) $field["type"] = ModelField::TYPE_DECIMAL;
-				else $field["type"] = $row["type"];
+				else $field["type"] = strtolower($row["type"]);
 
 				$field["null"] = $row["notnull"] == 0;
 				$field["primary"] = $row["pk"] == 1;
