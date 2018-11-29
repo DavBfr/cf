@@ -170,7 +170,7 @@ class ModelField {
 	 * @return bool
 	 */
 	public function isPassword() {
-		trigger_error('Deprecated: isPassword() is deprecated', E_NOTICE);
+		trigger_error('Deprecated: isPassword() is deprecated', E_USER_NOTICE);
 		return $this->props["editor"] == "passwd";
 	}
 
@@ -179,7 +179,7 @@ class ModelField {
 	 * @return bool
 	 */
 	public function isEmail() {
-		trigger_error('Deprecated: isEmail() is deprecated', E_NOTICE);
+		trigger_error('Deprecated: isEmail() is deprecated', E_USER_NOTICE);
 		return $this->props["editor"] == "email";
 	}
 
@@ -188,7 +188,7 @@ class ModelField {
 	 * @return bool
 	 */
 	public function isUrl() {
-		trigger_error('Deprecated: isUrl() is deprecated', E_NOTICE);
+		trigger_error('Deprecated: isUrl() is deprecated', E_USER_NOTICE);
 		return $this->props["editor"] == "url";
 	}
 
