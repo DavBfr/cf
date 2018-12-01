@@ -103,6 +103,24 @@ class ErrorHandler {
 
 
 	/**
+	 * @param array $backtrace
+	 * @return string
+	 */
+	protected function formatTextBacktrace($backtrace) {
+		$body = "";
+		foreach ($backtrace as $n => $bt) {
+			$body .=
+				"#$n"
+				. " ${bt[0]} (${bt[1]}):\n"
+				. (isset($bt[2]) ? $bt[2] . '->' : '')
+				. (isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '')
+				. "\n";
+		}
+		return $body;
+	}
+
+
+	/**
 	 * @param int $code
 	 * @param string $message
 	 * @param string $body
@@ -143,15 +161,7 @@ class ErrorHandler {
 		header("Content-type: text/plain");
 		$body = "$message ($code)\n$body";
 		if (is_array($backtrace) && count($backtrace) > 0) {
-			$body .= "\n\nBacktrace:\n";
-			foreach ($backtrace as $n => $bt) {
-				$body .=
-					"#$n"
-					. " ${bt[0]} (${bt[1]}):\n"
-					. (isset($bt[2]) ? $bt[2] . '->' : '')
-					. (isset($bt[3]) ? $bt[3] . '(' . implode(', ', $bt[4]) . ')' : '')
-					. "\n";
-			}
+			$body .= "\n\nBacktrace:\n" . $this->formatTextBacktrace($backtrace);			
 		}
 		$body .= "\n---\n" . $baseline . "\n";
 		echo $body;
@@ -220,8 +230,13 @@ class ErrorHandler {
 
 		if ($code < 500 && $code != 404) {
 			echo $body;
-			if (DEBUG)
+			if (DEBUG) {
 				echo "\n";
+				if ($backtrace !== false) {
+					$this->debugBacktrace($backtrace);
+					echo "Backtrace:\n" . $this->formatTextBacktrace($this->backtrace);
+				}
+			}
 			Output::finish($code);
 		}
 
