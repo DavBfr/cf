@@ -27,7 +27,7 @@ abstract class RestApi extends Rest {
 	public function handleRequest($method, $path) {
 		header('Access-Control-Allow-Origin: *');
 		header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Cf-Token");
-		header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE");
+		header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE, PUT, PATCH");
 
 		if ($method == "OPTIONS") {
 			Output::finish();
