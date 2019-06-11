@@ -21,6 +21,7 @@
 		"ext-apc": "For MamCache backed by APC"
 	},
 	"require-dev": {
+		"phan/phan": "^1.0",
 		"phpunit/phpunit": "~6"
 	},
 	"authors": [{
