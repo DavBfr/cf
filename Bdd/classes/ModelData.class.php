@@ -283,7 +283,7 @@ class ModelData implements Iterator, ArrayAccess {
 		if (!array_key_exists($field, $this->values))
 			throw new Exception("Field ${field} not found in table " . $this->model->getTableName());
 
-		if (!is_a($field, "ModelField"))
+		if (!is_a($field, __NAMESPACE__ . "\\ModelField"))
 			$field = $this->model->getField($field);
 
 		$func = "set" . ucfirst($field->getName()) . "Field";
