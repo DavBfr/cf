@@ -12,16 +12,19 @@
  * Generated with CF @CF_VERSION@ on @DATE@
  **/
 
-if (!file_exists(dirname(__file__) . "/config/paths.php"))
-	die("Site not configured.");
-include_once(dirname(__file__) . "/config/paths.php");
+if (file_exists(dirname(__file__) . "/vendor/autoload.php")) {
+	define("ROOT_DIR", dirname(__file__));
+	include_once(ROOT_DIR . "/vendor/autoload.php");
+} else {
+	if (!file_exists(dirname(__file__) . "/config/paths.php"))
+		die("Site not configured.");
+	include_once(dirname(__file__) . "/config/paths.php");
 
-if (file_exists(dirname(__file__) . "/vendor/autoload.php"))
-	include_once(dirname(__file__) . "/vendor/autoload.php");
-elseif (!file_exists(CF_DIR . "/cf.php"))
-	die("Site not configured correctly.");
-else
-	require_once(CF_DIR . "/cf.php");
+	if (!file_exists(CF_DIR . "/cf.php"))
+		die("Site not configured correctly.");
+	else
+		require_once(CF_DIR . "/cf.php");
+}
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $tpt = CorePlugin::bootstrap();

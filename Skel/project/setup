@@ -14,11 +14,13 @@
  **/
 
 define("ROOT_DIR", dirname(__file__));
-if (file_exists(ROOT_DIR . "/config/paths.php"))
-	include_once(ROOT_DIR . "/config/paths.php");
 
-if (file_exists(ROOT_DIR . "/vendor/autoload.php"))
+if (file_exists(ROOT_DIR . "/vendor/autoload.php")) {
 	include_once(ROOT_DIR . "/vendor/autoload.php");
+} else {
+	if (file_exists(ROOT_DIR . "/config/paths.php"))
+	include_once(ROOT_DIR . "/config/paths.php");
+}
 
 if (file_exists(ROOT_DIR . "/phpunit.phar"))
 	include_once(ROOT_DIR . "/phpunit.phar");
