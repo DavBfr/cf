@@ -247,7 +247,7 @@ function CrudController($scope, $timeout, $location, $route, CrudService, Notifi
 		for (let item in data) {
 			if (data.hasOwnProperty(item)) {
 				if (data[item] instanceof Date) {
-					data[item] = data[item].getTime() / 1000;
+					data[item] = Math.floor(data[item].getTime() / 1000);
 				}
 			}
 		}

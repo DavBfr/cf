@@ -270,19 +270,19 @@ abstract class BddHelper {
 			case ModelField::TYPE_DATE:
 				if ($value instanceof DateTime)
 					$value = $value->format("Y-m-d");
-				elseif (is_int($value) || $value == strval(intval($value)))
+				elseif (is_int($value) || is_double($value) || $value == strval(intval($value)) ||$value == strval(floatval($value)))
 					$value = date("Y-m-d", intval($value));
 				break;
 			case ModelField::TYPE_TIME:
 				if ($value instanceof DateTime)
 					$value = $value->format("H:i:s");
-				elseif (is_int($value) || $value == strval(intval($value)))
+				elseif (is_int($value) || is_double($value) || $value == strval(intval($value)) ||$value == strval(floatval($value)))
 					$value = date("H:i:s", intval($value));
 				break;
 			case ModelField::TYPE_DATETIME:
 				if ($value instanceof DateTime)
 					$value = $value->format("Y-m-d H:i:s");
-				elseif (is_int($value) || $value == strval(intval($value)))
+				elseif (is_int($value) || is_double($value) || $value == strval(intval($value)) ||$value == strval(floatval($value)))
 					$value = date("Y-m-d H:i:s", intval($value));
 				break;
 		}
@@ -305,9 +305,9 @@ abstract class BddHelper {
 			case ModelField::TYPE_BOOL:
 				return intval($value) != 0;
 			case ModelField::TYPE_DATETIME:
-			case ModelField::TYPE_TIME:
-				if ($value instanceof DateTime)
+				if ($value instanceof DateTime) {
 					return $value->getTimestamp();
+				}
 				try {
 					$value = new DateTime($value);
 					return $value->getTimestamp();
@@ -315,15 +315,34 @@ abstract class BddHelper {
 					Logger::error("Date {$value} invalid: " . $e->getMessage());
 					return $value;
 				}
-			case ModelField::TYPE_DATE:
-				if ($value instanceof DateTime)
+			case ModelField::TYPE_TIME:
+				if ($value instanceof DateTime) {
+					$value->setDate(1970, 1, 1);
 					return $value->getTimestamp();
+				}
 				try {
 					$value = new DateTime($value);
+					$value->setDate(1970, 1, 1);
 					return $value->getTimestamp();
 				} catch (Exception $e) {
 					Logger::error("Date {$value} invalid: " . $e->getMessage());
-					return $value + 43200;
+					return $value;
+				}
+			case ModelField::TYPE_DATE:
+				$hours = date('H');
+				$minutes = date('i');
+				$seconds = date('s');
+				if ($value instanceof DateTime) {
+					$value->setTime($hours, $minutes, $seconds);
+					return $value->getTimestamp();
+				}
+				try {
+					$value = new DateTime($value);
+					$value->setTime($hours, $minutes, $seconds);
+					return $value->getTimestamp();
+				} catch (Exception $e) {
+					Logger::error("Date {$value} invalid: " . $e->getMessage());
+					return $value;
 				}
 		}
 		return $value;

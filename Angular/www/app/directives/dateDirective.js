@@ -21,7 +21,7 @@ app.directive("tsToDate", function () {
 		require: "ngModel",
 		link: function (scope, element, attrs, ctrl) {
 			ctrl.$parsers.push(function (inputValue) {
-				return new Date(inputValue + 'T12:00:00');
+				return new Date(inputValue + new Date().toISOString().substr(10));
 			});
 			scope.$watch(attrs.ngModel, function (newValue, oldValue) {
 				if (Number.isInteger(newValue)) {
