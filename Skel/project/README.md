@@ -1,45 +1,45 @@
-INSTALLATION
-============
+# INSTALLATION
 
-Requirements
-------------
+## Requirements
 
-This software require PHP version 7.0 or up with the php command-line
-program available to run installation scripts.
+This software requires PHP version 7.0 or up with the PHP command-line program available to run installation scripts.
 
 You may also need Internet access to be able to download dependencies.
 
-Download Composer
------------------
+## Download Composer
 
 Run this in your terminal to get the latest Composer version:
 
-    curl -sS https://getcomposer.org/installer | php
+```bash
+curl -sS https://getcomposer.org/installer | php
+```
 
 Or if you don't have curl:
 
-    php -r "readfile('https://getcomposer.org/installer');" | php
+```bash
+php -r "readfile('https://getcomposer.org/installer');" | php
+```
 
-This installer script will simply check some php.ini settings, warn you
-if they are set incorrectly, and then download the latest composer.phar
-in the current directory
+This installer script will simply check some php.ini settings, warn you if they are set incorrectly, and then download the latest composer.phar in the current directory
 
-Run the installation
---------------------
+## Run the installation
 
-Run this in your terminal to install dependencies and configure the
-software.
+Run this in your terminal to install dependencies and configure the software.
 
-    ./composer.phar install
+```bash
+./composer.phar install
+```
 
-Configuration
--------------
+## Configuration
 
-Site specific configuration is loaded from the file
+Site-specific configuration is loaded from the file
 
-    config/config.local.php
+```bash
+config/config.local.php
+```
 
-To change the configuration, run this in a
-terminal:
+To change the configuration, run this in a terminal:
 
-    ./setup config -set key value
+```bash
+./setup config -set key value
+```
