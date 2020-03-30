@@ -446,7 +446,7 @@ function configure($key, $value) {
 ob_start();
 define("URL_SEPARATOR", "/");
 define("START_TIME", microtime(true));
-define("CF_VERSION", "2.4");
+define("CF_VERSION", "2.5");
 define("CF_URL", "https://github.com/DavBfr/cf");
 define("CF_AUTHOR", "David PHAM-VAN");
 define("CF_EMAIL", "dev.nfet.net@gmail.com");
