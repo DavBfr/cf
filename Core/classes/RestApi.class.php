@@ -1,4 +1,5 @@
 <?php namespace DavBfr\CF;
+
 /**
  * Copyright (C) 2013-2018 David PHAM-VAN
  *
@@ -18,22 +19,17 @@
  **/
 
 abstract class RestApi extends Rest {
-
 	/**
 	 * @param string $method
 	 * @param string $path
-	 * @throws \Exception
+	 * @return array
 	 */
-	public function handleRequest($method, $path) {
-		header('Access-Control-Allow-Origin: *');
-		header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Cf-Token");
-		header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE, PUT, PATCH");
-
-		if ($method == "OPTIONS") {
-			Output::finish();
-		}
-
-		parent::handleRequest($method, $path);
+	public function getRequestHeaders($method, $path) {
+		return [
+			'Access-Control-Allow-Origin' => '*',
+			'Access-Control-Allow-Headers' => ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Cf-Token'],
+			'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+		];
 	}
 
 

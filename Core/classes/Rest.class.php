@@ -113,9 +113,31 @@ abstract class Rest {
 	/**
 	 * @param string $method
 	 * @param string $path
+	 * @return array
+	 */
+	public function getRequestHeaders($method, $path) {
+		return [];
+	}
+
+
+	/**
+	 * @param string $method
+	 * @param string $path
 	 * @throws \Exception
 	 */
 	public function handleRequest($method, $path) {
+		foreach($this->getRequestHeaders($method, $path) as $header => $value) {
+			if (is_array($value)) {
+				$value = implode(', ', $value);
+			}
+
+			header("$header: $value");
+		}
+
+		if ($method == 'OPTIONS') {
+			Output::finish();
+		}
+
 		if ($path == "")
 			$path = "/";
 
