@@ -76,7 +76,7 @@ class System {
 			if ($fold == '..' && $i > 0 && end($out) != '..') array_pop($out);
 			else $out[] = $fold;
 		}
-		return ($path{0} == DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '') . join(DIRECTORY_SEPARATOR, $out);
+		return ($path[0] == DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '') . join(DIRECTORY_SEPARATOR, $out);
 	}
 
 
