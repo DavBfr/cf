@@ -1,6 +1,7 @@
 {
 	"description": "Skeletton site made with <i>CoreFramework</i>.",
 	"plugins": ["Angular", "Bootstrap", "Minifier"],
+	"debugPlugins": ["WebSetup"],
 
 	"scripts": [
 		"bootstrap/bootstrap-theme.css",

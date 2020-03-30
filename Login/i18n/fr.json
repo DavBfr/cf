@@ -1,0 +1,14 @@
+{
+	"login": {
+		"user": "Utilisateur",
+		"account": "Mon compte",
+		"admin": "Administrateur",
+		"email": "Courriel",
+		"since": "Enregistré depuis",
+		"change_pwd": "Changer de mot de passe",
+		"pwd_old": "Ancien mot de passe",
+		"pwd_new": "Nouveau mot de passe",
+		"pwd_new2": "Nouveau mot de passe, encore",
+		"pwd_nomatch": "Les mots de passe ne sont pas les mêmes"
+	}
+}

@@ -42,7 +42,7 @@ class SkelPlugin extends Plugins {
 			}
 			$content = str_replace("@DATE@", date("r"), $content);
 			$gitignore = trim(file_get_contents($this->getDir() . DIRECTORY_SEPARATOR . "project" . DIRECTORY_SEPARATOR . ".gitignore"));
-			$content = str_replace("@EXCLUDES@", "\"" . implode(explode("\n", $gitignore), "\", \"") . "\"", $content);
+			$content = str_replace("@EXCLUDES@", "\"" . implode("\", \"", explode("\n", $gitignore)) . "\"", $content);
 			file_put_contents(getcwd() . DIRECTORY_SEPARATOR . $file, $content);
 		}
 	}

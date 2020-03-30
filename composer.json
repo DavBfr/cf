@@ -13,7 +13,9 @@
 		"ext-PDO": "*",
 		"ext-mbstring": "*",
 		"ext-posix": "*",
-		"ext-fileinfo": "*"
+		"ext-fileinfo": "*",
+		"nimmneun/onesheet": "^1.1",
+		"erusev/parsedown": "^1.7"
 	},
 	"suggest": {
 		"ext-sysvmsg": "For Queue/Message",

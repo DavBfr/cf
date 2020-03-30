@@ -1,0 +1,14 @@
+{
+	"login": {
+		"user": "User",
+		"account": "My account",
+		"admin": "Administrator",
+		"email": "Email",
+		"since": "Registered since",
+		"change_pwd": "Change password",
+		"pwd_old": "Old Password",
+		"pwd_new": "New Password",
+		"pwd_new2": "New Password again",
+		"pwd_nomatch": "The passwords are not the same"
+	}
+}

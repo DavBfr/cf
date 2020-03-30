@@ -1,0 +1,8 @@
+{
+	"full_site": true,
+	"api": false,
+	"allow_change_password": true,
+	"allow_change_name": false,
+	"allow_change_email": false,
+	"show_account_menu": true
+}

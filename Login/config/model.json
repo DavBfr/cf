@@ -1,0 +1,71 @@
+{
+	"user": {
+		"__baseClassName__": "UserModelLogin",
+
+		"id": {
+			"type": "auto",
+			"primary": true,
+			"edit": false,
+			"autoincrement": true
+		},
+		"name": {
+			"type": "text",
+			"list": true,
+			"caption": "Name"
+		},
+		"email": {
+			"type": "text",
+			"editor": "email",
+			"caption": "Email",
+			"null": true,
+			"list": true
+		},
+		"login": {
+			"type": "text",
+			"caption": "User name",
+			"list": true
+		},
+		"password": {
+			"type": "text",
+			"editor": "password",
+			"caption": "Password",
+			"list": false
+		},
+		"admin": {
+			"type": "bool",
+			"list": true,
+			"caption": "Admin"
+		},
+		"creation": {
+			"type": "ts",
+			"list": true,
+			"edit": false,
+			"caption": "Creation date"
+		}
+	},
+	"token": {
+		"__baseClassName__": "TokenModelLogin",
+
+		"id": {
+			"type": "auto",
+			"primary": true,
+			"default": null,
+			"edit": false,
+			"autoincrement": true
+		},
+		"name": {
+			"type": "text",
+			"list": true
+		},
+		"token": {
+			"type": "text",
+			"list": true,
+			"edit": true
+		},
+		"active": {
+			"type": "bool",
+			"default": true,
+			"list": true
+		}
+	}
+}
