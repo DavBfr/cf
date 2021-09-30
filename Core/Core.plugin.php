@@ -20,6 +20,8 @@
 
 use PHPUnit_Framework_TestSuite;
 
+require_once(Plugins::CLASS_DIR . DIRECTORY_SEPARATOR . 'HttpHeaders.class.php');
+
 Options::set("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www", "Public webpages home");
 
 Options::set("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data", "Data directory");
@@ -30,11 +32,11 @@ if (substr(WWW_DIR, 0, strlen(DOCUMENT_ROOT)) == DOCUMENT_ROOT)
 else
 	Options::set("WWW_PATH", "www", "Website relative url");
 Options::set("INDEX_PATH", WWW_PATH . "/index.php", "Main webpage URL");
-Options::set("REST_PATH", array_key_exists('HTTP_MOD_REWRITE', $_SERVER) ? WWW_PATH . "/api" : INDEX_PATH, "Json Rest API URL");
+Options::set("REST_PATH", HttpHeaders::contains('mod-rewrite') ? WWW_PATH . "/api" : INDEX_PATH, "Json Rest API URL");
 Options::set("CACHE_ENABLED", !DEBUG, "Enable caching");
 Options::set("CACHE_TIME", 86400, "Cache expire time");
 Options::set("MESSAGE_QUEUE", 92873, "Message Queue ID");
-Options::set("JSON_HEADER", !DEBUG || (isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && $_SERVER["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"), "The browser asked for a Json document");
+Options::set("JSON_HEADER", !DEBUG || (HttpHeaders::get('x-requested-with')  == "XMLHttpRequest"), "The browser asked for a Json document");
 Options::set("SESSION_NAME", "CF", "Cookie Name seen in the User Agent");
 Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"), "Cookie Life Time");
 Options::set("SESSION_REGENERATE", SESSION_TIMEOUT, "Time to regenerate the cookie");

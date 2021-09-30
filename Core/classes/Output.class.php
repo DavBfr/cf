@@ -119,14 +119,14 @@ class Output {
 		if ($cache) {
 			if ($data === null) {
 				$filetime = filemtime($filename);
-				$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
+				$if_modified_since = HttpHeaders::contains('if-modified-since') ? HttpHeaders::get('if-modified-since') : false;
 				$etag_header = false;
 				$etag = '';
 			} else {
 				$if_modified_since = false;
 				$filetime = 0;
 				$etag = sha1($data);
-				$etag_header = isset($_SERVER['HTTP_IF_NONE_MMATCH']) ? $_SERVER['HTTP_IF_NONE_MMATCH'] : false;
+				$etag_header = HttpHeaders::contains('if-none-match') ? HttpHeaders::contains('if-none-match') : false;
 			}
 
 			header_remove("Pragma");

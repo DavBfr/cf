@@ -143,7 +143,7 @@ class ErrorHandler {
 			$backtrace = array();
 		}
 
-		$http = array_key_exists("HTTP_ACCEPT", $_SERVER) && strpos($_SERVER["HTTP_ACCEPT"], "text/html") !== false;
+		$http = HttpHeaders::contains('accept') && strpos(HttpHeaders::get('accept'), "text/html") !== false;
 
 		if (!IS_CLI && $http && Template::findTemplate(ERROR_TEMPLATE)) {
 			$tpt = new TemplateRes(array(
@@ -161,7 +161,7 @@ class ErrorHandler {
 		header("Content-type: text/plain");
 		$body = "$message ($code)\n$body";
 		if (is_array($backtrace) && count($backtrace) > 0) {
-			$body .= "\n\nBacktrace:\n" . $this->formatTextBacktrace($backtrace);			
+			$body .= "\n\nBacktrace:\n" . $this->formatTextBacktrace($backtrace);
 		}
 		$body .= "\n---\n" . $baseline . "\n";
 		echo $body;

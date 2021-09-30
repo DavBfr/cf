@@ -331,7 +331,7 @@ abstract class Rest {
 				"name" => $config->get("composer.license"),
 			),
 			"servers" => array(
-				array("url" => "http" . ($_SERVER["HTTPS"] ? "s" : "") . "://" . $_SERVER['HTTP_HOST'] . REST_PATH),
+				array("url" => "http" . ($_SERVER["HTTPS"] ? "s" : "") . "://" . HttpHeaders::get('host') . REST_PATH),
 			),
 		);
 

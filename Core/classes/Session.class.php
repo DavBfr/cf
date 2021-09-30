@@ -233,10 +233,11 @@ class Session {
 		if (self::hasSession() && self::hasRight("logged_api"))
 			return true;
 
-		$header = 'HTTP_' . strtoupper(str_replace('-', '_', API_TOKEN_HEADER));
-		if (array_key_exists($header, $_SERVER)) {
-			$token = $_SERVER[$header];
-			return Plugins::dispatch("token_login", $token) === true;
+		if (HttpHeaders::contains(API_TOKEN_HEADER)) {
+			$token = HttpHeaders::get(API_TOKEN_HEADER);
+			$login = Plugins::dispatch("token_login", $token);
+			Logger::error("token_login result: " . var_export($login, true));
+			return $login === true;
 		}
 
 		return false;
@@ -298,11 +299,10 @@ class Session {
 		if (DEBUG)
 			return true;
 
-		$header = 'HTTP_' . strtoupper(str_replace('-', '_', XSRF_HEADER));
-		if (!array_key_exists($header, $_SERVER))
+		if (!HttpHeaders::contains(XSRF_HEADER))
 			return false;
 
-		return Session::Get(self::xsrf_token) == $_SERVER[$header];
+		return Session::Get(self::xsrf_token) == HttpHeaders::get(XSRF_HEADER);
 	}
 
 

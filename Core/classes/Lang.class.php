@@ -203,9 +203,9 @@ class Lang {
 	 */
 	public static function detect($supported_list = null) {
 		$languages = array();
-		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+		if (HttpHeaders::contains('accept-language')) {
 			$languagesQ = array();
-			$languageList = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+			$languageList = HttpHeaders::get('accept-language');
 			$languageRanges = explode(',', trim($languageList));
 			foreach ($languageRanges as $languageRange) {
 				if (preg_match('/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/', trim($languageRange), $match)) {
