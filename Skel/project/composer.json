@@ -15,7 +15,7 @@
 		"davbfr/cf": "~@CF_VERSION@"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "~6"
+		"phpunit/phpunit": "*"
 	},
 	"scripts": {
 		"post-install-cmd": [

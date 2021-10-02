@@ -18,15 +18,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-use lessc;
-use lessc_formatter_compressed;
-
-class Less extends lessc {
-	private $origdir = null;
+class Less {
+	private $origdir = '';
+	private $options = [];
+	private $functions = [];
 
 
 	public function __construct($fname = null) {
-		parent::__construct($fname);
+		$this->options['import_callback'] = array($this, 'findImport');
+
 		$this->registerFunction("media", function ($arg) {
 			$file = Resources::find($arg[2][0]);
 			if ($file !== null) {
@@ -37,6 +37,24 @@ class Less extends lessc {
 		});
 	}
 
+	public function compileFile($fname, $outFname = null) {
+		$parser = new \Less_Parser($this->options);
+		foreach ($this->functions as $name => $func) {
+			$parser->registerFunction($name, $func);
+		}
+		$parser->parseFile($fname, $this->origdir);
+		$css = $parser->getCss();
+
+		if ($outFname !== null) {
+			return file_put_contents($outFname, $css);
+		}
+
+		return $css;
+	}
+
+	public function registerFunction($name, $func) {
+		$this->functions[$name] = $func;
+	}
 
 	public function setOriginalDir($dir) {
 		$this->origdir = $dir;
@@ -56,7 +74,7 @@ class Less extends lessc {
 
 		foreach ((array)$this->importDir as $dir) {
 			$full = $dir . (substr($dir, -1) != '/' ? '/' : '') . $url;
-			if ($this->fileExists($file = $full . '.less') || $this->fileExists($file = $full)) {
+			if (is_file($file = $full . '.less') || is_file($file = $full)) {
 				return $file;
 			}
 		}
@@ -66,7 +84,7 @@ class Less extends lessc {
 
 
 	public function enableMinify() {
-		$this->setFormatter(new lessc_formatter_compressed());
+		$this->options['compress'] = true;
 	}
 
 }
