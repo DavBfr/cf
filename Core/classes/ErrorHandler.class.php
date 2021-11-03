@@ -40,8 +40,8 @@ class ErrorHandler {
 	 * ErrorHandler constructor.
 	 */
 	protected function __construct() {
-		error_reporting(E_ALL ^ (E_NOTICE | E_USER_NOTICE | (DEBUG ? 0 : (E_WARNING | E_USER_WARNING))));
-		ini_set("display_errors", DEBUG ? 1 : 0);
+		error_reporting(E_ALL ^ (E_NOTICE | E_USER_NOTICE | (Options::get('DEBUG') ? 0 : (E_WARNING | E_USER_WARNING))));
+		ini_set("display_errors", Options::get('DEBUG') ? 1 : 0);
 		ini_set("track_errors", 1);
 		ini_set("html_errors", 1);
 		set_error_handler(array($this, "errorHandler"));
@@ -138,14 +138,14 @@ class ErrorHandler {
 				$message = "Error #${code}";
 		}
 
-		if (!DEBUG) {
+		if (!Options::get('DEBUG')) {
 			$body = "";
 			$backtrace = array();
 		}
 
 		$http = HttpHeaders::contains('accept') && strpos(HttpHeaders::get('accept'), "text/html") !== false;
 
-		if (!IS_CLI && $http && Template::findTemplate(ERROR_TEMPLATE)) {
+		if (!IS_CLI && $http && Template::findTemplate(Options::get('ERROR_TEMPLATE'))) {
 			$tpt = new TemplateRes(array(
 				"code" => $code,
 				"message" => $message,
@@ -156,7 +156,7 @@ class ErrorHandler {
 				"log" => $log
 			));
 			header("Content-type: text/html");
-			$tpt->output(ERROR_TEMPLATE);
+			$tpt->output(Options::get('ERROR_TEMPLATE'));
 		}
 		header("Content-type: text/plain");
 		$body = "$message ($code)\n$body";
@@ -230,7 +230,7 @@ class ErrorHandler {
 
 		if ($code < 500 && $code != 404) {
 			echo $body;
-			if (DEBUG) {
+			if (Options::get('DEBUG')) {
 				echo "\n";
 				if ($backtrace !== false) {
 					$this->debugBacktrace($backtrace);

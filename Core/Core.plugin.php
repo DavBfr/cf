@@ -27,29 +27,29 @@ Options::set("WWW_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "www", "Public webpages
 Options::set("DATA_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "data", "Data directory");
 Options::set("DOCUMENT_ROOT", str_replace($_SERVER["SCRIPT_NAME"], '', $_SERVER["SCRIPT_FILENAME"]), "Root directory under which the current script is executing");
 Options::set("ALLOW_DOCUMENT_ROOT", true, "Allow direct resources access from document root");
-if (substr(WWW_DIR, 0, strlen(DOCUMENT_ROOT)) == DOCUMENT_ROOT)
-	Options::set("WWW_PATH", str_replace(DOCUMENT_ROOT, '', WWW_DIR), "Website relative URL");
+if (substr(Options::get('WWW_DIR'), 0, strlen(Options::get('DOCUMENT_ROOT'))) == Options::get('DOCUMENT_ROOT'))
+	Options::set("WWW_PATH", str_replace(Options::get('DOCUMENT_ROOT'), '', Options::get('WWW_DIR')), "Website relative URL");
 else
 	Options::set("WWW_PATH", "www", "Website relative url");
-Options::set("INDEX_PATH", WWW_PATH . "/index.php", "Main webpage URL");
-Options::set("REST_PATH", HttpHeaders::contains('mod-rewrite') ? WWW_PATH . "/api" : INDEX_PATH, "Json Rest API URL");
-Options::set("CACHE_ENABLED", !DEBUG, "Enable caching");
+Options::set("INDEX_PATH", Options::get('WWW_PATH') . "/index.php", "Main webpage URL");
+Options::set("REST_PATH", HttpHeaders::contains('mod-rewrite') ? Options::get('WWW_PATH') . "/api" : Options::get('INDEX_PATH'), "Json Rest API URL");
+Options::set("CACHE_ENABLED", !Options::get('DEBUG'), "Enable caching");
 Options::set("CACHE_TIME", 86400, "Cache expire time");
 Options::set("MESSAGE_QUEUE", 92873, "Message Queue ID");
-Options::set("JSON_HEADER", !DEBUG || (HttpHeaders::get('x-requested-with')  == "XMLHttpRequest"), "The browser asked for a Json document");
+Options::set("JSON_HEADER", !Options::get('DEBUG') || (HttpHeaders::get('x-requested-with')  == "XMLHttpRequest"), "The browser asked for a Json document");
 Options::set("SESSION_NAME", "CF", "Cookie Name seen in the User Agent");
 Options::set("SESSION_TIMEOUT", ini_get("session.gc_maxlifetime"), "Cookie Life Time");
-Options::set("SESSION_REGENERATE", SESSION_TIMEOUT, "Time to regenerate the cookie");
+Options::set("SESSION_REGENERATE", Options::get('SESSION_TIMEOUT'), "Time to regenerate the cookie");
 Options::set("SESSION_PATH", ini_get("session.cookie_path"), "Cookie path");
 Options::set("SESSION_DOMAIN", ini_get("session.cookie_domain"), "Cookie domain name");
 Options::set("SESSION_SAME_SITE", "strict", "Cookie same site policy");
-Options::set("MEMCACHE_PREFIX", SESSION_NAME, "Memory cache variable prefix to use");
+Options::set("MEMCACHE_PREFIX", Options::get('SESSION_NAME'), "Memory cache variable prefix to use");
 Options::set("MEMCACHE_LIFETIME", 10800, "Memory cache time to live");
 Options::set("MEMCACHE_ENABLED", false, "Enable memory cache");
 Options::set("API_TOKEN_HEADER", "cf-token", "Api token name");
 Options::set("ERROR_TEMPLATE", "error.php", "Error template");
-Options::set("CACHE_DIR", DATA_DIR . DIRECTORY_SEPARATOR . "cache", "Cache directory");
-Options::set("WWW_CACHE_DIR", WWW_DIR . DIRECTORY_SEPARATOR . "cache", "Public Cache URL");
+Options::set("CACHE_DIR", Options::get('DATA_DIR') . DIRECTORY_SEPARATOR . "cache", "Cache directory");
+Options::set("WWW_CACHE_DIR", Options::get('WWW_DIR') . DIRECTORY_SEPARATOR . "cache", "Public Cache URL");
 Options::set("LANG_DEFAULT", "en_US", "Default language");
 Options::set("LANG_AUTOLOAD", true, "Load locale file automatically");
 Options::set("LANG_AUTODETECT", true, "Try to autodetect user language");
@@ -75,7 +75,7 @@ class CorePlugin extends Plugins {
 			foreach ($conf->get("plugins", array()) as $plugin) {
 				Plugins::add($plugin);
 			}
-			if (DEBUG) {
+			if (Options::get('DEBUG')) {
 				foreach ($conf->get("debugPlugins", array()) as $plugin) {
 					Plugins::add($plugin);
 				}
@@ -86,26 +86,26 @@ class CorePlugin extends Plugins {
 				if (file_exists(ROOT_DIR . "/composer.json")) {
 					$conf->append(ROOT_DIR . "/composer.json", false, "composer");
 				}
-				if (file_exists(CONFIG_DIR . "/config.json")) {
-					$conf->append(CONFIG_DIR . "/config.json");
+				if (file_exists(Options::get('CONFIG_DIR') . "/config.json")) {
+					$conf->append(Options::get('CONFIG_DIR') . "/config.json");
 				}
-				if (file_exists(CONFIG_DIR . "/config.local.json")) {
-					$conf->append(CONFIG_DIR . "/config.local.json");
+				if (file_exists(Options::get('CONFIG_DIR') . "/config.local.json")) {
+					$conf->append(Options::get('CONFIG_DIR') . "/config.local.json");
 				}
-				foreach (glob(CONFIG_DIR . "/*.json") as $file) {
+				foreach (glob(Options::get('CONFIG_DIR') . "/*.json") as $file) {
 					$bn = basename($file);
 					if (substr($bn, 0, 7) != "config.") {
 						$conf->append($file, false, substr($bn, 0, strlen($bn) - 5));
 					}
 				}
-				if (DEBUG && file_exists(CONFIG_DIR . "/config.debug.json")) {
-					$conf->append(CONFIG_DIR . "/config.debug.json");
+				if (Options::get('DEBUG') && file_exists(Options::get('CONFIG_DIR') . "/config.debug.json")) {
+					$conf->append(Options::get('CONFIG_DIR') . "/config.debug.json");
 				}
 				$confsave = $conf->getData();
 				foreach ($conf->get("plugins", array()) as $plugin) {
 					Plugins::add($plugin);
 				}
-				if (DEBUG) {
+				if (Options::get('DEBUG')) {
 					foreach ($conf->get("debugPlugins", array()) as $plugin) {
 						Plugins::add($plugin);
 					}
@@ -129,7 +129,7 @@ class CorePlugin extends Plugins {
 				foreach ($conf->get("plugins", array()) as $plugin) {
 					Plugins::add($plugin);
 				}
-				if (DEBUG) {
+				if (Options::get('DEBUG')) {
 					foreach ($conf->get("debugPlugins", array()) as $plugin) {
 						Plugins::add($plugin);
 					}
@@ -233,7 +233,7 @@ class CorePlugin extends Plugins {
 		$content = "<?php // DO NOT MODIFY THIS FILE, IT IS GENERATED BY setup update SCRIPT\n\n";
 		$content .= "@define(\"ROOT_DIR\", \"" . ROOT_DIR . "\");\n";
 		$content .= "@define(\"CF_DIR\", $cf_dir);\n";
-		file_put_contents(CONFIG_DIR . "/paths.php", $content);
+		file_put_contents(Options::get('CONFIG_DIR') . "/paths.php", $content);
 	}
 
 
@@ -241,8 +241,8 @@ class CorePlugin extends Plugins {
 	 *
 	 */
 	public function clean() {
-		System::rmtree(CACHE_DIR);
-		System::rmtree(WWW_CACHE_DIR);
+		System::rmtree(Options::get('CACHE_DIR'));
+		System::rmtree(Options::get('WWW_CACHE_DIR'));
 	}
 
 

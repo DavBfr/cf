@@ -137,7 +137,6 @@ class Cli {
 	 * @param array $args
 	 */
 	public function printHelp($args) {
-		
 		self::pcolorln(self::ansiinfo, "Help " . basename(isset($args["input"]) ? $args["input"][0] : './setup') . " <command> [options]");
 		self::pln();
 		self::pcolorln(self::ansiinfo, "Commands:");

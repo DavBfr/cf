@@ -74,9 +74,9 @@ class Plugins {
 		}
 
 		if ($dir === null) {
-			$dir = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
+			$dir = Options::get('PLUGINS_DIR') . DIRECTORY_SEPARATOR . $name;
 			if (!is_dir($dir))
-				$dir = CF_PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
+				$dir = Options::get('CF_PLUGINS_DIR') . DIRECTORY_SEPARATOR . $name;
 		}
 
 		if (!is_dir($dir))
@@ -466,8 +466,8 @@ if (file_exists(INIT_CONFIG_DIR . DIRECTORY_SEPARATOR . "config.php")) {
 }
 
 Options::set("MINIMUM_PHP_VERSION", "7.0.0", "Minimum PHP version supported");
-if (version_compare(MINIMUM_PHP_VERSION, PHP_VERSION, '>'))
-	die("PHP " . MINIMUM_PHP_VERSION . " required." . PHP_EOL);
+if (version_compare(Options::get('MINIMUM_PHP_VERSION'), PHP_VERSION, '>'))
+	die("PHP " . Options::get('MINIMUM_PHP_VERSION') . " required." . PHP_EOL);
 
 if (!defined("ROOT_DIR"))
 	die("ROOT_DIR not defined." . PHP_EOL);
@@ -485,8 +485,8 @@ Options::set("DEBUG", false, "For development only");
 define("IS_CLI", defined("STDIN") && substr(php_sapi_name(), 0, 3) == "cli");
 define("IS_PHAR", substr(__FILE__, 0, 7) == "phar://");
 
-if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
-	if (USE_STS) {
+if (!IS_CLI && Options::get('FORCE_HTTPS') && $_SERVER["HTTPS"] != "on") {
+	if (Options::get('USE_STS')) {
 		header('Strict-Transport-Security: max-age=500');
 	} else {
 		header('Status-Code: 301');
@@ -495,14 +495,14 @@ if (!IS_CLI && FORCE_HTTPS && $_SERVER["HTTPS"] != "on") {
 	}
 }
 
-date_default_timezone_set(DEFAULT_TIMEZONE);
+date_default_timezone_set(Options::get('DEFAULT_TIMEZONE'));
 
 if (function_exists('mb_internal_encoding'))
 	mb_internal_encoding('UTF-8');
 
 Plugins::registerAutoload();
 try {
-	Plugins::add(CORE_PLUGIN, Plugins::CORE);
+	Plugins::add(Options::get('CORE_PLUGIN'), Plugins::CORE);
 	Plugins::addApp();
 } catch (\ReflectionException $e) {
 	die($e->getMessage());
