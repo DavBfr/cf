@@ -25,7 +25,7 @@ class Less {
 
 
 	public function __construct($fname = null) {
-		$this->options['import_callback'] = array($this, 'findImport');
+		$this->options['import_callback'] = [$this, 'findImport'];
 
 		$this->registerFunction("media", function ($arg) {
 			$file = Resources::find($arg[2][0]);
