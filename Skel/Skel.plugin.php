@@ -38,7 +38,7 @@ class SkelPlugin extends Plugins {
 			Cli::pinfo(" * Update $file");
 			$content = file_get_contents(getcwd() . DIRECTORY_SEPARATOR . $file);
 			foreach (array_merge(get_defined_constants(), Options::getAll()) as $key => $val) {
-				$content = str_replace("@$key@", $val, $content);
+				$content = str_replace("@$key@", "$val", $content);
 			}
 			$content = str_replace("@DATE@", date("r"), $content);
 			$gitignore = trim(file_get_contents($this->getDir() . DIRECTORY_SEPARATOR . "project" . DIRECTORY_SEPARATOR . ".gitignore"));
@@ -66,13 +66,13 @@ class SkelPlugin extends Plugins {
 		System::copyTree($this->getDir() . DIRECTORY_SEPARATOR . "project", getcwd());
 		$this->updateFiles();
 		chmod(getcwd() . DIRECTORY_SEPARATOR . "setup", 0755);
-		System::ensureDir(DATA_DIR);
+		System::ensureDir(Options::get('DATA_DIR'));
 		$conf = Config::getInstance();
-		$conf->load(CONFIG_DIR . DIRECTORY_SEPARATOR . "config.json");
+		$conf->load(Options::get('CONFIG_DIR') . DIRECTORY_SEPARATOR . "config.json");
 		foreach ($conf->get("plugins", array()) as $plugin) {
 			Plugins::add($plugin);
 		}
-		if (DEBUG) {
+		if (Options::get('DEBUG')) {
 			foreach ($conf->get("debugPlugins", array()) as $plugin) {
 				Plugins::add($plugin);
 			}
@@ -95,7 +95,7 @@ class SkelPlugin extends Plugins {
 		}
 		$this->updateFiles();
 		chmod(getcwd() . DIRECTORY_SEPARATOR . "setup", 0755);
-		System::ensureDir(DATA_DIR);
+		System::ensureDir(Options::get('DATA_DIR'));
 		Cli::update();
 	}
 
@@ -112,7 +112,7 @@ class SkelPlugin extends Plugins {
 		}
 
 		foreach ($names as $name) {
-			$dest = PLUGINS_DIR . DIRECTORY_SEPARATOR . $name;
+			$dest = Options::get('PLUGINS_DIR') . DIRECTORY_SEPARATOR . $name;
 			if (file_exists($dest)) {
 				if (!Cli::question("A plugin with this name already exists, do you want to replace?")) {
 					System::rmtree($dest);

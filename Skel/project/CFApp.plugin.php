@@ -22,7 +22,7 @@ class CFAppPlugin extends Plugins {
 		$address = Cli::addOption('address', "127.0.0.1", 'Address to listen to');
 		$port = Cli::addOption('port', "3000", 'Port to listen to');
 		Cli::enableHelp();
-		system("php -S $address:$port -t " . WWW_DIR . " 1>&2");
+		system("php -S $address:$port -t " . Options::get('WWW_DIR') . " 1>&2");
 
 	}
 

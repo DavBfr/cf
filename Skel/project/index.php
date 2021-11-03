@@ -30,4 +30,4 @@ if (file_exists(dirname(__file__) . "/vendor/autoload.php")) {
 $tpt = CorePlugin::bootstrap();
 Options::set("CF_TEMPLATE", "index.php", "Template to load");
 /** @noinspection PhpUnhandledExceptionInspection */
-$tpt->outputCached(CF_TEMPLATE);
+$tpt->outputCached(Options::get('CF_TEMPLATE'));
