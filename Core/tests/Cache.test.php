@@ -20,7 +20,7 @@
 class CacheTest extends \PHPUnit\Framework\TestCase {
 
 	public function testMakeCacheName() {
-    Cache::MakeCacheName("name", CACHE_DIR, 0);
+    Cache::MakeCacheName("name", Options::get('CACHE_DIR'), 0);
 		$this->assertEquals(True, True);
 	}
 

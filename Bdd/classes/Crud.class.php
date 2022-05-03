@@ -61,7 +61,7 @@ abstract class Crud extends Rest {
 			"can_filter" => true,
 			"list_partial" => "crud-list.php",
 			"detail_partial" => "crud-detail.php",
-			"limit" => CRUD_LIMIT,
+			"limit" => Options::get('CRUD_LIMIT'),
 			"foreign_limit" => null,
 		);
 	}
@@ -168,6 +168,9 @@ abstract class Crud extends Rest {
 			Output::success(array("list" => $conf->get($foreign)));
 		}
 
+		if (!is_array($foreign)) {
+			Output::success(array("list" => []));
+		}
 		list($table, $key, $value) = $foreign;
 		$foreignModel = Model::getModel($table);
 		$col = Collection::Query($table)
@@ -404,7 +407,7 @@ abstract class Crud extends Rest {
 		$config = Config::getInstance();
 		$rest = Plugins::get(Plugins::APP_NAME)->getDir() . DIRECTORY_SEPARATOR . self::REQUEST_DIR;
 		System::ensureDir($rest);
-		$ctrl = WWW_DIR . "/app/crud";
+		$ctrl = Options::get('WWW_DIR') . "/app/crud";
 		System::ensureDir($ctrl);
 
 		foreach ($models as $model) {

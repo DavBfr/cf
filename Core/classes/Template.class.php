@@ -392,8 +392,8 @@ class Template {
 			$options = array_merge($options, $opt);
 		}
 
-		if (DEBUG) {
-			$options['debug'] = DEBUG;
+		if (Options::get('DEBUG')) {
+			$options['debug'] = Options::get('DEBUG');
 		}
 
 		$this->disable_cache();

@@ -39,7 +39,7 @@ abstract class RestApi extends Rest {
 	 * @throws \Exception
 	 */
 	protected function preCheck($mp) {
-		DEBUG || Session::ensureLoggedinApi();
+		Options::get('DEBUG') || Session::ensureLoggedinApi();
 		return parent::preCheck($mp);
 	}
 }

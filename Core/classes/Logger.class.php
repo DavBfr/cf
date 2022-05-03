@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-Options::set("BROWSER_LOG", DEBUG, "Log messages to chrome console");
+Options::set("BROWSER_LOG", Options::get('DEBUG'), "Log messages to chrome console");
 
 
 class Logger {
@@ -79,7 +79,7 @@ class Logger {
 	 */
 	public static function getInstance() {
 		if (is_null(self::$instance)) {
-			self::$instance = new self(DEBUG ? self::DEBUG : self::ERROR);
+			self::$instance = new self(Options::get('DEBUG') ? self::DEBUG : self::ERROR);
 		}
 
 		return self::$instance;
@@ -155,7 +155,7 @@ class Logger {
 				}
 				$data = implode(" ", $output);
 			}
-			if (BROWSER_LOG && !IS_CLI) {
+			if (Options::get('BROWSER_LOG') && !IS_CLI) {
 				$this->logToChrome($data, $level);
 			}
 			if (IS_CLI) {
@@ -164,7 +164,7 @@ class Logger {
 				$data = "[CF] [" . @date('M j H:i:s') . "] [" . $raddr . "] [" . self::$levels[$level] . "] " . $data;
 				fwrite($this->stderr, $data . "\n");
 			}
-			if (DEBUG) {
+			if (Options::get('DEBUG')) {
 				$this->log[] = $data;
 			}
 		}

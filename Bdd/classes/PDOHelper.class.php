@@ -292,7 +292,7 @@ class PDOHelper extends BddHelper {
 		$queries = $this->alterTableQuery($name, $table_structure);
 		if (count($queries) == 0) return;
 
-		if (DATABASE_ALTER_CONFIRMATION) {
+		if (Options::get('DATABASE_ALTER_CONFIRMATION')) {
 			Cli::perr("The table '$name' has been modified.");
 			Cli::pinfo("the following SQL statements have to be executed on the server:");
 			Cli::pln(implode(";\n", $queries) . ";");
@@ -542,7 +542,7 @@ class PDOStatementHelper extends BddCursorHelper {
 	/**
 	 * @return array|null
 	 */
-	public function current() {
+	public function current(): mixed {
 		if (!is_array($this->current))
 			return $this->current;
 
@@ -565,12 +565,12 @@ class PDOStatementHelper extends BddCursorHelper {
 	/**
 	 * @return mixed
 	 */
-	public function key() {
+	public function key(): mixed {
 		return null;
 	}
 
 
-	public function next() {
+	public function next(): void {
 		$this->current = $this->cursor->fetch(PDO::FETCH_ASSOC);
 	}
 
@@ -578,7 +578,7 @@ class PDOStatementHelper extends BddCursorHelper {
 	/**
 	 * @throws Exception
 	 */
-	public function rewind() {
+	public function rewind(): void {
 		if ($this->current === null)
 			$this->current = $this->cursor->fetch(PDO::FETCH_ASSOC);
 		else
@@ -589,7 +589,7 @@ class PDOStatementHelper extends BddCursorHelper {
 	/**
 	 * @return bool
 	 */
-	public function valid() {
+	public function valid(): bool {
 		return $this->current !== false && $this->current !== null;
 	}
 

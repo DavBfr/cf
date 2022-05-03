@@ -19,7 +19,7 @@
 
 class Session {
 	const rights_key = "RIGHTS";
-	const xsrf_token = "XSRF_TOKEN";
+	const xsrf_token = "Options::get('XSRF_TOKEN')";
 
 	private static $instance = null;
 
@@ -32,21 +32,21 @@ class Session {
 		if (session_id() != '')
 			ErrorHandler::error(500, "Session already started");
 
-		session_name(SESSION_NAME);
+		session_name(Options::get('SESSION_NAME'));
 		if (version_compare(PHP_VERSION, '7.3.0') < 0) {
-			session_set_cookie_params(0, SESSION_PATH . '; samesite=' . SESSION_SAME_SITE, SESSION_DOMAIN, FORCE_HTTPS, true);
+			session_set_cookie_params(0, Options::get('SESSION_PATH') . '; samesite=' . Options::get('SESSION_SAME_SITE'), Options::get('SESSION_DOMAIN'), Options::get('FORCE_HTTPS'), true);
 		} else {
 			session_set_cookie_params([
 				'lifetime' => 0,
-				'path' => SESSION_PATH,
-				'domain' => SESSION_DOMAIN,
-				'secure' => FORCE_HTTPS,
+				'path' => Options::get('SESSION_PATH'),
+				'domain' => Options::get('SESSION_DOMAIN'),
+				'secure' => Options::get('FORCE_HTTPS'),
 				'httponly' => true,
-				'samesite' => SESSION_SAME_SITE]);
+				'samesite' => Options::get('SESSION_SAME_SITE')]);
 		}
 		session_start();
 
-		if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > SESSION_TIMEOUT)) {
+		if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > Options::get('SESSION_TIMEOUT'))) {
 			session_unset();
 			session_destroy();
 		}
@@ -54,7 +54,7 @@ class Session {
 
 		if (!isset($_SESSION['CREATED'])) {
 			$_SESSION['CREATED'] = time();
-		} elseif (time() - $_SESSION['CREATED'] > SESSION_REGENERATE) {
+		} elseif (time() - $_SESSION['CREATED'] > Options::get('SESSION_REGENERATE')) {
 			session_regenerate_id(true);
 			$_SESSION['CREATED'] = time();
 		}
@@ -91,21 +91,21 @@ class Session {
 		}
 		self::$instance = null;
 
-		if (isset($_COOKIE[SESSION_NAME])) {
+		if (isset($_COOKIE[Options::get('SESSION_NAME')])) {
 			$params = session_get_cookie_params();
 			setcookie(session_name(), '', time() - 42000,
 				$params["path"], $params["domain"],
 				$params["secure"], $params["httponly"]
 			);
-			unset($_COOKIE[SESSION_NAME]);
+			unset($_COOKIE[Options::get('SESSION_NAME')]);
 		}
 
-		if (isset($_COOKIE[XSRF_TOKEN])) {
-			setcookie(XSRF_TOKEN, '', time() - 42000,
+		if (isset($_COOKIE[Options::get('XSRF_TOKEN')])) {
+			setcookie(Options::get('XSRF_TOKEN'), '', time() - 42000,
 				$params["path"], $params["domain"],
 				$params["secure"], $params["httponly"]
 			);
-			unset($_COOKIE[XSRF_TOKEN]);
+			unset($_COOKIE[Options::get('XSRF_TOKEN')]);
 		}
 	}
 
@@ -122,7 +122,7 @@ class Session {
 	 * @return bool
 	 */
 	public static function hasSession() {
-		return array_key_exists(SESSION_NAME, $_COOKIE);
+		return array_key_exists(Options::get('SESSION_NAME'), $_COOKIE);
 	}
 
 
@@ -130,7 +130,7 @@ class Session {
 	 * @return mixed
 	 */
 	public static function nextCheck() {
-		return SESSION_TIMEOUT;
+		return Options::get('SESSION_TIMEOUT');
 	}
 
 
@@ -201,7 +201,7 @@ class Session {
 	 */
 	public static function Get($key) {
 		self::getInstance();
-		return $_SESSION[$key];
+		return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : null;
 	}
 
 
@@ -233,8 +233,8 @@ class Session {
 		if (self::hasSession() && self::hasRight("logged_api"))
 			return true;
 
-		if (HttpHeaders::contains(API_TOKEN_HEADER)) {
-			$token = HttpHeaders::get(API_TOKEN_HEADER);
+		if (HttpHeaders::contains(Options::get('API_TOKEN_HEADER'))) {
+			$token = HttpHeaders::get(Options::get('API_TOKEN_HEADER'));
 			$login = Plugins::dispatch("token_login", $token);
 			Logger::error("token_login result: " . var_export($login, true));
 			return $login === true;
@@ -286,7 +286,7 @@ class Session {
 		$token = substr($pwd->hash($pwd->getRandomBytes(32)), 7);
 		Session::Set(self::xsrf_token, $token);
 		$params = session_get_cookie_params();
-		setcookie(XSRF_TOKEN, $token, $params["lifetime"], $params["path"], $params["domain"],
+		setcookie(Options::get('XSRF_TOKEN'), $token, $params["lifetime"], $params["path"], $params["domain"],
 			$params["secure"], false);
 	}
 
@@ -296,13 +296,13 @@ class Session {
 	 * @throws \Exception
 	 */
 	public static function checkXsrfToken() {
-		if (DEBUG)
+		if (Options::get('DEBUG'))
 			return true;
 
-		if (!HttpHeaders::contains(XSRF_HEADER))
+		if (!HttpHeaders::contains(Options::get('XSRF_HEADER')))
 			return false;
 
-		return Session::Get(self::xsrf_token) == HttpHeaders::get(XSRF_HEADER);
+		return Session::Get(self::xsrf_token) == HttpHeaders::get(Options::get('XSRF_HEADER'));
 	}
 
 

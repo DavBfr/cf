@@ -559,7 +559,7 @@ class Cli {
 					if (is_dir($filename)) {
 						$subDirs[] = $filename;
 					} else {
-						$relFilename = substr($filename, strlen(CF_DIR) + 1);
+						$relFilename = substr($filename, strlen(Options::get('CF_DIR')) + 1);
 						self::pcolorln(self::ansiwarn, "Add $relFilename");
 						$phar->addFile($filename, $relFilename);
 					}
@@ -593,7 +593,7 @@ class Cli {
 		);
 		$phar->startBuffering();
 		$phar->setSignatureAlgorithm(Phar::SHA256);
-		self::addToPhar($phar, CF_DIR);
+		self::addToPhar($phar, Options::get('CF_DIR'));
 		$phar->setStub($phar->createDefaultStub("setup.php"));
 		$phar->compressFiles(Phar::GZ);
 		$phar->stopBuffering();

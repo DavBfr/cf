@@ -88,14 +88,14 @@ class ModelData implements Iterator, ArrayAccess {
 	}
 
 
-	public function rewind() {
+	public function rewind(): void {
 	}
 
 
 	/**
 	 * @return $this
 	 */
-	public function current() {
+	public function current(): mixed {
 		return $this;
 	}
 
@@ -103,7 +103,7 @@ class ModelData implements Iterator, ArrayAccess {
 	/**
 	 * @return mixed
 	 */
-	public function key() {
+	public function key(): mixed {
 		return $this->values[$this->primary];
 	}
 
@@ -111,7 +111,7 @@ class ModelData implements Iterator, ArrayAccess {
 	/**
 	 * @return bool
 	 */
-	public function valid() {
+	public function valid(): bool {
 		return !$this->isempty;
 	}
 
@@ -120,7 +120,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @return $this
 	 * @throws Exception
 	 */
-	public function next() {
+	public function next(): void {
 		if (!$this->statement) {
 			$this->isempty = true;
 			$this->isnew = true;
@@ -128,7 +128,7 @@ class ModelData implements Iterator, ArrayAccess {
 			foreach ($this->model->getFields() as $field) {
 				$this->_set($field->getName(), $field->getDefault());
 			}
-			return $this;
+			return;
 		}
 		$this->statement->next();
 		$values = $this->statement->current();
@@ -139,13 +139,13 @@ class ModelData implements Iterator, ArrayAccess {
 			foreach ($this->model->getFields() as $field) {
 				$this->_set($field->getName(), $field->getDefault());
 			}
-			return $this;
+			return;
 		}
 		$this->isnew = false;
 		foreach ($values as $key => $val) {
 			$this->_set($key, $val);
 		}
-		return $this;
+		return;
 	}
 
 
@@ -341,7 +341,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @param string $offset
 	 * @return boolean true on success or false on failure.
 	 */
-	public function offsetExists($offset) {
+	public function offsetExists(mixed $offset): bool {
 		return $this->has($offset);
 	}
 
@@ -352,7 +352,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function offsetGet($offset) {
+	public function offsetGet($offset): mixed {
 		return $this->get($offset);
 	}
 
@@ -364,7 +364,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function offsetSet($offset, $value) {
+	public function offsetSet(mixed $offset, mixed $value): void {
 		$this->set($offset, $value);
 	}
 
@@ -375,7 +375,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function offsetUnset($offset) {
+	public function offsetUnset(mixed $offset): void {
 		$this->set($offset, null);
 	}
 

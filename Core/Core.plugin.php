@@ -223,9 +223,9 @@ class CorePlugin extends Plugins {
 	 */
 	public function update() {
 		if (Cli::getOption("a"))
-			$cf_dir = "\"" . realpath(CF_DIR) . "\"";
+			$cf_dir = "\"" . realpath(Options::get('CF_DIR')) . "\"";
 		else
-			$cf_dir = "ROOT_DIR . \"/" . System::relativePath(System::absPath(ROOT_DIR), System::absPath(CF_DIR)) . "\"";
+			$cf_dir = "ROOT_DIR . \"/" . System::relativePath(System::absPath(ROOT_DIR), System::absPath(Options::get('CF_DIR'))) . "\"";
 
 		Cli::pinfo(" * Create paths.php");
 		Logger::debug("CF dir is $cf_dir");

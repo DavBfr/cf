@@ -29,12 +29,12 @@ class Bdd {
 	 * @throws \Exception
 	 */
 	private function __construct() {
-		$this->driver = substr(DBNAME, 0, strpos(DBNAME, ":"));
+		$this->driver = substr(Options::get('DBNAME'), 0, strpos(Options::get('DBNAME'), ":"));
 		$helper = __NAMESPACE__ . "\\" . ucfirst($this->driver) . "Helper";
 		if (class_exists($helper, true)) {
-			$this->helper = new $helper(DBNAME, DBLOGIN, DBPASSWORD);
+			$this->helper = new $helper(Options::get('DBNAME'), Options::get('DBLOGIN'), Options::get('DBPASSWORD'));
 		} else {
-			$this->helper = new PDOHelper(DBNAME, DBLOGIN, DBPASSWORD);
+			$this->helper = new PDOHelper(Options::get('DBNAME'), Options::get('DBLOGIN'), Options::get('DBPASSWORD'));
 		}
 	}
 

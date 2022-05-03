@@ -33,9 +33,9 @@ class MemCache implements \ArrayAccess {
 	 * MemCache constructor.
 	 * @param int $lifetime
 	 */
-	public function __construct($lifetime = MEMCACHE_LIFETIME) {
-		$this->lifetime = $lifetime;
-		$this->apc = MEMCACHE_ENABLED && function_exists('apc_store') && ini_get('apc.enabled') && !DEBUG;
+	public function __construct($lifetime = null) {
+		$this->lifetime = ($lifetime === null) ? Options::get('MEMCACHE_LIFETIME') : $lifetime;
+		$this->apc = Options::get('MEMCACHE_ENABLED') && function_exists('apc_store') && ini_get('apc.enabled') && !Options::get('DEBUG');
 	}
 
 
@@ -44,13 +44,13 @@ class MemCache implements \ArrayAccess {
 	 * @param mixed $value
 	 * @throws Exception
 	 */
-	public function offsetSet($offset, $value) {
+	public function offsetSet(mixed $offset, mixed $value): void {
 		if (is_null($offset))
 			throw new Exception("MemCache offset cannot be null");
 
 		self::$data[$offset] = $value;
 		if ($this->apc) {
-			apc_store(MEMCACHE_PREFIX . $offset, $value, $this->lifetime);
+			apc_store(Options::get('MEMCACHE_PREFIX') . $offset, $value, $this->lifetime);
 		}
 	}
 
@@ -59,11 +59,11 @@ class MemCache implements \ArrayAccess {
 	 * @param string $offset
 	 * @return bool
 	 */
-	public function offsetExists($offset) {
+	public function offsetExists(mixed $offset): bool {
 		if (isset(self::$data[$offset]))
 			return true;
 		if ($this->apc)
-			return apc_exists(MEMCACHE_PREFIX . $offset);
+			return apc_exists(Options::get('MEMCACHE_PREFIX') . $offset);
 		return false;
 	}
 
@@ -71,10 +71,10 @@ class MemCache implements \ArrayAccess {
 	/**
 	 * @param string $offset
 	 */
-	public function offsetUnset($offset) {
+	public function offsetUnset(mixed $offset): void {
 		unset(self::$data[$offset]);
 		if ($this->apc)
-			apc_delete(MEMCACHE_PREFIX . $offset);
+			apc_delete(Options::get('MEMCACHE_PREFIX') . $offset);
 	}
 
 
@@ -82,11 +82,11 @@ class MemCache implements \ArrayAccess {
 	 * @param string $offset
 	 * @return mixed
 	 */
-	public function offsetGet($offset) {
+	public function offsetGet(mixed $offset): mixed {
 		if (isset(self::$data[$offset]))
 			return self::$data[$offset];
 		if ($this->apc)
-			return apc_fetch(MEMCACHE_PREFIX . $offset);
+			return apc_fetch(Options::get('MEMCACHE_PREFIX') . $offset);
 		return null;
 	}
 }

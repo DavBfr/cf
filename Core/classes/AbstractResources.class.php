@@ -57,12 +57,12 @@ abstract class AbstractResources {
 	 * @throws \Exception
 	 */
 	public static function web($filename) {
-		$localpath = WWW_DIR . DIRECTORY_SEPARATOR;
+		$localpath = Options::get('WWW_DIR') . DIRECTORY_SEPARATOR;
 		if (strpos($filename, $localpath) !== false) {
-			return WWW_PATH . DIRECTORY_SEPARATOR . str_replace($localpath, '', $filename);
+			return Options::get('WWW_PATH') . DIRECTORY_SEPARATOR . str_replace($localpath, '', $filename);
 		} else {
-			if (ALLOW_DOCUMENT_ROOT && strpos($filename, DOCUMENT_ROOT) === 0) {
-				return str_replace(DOCUMENT_ROOT, '', $filename);
+			if (Options::get('ALLOW_DOCUMENT_ROOT') && strpos($filename, Options::get('DOCUMENT_ROOT')) === 0) {
+				return str_replace(Options::get('DOCUMENT_ROOT'), '', $filename);
 			} else {
 				$cache = Cache::Pub($filename);
 				$cache->symlink();

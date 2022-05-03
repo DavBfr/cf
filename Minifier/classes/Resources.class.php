@@ -105,7 +105,7 @@ class Resources extends AbstractResources {
 		} else {
 			$min = Cache::Priv($filename);
 			if ($min->check()) {
-				if (MINIFY_YUI) {
+				if (Options::get('MINIFY_YUI')) {
 					exec("yui-compressor --nomunge --type js '${filename}'", $datamin, $ret);
 					if ($ret !== 0) {
 						$datamin = file_get_contents($filename);
@@ -135,7 +135,7 @@ class Resources extends AbstractResources {
 		} else {
 			$min = Cache::Priv($filename);
 			if ($min->check()) {
-				if (MINIFY_YUI) {
+				if (Options::get('MINIFY_YUI')) {
 					exec("yui-compressor --nomunge --type css '${filename}'", $datamin, $ret);
 					if ($ret !== 0) {
 						$datamin = file_get_contents($filename);
@@ -161,7 +161,7 @@ class Resources extends AbstractResources {
 	public function getScripts() {
 		$res = $this->getResourcesByExt(".js");
 		$output = Cache::Pub($this->tag . ".js");
-		if (!MINIFY_JSCSS) {
+		if (!Options::get('MINIFY_JSCSS')) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}
@@ -184,7 +184,7 @@ class Resources extends AbstractResources {
 	public function getStylesheets() {
 		$res = $this->getResourcesByExt(".css");
 		$output = Cache::Pub($this->tag . ".css");
-		if (!MINIFY_JSCSS) {
+		if (!Options::get('MINIFY_JSCSS')) {
 			$output->delete();
 			return array_map(array($this, "web"), $res);
 		}

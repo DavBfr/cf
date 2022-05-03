@@ -40,18 +40,18 @@ class Output {
 	 * @param bool $cache
 	 */
 	public static function json($object, $cache = false) {
-		if (JSON_HEADER)
+		if (Options::get('JSON_HEADER'))
 			header("Content-Type: text/json");
 		else
 			header("Content-Type: text/plain");
 
 		$content = ob_get_contents();
 		ob_end_clean();
-		if (DEBUG && is_array($object) && strlen($content) > 0) {
+		if (Options::get('DEBUG') && is_array($object) && strlen($content) > 0) {
 			$object["__debug__"] = $content;
 		}
 		$data = json_encode($object);
-		if (DEBUG)
+		if (Options::get('DEBUG'))
 			$data .= "\n";
 
 		self::fileCache(null, $data, $cache);
@@ -111,7 +111,7 @@ class Output {
 	 * @param bool $cache
 	 */
 	public static function fileCache($filename, $data = null, $cache = false) {
-		if (DEBUG) $cache = false;
+		if (Options::get('DEBUG')) $cache = false;
 
 		while (ob_get_length())
 			ob_end_clean();
@@ -130,13 +130,13 @@ class Output {
 			}
 
 			header_remove("Pragma");
-			header("Expires: " . gmdate("D, d M Y H:i:s", time() + CACHE_TIME) . " GMT");
+			header("Expires: " . gmdate("D, d M Y H:i:s", time() + Options::get('CACHE_TIME')) . " GMT");
 
 			if (($if_modified_since && strtotime($if_modified_since) == $filetime || ($etag_header && $etag_header == $etag))) {
 				header_remove("Cache-Control");
 				header('HTTP/1.1 304 Not Modified');
 			} else {
-				header("Cache-Control: immutable, only-if-cached, public, max-age=" . CACHE_TIME . ', stale-if-error=' . (CACHE_TIME * 2));
+				header("Cache-Control: immutable, only-if-cached, public, max-age=" . Options::get('CACHE_TIME') . ', stale-if-error=' . (Options::get('CACHE_TIME') * 2));
 
 				if ($data === null) {
 					header("Content-Length: " . filesize($filename));
@@ -170,7 +170,7 @@ class Output {
 	 * @throws \Exception
 	 */
 	public static function debug($message = "") {
-		if (!DEBUG)
+		if (!Options::get('DEBUG'))
 			return;
 
 		if ($message != "")

@@ -51,8 +51,8 @@ class Password {
 	 * Password constructor.
 	 */
 	public function __construct() {
-		$iteration_count_log2 = PASSWORD_ITERATION_COUNT;
-		$portable_hashes = PASSWORD_PORTABLE;
+		$iteration_count_log2 = Options::get('PASSWORD_ITERATION_COUNT');
+		$portable_hashes = Options::get('PASSWORD_PORTABLE');
 
 		$this->itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
@@ -303,7 +303,7 @@ class Password {
 		if (function_exists('password_verify')) {
 			if (password_verify($password, $stored_hash))
 				return true;
-			if (!PASSWORD_PHPASS)
+			if (!Options::get('PASSWORD_PHPASS'))
 				return false;
 		}
 

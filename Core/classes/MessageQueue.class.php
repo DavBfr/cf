@@ -37,8 +37,8 @@ class MessageQueue {
 	 * @param int $queue_id
 	 * @param int $mode
 	 */
-	public function __construct($queue_id = MESSAGE_QUEUE, $mode = 0600) {
-		$this->queue_id = $queue_id;
+	public function __construct($queue_id = null, $mode = 0600) {
+		$this->queue_id = $queue_id === null ? Options::get('MESSAGE_QUEUE') : $queue_id;
 		$this->mode = $mode;
 		Logger::debug("Open MessageQueue #$queue_id");
 		$this->queue = msg_get_queue($this->queue_id, $this->mode);
@@ -165,7 +165,7 @@ class MessageQueue {
 	 *
 	 */
 	public static function process() {
-		$queue_id = (int)Cli::addOption("queue", MESSAGE_QUEUE, "Message Queue ID (" . MESSAGE_QUEUE . ")");
+		$queue_id = (int)Cli::addOption("queue", Options::get('MESSAGE_QUEUE'), "Message Queue ID (" . Options::get('MESSAGE_QUEUE') . ")");
 		$timeout = (int)Cli::addOption("timeout", 0, "Time to wait");
 		$delete = (int)Cli::addSwitch("delete", "Delete the queue when finished");
 		Cli::enableHelp();

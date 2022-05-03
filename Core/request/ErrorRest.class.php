@@ -46,10 +46,10 @@ class ErrorRest extends Rest {
 		$tpt = new TemplateRes(array(
 			"code" => $code,
 			"message" => $message,
-			"body" => (DEBUG ? CorePlugin::info() : ""),
+			"body" => (Options::get('DEBUG') ? CorePlugin::info() : ""),
 			"baseline" => CorePlugin::getBaseline(),
 		));
-		$tpt->output(ERROR_TEMPLATE);
+		$tpt->output(Options::get('ERROR_TEMPLATE'));
 	}
 
 }

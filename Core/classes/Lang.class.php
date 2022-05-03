@@ -68,7 +68,7 @@ class Lang {
 
 		self::$baselang = $lang;
 
-		if (LANG_AUTOLOAD) {
+		if (Options::get('LANG_AUTOLOAD')) {
 			if (($pos = strpos($lang, "_")) !== false) {
 				$slang = substr($lang, 0, $pos);
 				foreach (Plugins::findAll(self::i18n . DIRECTORY_SEPARATOR . $slang . ".json") as $filename) {
@@ -115,12 +115,12 @@ class Lang {
 				return sprintf(self::getByCount($token, $context, $lang), $context);
 			} else {
 				if (is_null($t = self::getByLang($token, $lang)))
-					$t = self::getByLang($token, LANG_DEFAULT);
+					$t = self::getByLang($token, Options::get('LANG_DEFAULT'));
 				return $t;
 			}
 		}
 
-		if (DEBUG) {
+		if (Options::get('DEBUG')) {
 			self::set($token, str_replace(array("_", "."), array(" ", " "), $token));
 		}
 		return $token;
@@ -241,8 +241,8 @@ class Lang {
 
 
 try {
-	Lang::setLang(LANG_DEFAULT);
-	if (LANG_AUTODETECT && !IS_CLI) {
+	Lang::setLang(Options::get('LANG_DEFAULT'));
+	if (Options::get('LANG_AUTODETECT') && !IS_CLI) {
 		$d = Lang::detect();
 		Lang::setLang($d[0]);
 	}

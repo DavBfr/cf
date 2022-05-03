@@ -31,7 +31,7 @@ abstract class BaseExport {
 	 * @return BaseExport
 	 */
 	public static function newDefault() {
-		if (DEBUG)
+		if (Options::get('DEBUG'))
 			return new HtmlExport();
 
 		if (class_exists('\OneSheet\Sheet'))
@@ -93,7 +93,7 @@ abstract class BaseExport {
 
 
 	public function outputDefault($prefix) {
-		if (DEBUG && is_a($this, HtmlExport))
+		if (Options::get('DEBUG') && is_a($this, 'HtmlExport'))
 			die($this->end());
 		else
 			$this->output($prefix . "-" . date("Y-m-d-His") . $this->fileExtension(), true);

@@ -74,7 +74,7 @@ abstract class ModelSync extends RestApi {
 			"bidirectional" => true,
 			"filter_updated" => false,
 			"keymap" => array(),
-			"limit" => CRUD_LIMIT,
+			"limit" => Options::get('CRUD_LIMIT'),
 		);
 	}
 

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-Options::set("DBNAME", 'sqlite:' . DATA_DIR . '/db.sqlite', "Database name");
+Options::set("DBNAME", 'sqlite:' . Options::get('DATA_DIR') . '/db.sqlite', "Database name");
 Options::set("DBLOGIN", '', "Database Login");
 Options::set("DBPASSWORD", '', "Database password");
 Options::set("CRUD_LIMIT", 30, "Max number of lines in lists");
@@ -70,7 +70,7 @@ class BddPlugin extends Plugins {
 			if (!$bdd->tableExists($model->getTableName())) {
 				Cli::pinfo(" * Create table " . $model->getTableName());
 				$model->createTable();
-			} else if (DATABASE_ALTER) {
+			} else if (Options::get('DATABASE_ALTER')) {
 				Cli::pinfo(" * Update table " . $model->getTableName());
 				$model->alterTable();
 			}

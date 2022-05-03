@@ -446,7 +446,7 @@ function configure($key, $value) {
 ob_start();
 define("URL_SEPARATOR", "/");
 define("START_TIME", microtime(true));
-define("CF_VERSION", "2.5");
+define("CF_VERSION", "2.6");
 define("CF_URL", "https://github.com/DavBfr/cf");
 define("CF_AUTHOR", "David PHAM-VAN");
 define("CF_EMAIL", "dev.nfet.net@gmail.com");
@@ -473,9 +473,9 @@ if (!defined("ROOT_DIR"))
 	die("ROOT_DIR not defined." . PHP_EOL);
 
 Options::set("CF_DIR", dirname(__file__), "Path to the framework");
-Options::set("CF_PLUGINS_DIR", CF_DIR, "Path to the core plugins");
+Options::set("CF_PLUGINS_DIR", Options::get('CF_DIR'), "Path to the core plugins");
 Options::set("PLUGINS_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "plugins", "Path to the application plugins");
-Options::set("ROOT_DIR", dirname(CF_DIR), "Application home folder");
+Options::set("ROOT_DIR", dirname(Options::get('CF_DIR')), "Application home folder");
 Options::set("CONFIG_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "config", "Application configuration folder");
 Options::set("CORE_PLUGIN", "Core", "Main plugin to load");
 Options::set("FORCE_HTTPS", false, "Use https by default");

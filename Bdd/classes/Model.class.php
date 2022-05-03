@@ -188,7 +188,7 @@ abstract class Model {
 
 
 	/**
-	 * @return string
+	 * @return array
 	 */
 	abstract protected function getTable();
 

@@ -69,7 +69,7 @@ function CrudService($http, service) {
 				if (!restError(response))
 					onerror && onerror(response.data, response.status);
 			} else
-				onsuccess && onsuccess(data.id);
+				onsuccess && onsuccess(response.data.id);
 		}, function (response) {
 			if (!restError(response))
 				onerror && onerror(response.data);

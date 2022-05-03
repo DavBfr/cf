@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  **/
 
-Options::set("MINIFY_JSCSS", !DEBUG, "Minify Javascript and CSS files");
-Options::set("MINIFY_HTML", !DEBUG, "Minify Html files");
+Options::set("MINIFY_JSCSS", !Options::get('DEBUG'), "Minify Javascript and CSS files");
+Options::set("MINIFY_HTML", !Options::get('DEBUG'), "Minify Html files");
 Options::set("MINIFY_YUI", false, "Use yui-compressor to minify");
 
 
@@ -28,7 +28,7 @@ class MinifierPlugin extends Plugins {
 	 *
 	 */
 	public static function minify_images() {
-		$path = Cli::addOption("path", WWW_PATH, "Path where to find images");
+		$path = Cli::addOption("path", Options::get('WWW_PATH'), "Path where to find images");
 		$norun = Cli::addSwitch("n", "Do not run the scripts, only print files to process");
 		Cli::enableHelp();
 
@@ -73,7 +73,7 @@ class MinifierPlugin extends Plugins {
 	 * @return string
 	 */
 	public function minify_html($input) {
-		if (MINIFY_HTML)
+		if (Options::get('MINIFY_HTML'))
 			return HtmlMinifier::html($input);
 		else
 			return null;

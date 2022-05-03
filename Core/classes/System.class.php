@@ -49,9 +49,9 @@ class System {
 	 */
 	public static function publish($resource, $dest = null) {
 		if ($dest === null)
-			$dest = WWW_DIR . DIRECTORY_SEPARATOR . basename($resource);
+			$dest = Options::get('WWW_DIR') . DIRECTORY_SEPARATOR . basename($resource);
 		else
-			$dest = WWW_DIR . DIRECTORY_SEPARATOR . $dest;
+			$dest = Options::get('WWW_DIR') . DIRECTORY_SEPARATOR . $dest;
 
 		$resource = self::absPath($resource);
 		Logger::debug("publish $resource => $dest");

@@ -75,7 +75,7 @@ class Cache {
 	 * @return Cache
 	 */
 	public static function Priv($filename, $ext = null) {
-		return self::Create($filename, CACHE_DIR, 0, $ext);
+		return self::Create($filename, Options::get('CACHE_DIR'), 0, $ext);
 	}
 
 
@@ -85,7 +85,7 @@ class Cache {
 	 * @return Cache
 	 */
 	public static function Pub($filename, $ext = null) {
-		return self::Create($filename, WWW_CACHE_DIR, 0, $ext);
+		return self::Create($filename, Options::get('WWW_CACHE_DIR'), 0, $ext);
 	}
 
 
@@ -207,7 +207,7 @@ class Cache {
 	 * @return bool
 	 */
 	public function exists() {
-		return CACHE_ENABLED && is_file($this->filename_cache);
+		return Options::get('CACHE_ENABLED') && is_file($this->filename_cache);
 	}
 
 
