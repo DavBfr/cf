@@ -366,7 +366,8 @@ abstract class BddCursorHelper implements Iterator {
 	/**
 	 * @return array
 	 */
-	public function current(): mixed {
+	#[\ReturnTypeWillChange]
+	public function current() {
 		$data = $this->cursor->current();
 		return $data;
 	}
@@ -375,7 +376,8 @@ abstract class BddCursorHelper implements Iterator {
 	/**
 	 * @return mixed
 	 */
-	public function key(): mixed {
+	#[\ReturnTypeWillChange]
+	public function key() {
 		return $this->cursor->key();
 	}
 

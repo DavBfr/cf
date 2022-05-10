@@ -483,6 +483,7 @@ class MongodbCursorHelper extends BddCursorHelper {
 	/**
 	 * @return array
 	 */
+	#[\ReturnTypeWillChange]
 	public function current() {
 		$data = $this->cursor->current();
 		if ($data) {

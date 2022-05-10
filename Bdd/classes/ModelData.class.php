@@ -95,7 +95,8 @@ class ModelData implements Iterator, ArrayAccess {
 	/**
 	 * @return $this
 	 */
-	public function current(): mixed {
+	#[\ReturnTypeWillChange]
+	public function current() {
 		return $this;
 	}
 
@@ -103,7 +104,8 @@ class ModelData implements Iterator, ArrayAccess {
 	/**
 	 * @return mixed
 	 */
-	public function key(): mixed {
+	#[\ReturnTypeWillChange]
+	public function key() {
 		return $this->values[$this->primary];
 	}
 
@@ -341,7 +343,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @param string $offset
 	 * @return boolean true on success or false on failure.
 	 */
-	public function offsetExists(mixed $offset): bool {
+	public function offsetExists($offset): bool {
 		return $this->has($offset);
 	}
 
@@ -352,7 +354,8 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function offsetGet($offset): mixed {
+	#[\ReturnTypeWillChange]
+	public function offsetGet($offset) {
 		return $this->get($offset);
 	}
 
@@ -364,7 +367,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function offsetSet(mixed $offset, mixed $value): void {
+	public function offsetSet($offset, $value): void {
 		$this->set($offset, $value);
 	}
 
@@ -375,7 +378,7 @@ class ModelData implements Iterator, ArrayAccess {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function offsetUnset(mixed $offset): void {
+	public function offsetUnset($offset): void {
 		$this->set($offset, null);
 	}
 

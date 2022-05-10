@@ -187,7 +187,7 @@ class Config implements \ArrayAccess {
 	 * @param string $offset
 	 * @param mixed $value
 	 */
-	public function offsetSet(mixed $offset, mixed $value): void {
+	public function offsetSet($offset, $value): void {
 		$this->set($offset, $value);
 	}
 
@@ -196,7 +196,7 @@ class Config implements \ArrayAccess {
 	 * @param string $offset
 	 * @return bool
 	 */
-	public function offsetExists(mixed $offset): bool {
+	public function offsetExists($offset): bool {
 		return $this->get($offset) !== null;
 	}
 
@@ -204,7 +204,7 @@ class Config implements \ArrayAccess {
 	/**
 	 * @param string $offset
 	 */
-	public function offsetUnset(mixed $offset): void {
+	public function offsetUnset($offset): void {
 		$this->set($offset, null);
 	}
 
@@ -213,7 +213,8 @@ class Config implements \ArrayAccess {
 	 * @param string $offset
 	 * @return mixed
 	 */
-	public function offsetGet(mixed $offset): mixed {
+	#[\ReturnTypeWillChange]
+	public function offsetGet($offset) {
 		return $this->get($offset);
 	}
 

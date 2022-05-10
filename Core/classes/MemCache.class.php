@@ -44,7 +44,7 @@ class MemCache implements \ArrayAccess {
 	 * @param mixed $value
 	 * @throws Exception
 	 */
-	public function offsetSet(mixed $offset, mixed $value): void {
+	public function offsetSet($offset, $value): void {
 		if (is_null($offset))
 			throw new Exception("MemCache offset cannot be null");
 
@@ -59,7 +59,7 @@ class MemCache implements \ArrayAccess {
 	 * @param string $offset
 	 * @return bool
 	 */
-	public function offsetExists(mixed $offset): bool {
+	public function offsetExists($offset): bool {
 		if (isset(self::$data[$offset]))
 			return true;
 		if ($this->apc)
@@ -71,7 +71,7 @@ class MemCache implements \ArrayAccess {
 	/**
 	 * @param string $offset
 	 */
-	public function offsetUnset(mixed $offset): void {
+	public function offsetUnset($offset): void {
 		unset(self::$data[$offset]);
 		if ($this->apc)
 			apc_delete(Options::get('MEMCACHE_PREFIX') . $offset);
@@ -82,7 +82,8 @@ class MemCache implements \ArrayAccess {
 	 * @param string $offset
 	 * @return mixed
 	 */
-	public function offsetGet(mixed $offset): mixed {
+	#[\ReturnTypeWillChange]
+	public function offsetGet($offset) {
 		if (isset(self::$data[$offset]))
 			return self::$data[$offset];
 		if ($this->apc)

@@ -542,7 +542,8 @@ class PDOStatementHelper extends BddCursorHelper {
 	/**
 	 * @return array|null
 	 */
-	public function current(): mixed {
+	#[\ReturnTypeWillChange]
+	public function current() {
 		if (!is_array($this->current))
 			return $this->current;
 
@@ -565,7 +566,8 @@ class PDOStatementHelper extends BddCursorHelper {
 	/**
 	 * @return mixed
 	 */
-	public function key(): mixed {
+	#[\ReturnTypeWillChange]
+	public function key() {
 		return null;
 	}
 
