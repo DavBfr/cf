@@ -336,6 +336,9 @@ abstract class BddHelper {
 					$value->setTime($hours, $minutes, $seconds);
 					return $value->getTimestamp();
 				}
+				if (is_numeric($value)) {
+					return intval($value);
+				}
 				try {
 					$value = new DateTime($value);
 					$value->setTime($hours, $minutes, $seconds);
